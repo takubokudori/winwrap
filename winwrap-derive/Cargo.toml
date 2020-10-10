@@ -1,0 +1,18 @@
+[package]
+name = "winwrap-derive"
+version = "0.1.0"
+authors = ["takubokudori <takubokudori@gmail.com>"]
+license = "MIT"
+homepage = "https://github.com/takubokudori/winwrap"
+repository = "https://github.com/takubokudori/winwrap"
+description = "winwrap derives"
+readme = "README.md"
+edition = "2018"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = { version = "1.0.18", features = ["full", "extra-traits"] }
+quote = "1.0.7"
+proc-macro2 = "1.0.19"

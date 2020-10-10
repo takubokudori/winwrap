@@ -1,0 +1,68 @@
+[package]
+name = "winwrap"
+version = "0.1.0"
+authors = ["takubokudori <takubokudori@gmail.com>"]
+license = "MIT"
+homepage = "https://github.com/takubokudori/winwrap"
+repository = "https://github.com/takubokudori/winwrap"
+keywords = ["Windows", "WinAPI", "binding"]
+description = "Rust-friendly Windows API wrappers"
+readme = "README.md"
+edition = "2018"
+
+exclude = [
+    ".gitignore",
+    "examples/**",
+]
+
+[package.metadata.docs.rs]
+default-target = "x86_64-pc-windows-gnu"
+
+[workspace]
+members = ["winwrap-derive", "examples/find_first_file"]
+
+[dependencies]
+winwrap-derive = { path = "winwrap-derive", version = "0.1" }
+bitflags = "1.2"
+
+[dependencies.winapi]
+version = "0.3.9"
+features = [
+    "basetsd",
+    "consoleapi",
+    "debugapi",
+    "errhandlingapi",
+    "excpt",
+    "fileapi",
+    "handleapi",
+    "ioapiset",
+    "jobapi",
+    "jobapi2",
+    "libloaderapi",
+    "memoryapi",
+    "minwinbase",
+    "minwindef",
+    "namedpipeapi",
+    "ntdef",
+    "processenv",
+    "processthreadsapi",
+    "psapi",
+    "shellapi",
+    "stringapiset",
+    "synchapi",
+    "sysinfoapi",
+    "timezoneapi",
+    "tlhelp32",
+    "winbase",
+    "wincon",
+    "wincontypes",
+    "winerror",
+    "winnls",
+    "winnt",
+    "winreg",
+    "winuser",
+    "wow64apiset",
+]
+
+[features]
+ansi = []

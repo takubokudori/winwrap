@@ -1,0 +1,17 @@
+[package]
+name = "find_first_file"
+version = "0.1.0"
+authors = ["takubokudori <takubokudori@gmail.com>"]
+license = "MIT"
+homepage = "https://github.com/takubokudori/winwrap"
+repository = "https://github.com/takubokudori/winwrap"
+description = "An Example of winwrap"
+readme = "README.md"
+edition = "2018"
+
+[[bin]]
+name = "fff_winwrap"
+path = "src/winwrapapi.rs"
+
+[dependencies]
+winwrap = { path = "../../" }

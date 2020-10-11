@@ -61,11 +61,12 @@ fn wide_char_to_multi_byte_wrap(
 
 fn multi_byte_to_wide_char_wrap(
     code_page: CodePage,
+    mb_flags: MBFlags,
     x: &[u8],
 ) -> OsResult<Vec<u16>> {
     let l = multi_byte_to_wide_char(
         code_page,
-        MBFlags::PRECOMPOSED | MBFlags::ERR_INVALID_CHARS,
+        mb_flags,
         x,
         &mut [],
     )?;
@@ -75,7 +76,7 @@ fn multi_byte_to_wide_char_wrap(
 
         let l2 = multi_byte_to_wide_char(
             code_page,
-            MBFlags::PRECOMPOSED | MBFlags::ERR_INVALID_CHARS,
+            mb_flags,
             x,
             ret.as_mut_slice(),
         )?;
@@ -180,6 +181,24 @@ impl WString {
         }
     }
 
+    fn from_astr(x: &AStr) -> OsResult<Self> {
+        let wc = multi_byte_to_wide_char_wrap(
+            CodePage::ACP,
+            MBFlags::PRECOMPOSED | MBFlags::ERR_INVALID_CHARS,
+            x.to_bytes_with_nul(),
+        )?;
+        Ok(Self::_new(wc))
+    }
+
+    fn from_astr_lossy(x: &AStr) -> Self {
+        let wc = multi_byte_to_wide_char_wrap(
+            CodePage::ACP,
+            MBFlags::PRECOMPOSED,
+            x.to_bytes_with_nul(),
+        ).unwrap();
+        Self::_new(wc)
+    }
+
 
     #[inline]
     fn _new2(mut v: Vec<u8>) -> Self {
@@ -218,15 +237,17 @@ impl ops::Index<ops::RangeFull> for WString {
     type Output = WStr;
 
     #[inline]
-    fn index(&self, _index: ops::RangeFull) -> &Self::Output {
+    fn index(&self, _: ops::RangeFull) -> &Self::Output {
         self
     }
 }
 
 impl From<&AStr> for WString {
+    /// Converts &AStr to WString. Panic if an input cannot be converted to WCHAR.
     fn from(x: &AStr) -> Self {
         let wc = multi_byte_to_wide_char_wrap(
             CodePage::ACP,
+            MBFlags::PRECOMPOSED | MBFlags::ERR_INVALID_CHARS,
             x.to_bytes_with_nul(),
         ).unwrap();
         Self::_new(wc)
@@ -234,6 +255,7 @@ impl From<&AStr> for WString {
 }
 
 impl From<AString> for WString {
+    /// Converts AString to WString. Panic if an input cannot be converted to WCHAR.
     #[inline]
     fn from(x: AString) -> Self { Self::from(x.as_c_str()) }
 }
@@ -291,6 +313,7 @@ impl From<&WStr> for AString {
 }
 
 impl From<WString> for AString {
+    /// Converts WString to AString. Panic if an input cannot be converted to CHAR.
     fn from(x: WString) -> Self {
         Self::from(x.as_c_str())
     }
@@ -313,20 +336,22 @@ impl AString {
     pub fn len(&self) -> usize { self.inner.len() }
 
     pub fn to_string(&self) -> OsResult<String> {
-        let x = WString::from(self.as_c_str());
+        // ANSI -> UNICODE -> UTF8
+        let x = WString::from_astr(self.as_c_str())?;
         unsafe {
             let mut mb = wide_char_to_multi_byte_wrap(
                 CodePage::UTF8,
                 WCFlags::ERR_INVALID_CHARS,
                 x.as_bytes_with_nul(),
-            ).unwrap();
+            )?;
             mb.set_len(mb.len() - 1); // remove NULL
             Ok(String::from_utf8_unchecked(mb))
         }
     }
+
     pub fn to_string_lossy(&self) -> String {
         // ANSI -> UNICODE -> UTF8
-        let x = WString::from(self.as_c_str());
+        let x = WString::from_astr_lossy(self.as_c_str());
         unsafe {
             let mut mb = wide_char_to_multi_byte_wrap(
                 CodePage::UTF8,
@@ -407,6 +432,7 @@ impl ops::Index<ops::RangeFull> for AString {
 }
 
 impl From<Vec<u8>> for AString {
+    #[inline]
     fn from(x: Vec<u8>) -> Self { Self::new(x) }
 }
 

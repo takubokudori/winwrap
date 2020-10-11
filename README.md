@@ -9,10 +9,19 @@ Rust-friendly Windows API Wrappers.
 - TCHAR and TString support.
     - By default, TCHAR is WCHAR. If you want to use ANSI, ansi feature on.
 
+# Installation
+
+```
+[dependencies]
+winwrap = "0.1.0"
+```
+
+or
+
 ```
 [dependencies.winwrap]
 version = "0.1.0"
-features = ["ansi"]
+features = ["ansi"] # TCHAR == CHAR, TString == AString
 ```
 
 # Examples

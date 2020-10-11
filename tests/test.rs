@@ -3,6 +3,7 @@ pub mod tests {
     use winwrap::string::*;
     use winwrap::um::processenv::get_environment_variable_a;
     use winwrap::winapi::shared::winerror::ERROR_ENVVAR_NOT_FOUND;
+    use winapi::shared::winerror::ERROR_NO_UNICODE_TRANSLATION;
 
     #[test]
     fn wstring_test() {
@@ -40,6 +41,9 @@ pub mod tests {
         assert_eq!(x.as_bytes_with_nul(), x.as_c_str().to_bytes_with_nul());
         assert_eq!(x, AString::from("te"));
         assert_ne!(x, AString::from("Te"));
+        let x=AString::new(vec![0xff]); // invalid byte
+        assert_eq!("\u{f8f3}",&x.to_string_lossy());
+        assert_eq!(Err(ERROR_NO_UNICODE_TRANSLATION),x.to_string());
     }
 
     #[test]
@@ -67,7 +71,6 @@ pub mod tests {
         let value = get_environment_variable_a(name.as_c_str());
         assert_eq!(Err(ERROR_ENVVAR_NOT_FOUND), value);
         let name = AString::from("NUMBER_OF_PROCESSORS");
-        let value = get_environment_variable_a(name.as_c_str()).expect("Failed to get the value");
-        println!("value: {:?}", value.to_string_lossy());
+        get_environment_variable_a(name.as_c_str()).expect("Failed to get the value");
     }
 }

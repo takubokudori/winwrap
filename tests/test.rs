@@ -26,6 +26,10 @@ pub mod tests {
         assert_eq!(x.as_bytes_with_nul(), x.as_c_str().to_bytes_with_nul());
         assert_eq!(x, WString::from("test"));
         assert_ne!(x, WString::from("Test"));
+        let x = &mut [0x0074, 0x0065, 0x0073, 0x0074, 0x0000];
+        unsafe {
+            assert_eq!("test", WString::from_raw(x.as_mut_ptr()).to_string_lossy());
+        }
     }
 
     #[test]
@@ -41,9 +45,13 @@ pub mod tests {
         assert_eq!(x.as_bytes_with_nul(), x.as_c_str().to_bytes_with_nul());
         assert_eq!(x, AString::from("te"));
         assert_ne!(x, AString::from("Te"));
-        let x=AString::new(vec![0xff]); // invalid byte
-        assert_eq!("\u{f8f3}",&x.to_string_lossy());
-        assert_eq!(Err(ERROR_NO_UNICODE_TRANSLATION),x.to_string());
+        let x = AString::new(vec![0xff]); // invalid byte
+        assert_eq!("\u{f8f3}", &x.to_string_lossy());
+        assert_eq!(Err(ERROR_NO_UNICODE_TRANSLATION), x.to_string());
+        let x = &mut [0x74, 0x65, 0x73, 0x74, 0x00];
+        unsafe {
+            assert_eq!("test", AString::from_raw(x.as_mut_ptr()).to_string_lossy());
+        }
     }
 
     #[test]

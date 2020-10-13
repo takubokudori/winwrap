@@ -86,46 +86,6 @@ fn multi_byte_to_wide_char_wrap(
 }
 
 #[repr(C)]
-#[derive(Debug)]
-pub struct WStr {
-    inner: [wchar_t],
-}
-
-impl WStr {
-    #[inline]
-    pub unsafe fn from_bytes_with_nul_unchecked(bytes: &[u16]) -> &Self {
-        &*(bytes as *const [u16] as *const Self)
-    }
-
-    #[inline]
-    pub fn as_ptr(&self) -> *const wchar_t { self.inner.as_ptr() }
-
-    #[inline]
-    pub fn as_mut_ptr(&mut self) -> *mut wchar_t { self.inner.as_mut_ptr() }
-
-    #[inline]
-    pub fn len(&self) -> usize { self.inner.len() }
-
-    #[inline]
-    pub fn to_bytes_with_nul(&self) -> &[u16] { &self.inner }
-
-    pub fn to_bytes(&self) -> &[u16] {
-        let bytes = self.to_bytes_with_nul();
-        &bytes[..bytes.len() - 1]
-    }
-
-    #[inline]
-    pub fn to_u8_bytes_with_nul(&self) -> &[u8] {
-        unsafe { std::slice::from_raw_parts(self.inner.as_ptr() as *const u8, self.inner.len() * 2) }
-    }
-
-    pub fn to_u8_bytes(&self) -> &[u8] {
-        let bytes = self.to_u8_bytes_with_nul();
-        &bytes[..bytes.len() - 2]
-    }
-}
-
-#[repr(C)]
 #[derive(Clone, Debug, PartialOrd, PartialEq, Eq, Ord, Hash)]
 pub struct WString {
     inner: Box<[wchar_t]>,
@@ -266,6 +226,46 @@ impl From<Vec<u16>> for WString {
 
 impl From<&str> for WString {
     fn from(x: &str) -> Self { Self::_new(x.encode_utf16().collect()) }
+}
+
+#[repr(C)]
+#[derive(Debug)]
+pub struct WStr {
+    inner: [wchar_t],
+}
+
+impl WStr {
+    #[inline]
+    pub unsafe fn from_bytes_with_nul_unchecked(bytes: &[u16]) -> &Self {
+        &*(bytes as *const [u16] as *const Self)
+    }
+
+    #[inline]
+    pub fn as_ptr(&self) -> *const wchar_t { self.inner.as_ptr() }
+
+    #[inline]
+    pub fn as_mut_ptr(&mut self) -> *mut wchar_t { self.inner.as_mut_ptr() }
+
+    #[inline]
+    pub fn len(&self) -> usize { self.inner.len() }
+
+    #[inline]
+    pub fn to_bytes_with_nul(&self) -> &[u16] { &self.inner }
+
+    pub fn to_bytes(&self) -> &[u16] {
+        let bytes = self.to_bytes_with_nul();
+        &bytes[..bytes.len() - 1]
+    }
+
+    #[inline]
+    pub fn to_u8_bytes_with_nul(&self) -> &[u8] {
+        unsafe { std::slice::from_raw_parts(self.inner.as_ptr() as *const u8, self.inner.len() * 2) }
+    }
+
+    pub fn to_u8_bytes(&self) -> &[u8] {
+        let bytes = self.to_u8_bytes_with_nul();
+        &bytes[..bytes.len() - 2]
+    }
 }
 
 impl PartialEq for WStr {
@@ -410,7 +410,7 @@ impl AString {
     pub unsafe fn from_raw(ptr: *mut u8) -> Self {
         let len = strlen(ptr);
         let slice = std::slice::from_raw_parts_mut(ptr, len as usize + 1);
-        Self { inner: Box::from_raw(slice as *mut [u8]) }
+        Self { inner: Box::from_raw(slice) }
     }
 }
 
@@ -434,6 +434,15 @@ impl ops::Index<ops::RangeFull> for AString {
 impl From<Vec<u8>> for AString {
     #[inline]
     fn from(x: Vec<u8>) -> Self { Self::new(x) }
+}
+
+impl Drop for AString {
+    fn drop(&mut self) {
+        unsafe {
+            *self.inner.as_mut_ptr() = 0;
+            std::mem::forget(self)
+        }
+    }
 }
 
 #[repr(C)]

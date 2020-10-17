@@ -202,7 +202,7 @@ impl HKeyType for HKeyFlags {
 /// use winwrap::string::AString;
 ///
 /// let sub_key = AString::from("Environment");
-/// reg_create_key_a(&HKeyFlags::HKEY_CURRENT_USER,sub_key.as_c_str()).expect("Failed to reg_create_key_a");
+/// reg_create_key_a(&HKeyFlags::CURRENT_USER,sub_key.as_c_str()).expect("Failed to reg_create_key_a");
 /// ```
 #[ansi_fn]
 pub fn reg_create_key_a(

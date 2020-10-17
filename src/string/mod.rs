@@ -159,7 +159,6 @@ impl WString {
         Self::_new(wc)
     }
 
-
     #[inline]
     fn _new2(mut v: Vec<u8>) -> Self {
         if v.len() & 1 == 1 { v.push(0); } // Make the length even.
@@ -182,6 +181,11 @@ impl WString {
         let len = wcslen(ptr);
         let slice = std::slice::from_raw_parts_mut(ptr, len as usize + 1);
         Self { inner: Box::from_raw(slice) }
+    }
+
+    pub unsafe fn from_raw_s(ptr: *mut u16, len: usize) -> Self {
+        let v = Vec::from_raw_parts(ptr, len, len);
+        Self::_new(v)
     }
 }
 
@@ -226,6 +230,15 @@ impl From<Vec<u16>> for WString {
 
 impl From<&str> for WString {
     fn from(x: &str) -> Self { Self::_new(x.encode_utf16().collect()) }
+}
+
+impl Drop for WString {
+    fn drop(&mut self) {
+        unsafe {
+            *self.inner.as_mut_ptr() = 0;
+            std::mem::forget(self)
+        }
+    }
 }
 
 #[repr(C)]
@@ -330,6 +343,9 @@ impl AString {
     pub fn as_c_str(&self) -> &AStr { &*self }
 
     #[inline]
+    pub fn as_mut_c_str(&mut self) -> &mut AStr { &mut *self }
+
+    #[inline]
     pub fn as_ptr(&self) -> *const u8 { self.inner.as_ptr() }
 
     #[inline]
@@ -373,7 +389,7 @@ impl AString {
     /// ```no_run
     /// use winapi::shared::minwindef::FARPROC;
     /// use winwrap::OsResult;
-    /// use winwrap::string::AString;
+    /// use winwrap::string::*;
     /// use winwrap::um::libloaderapi::{get_proc_address, load_library_w, ProcAddress};
     ///
     /// /// It is assumed that a function name does not contains any multi-byte character.
@@ -412,6 +428,11 @@ impl AString {
         let slice = std::slice::from_raw_parts_mut(ptr, len as usize + 1);
         Self { inner: Box::from_raw(slice) }
     }
+
+    pub unsafe fn from_raw_s(ptr: *mut u8, len: usize) -> Self {
+        let v = Vec::from_raw_parts(ptr, len, len);
+        Self::_new(v)
+    }
 }
 
 impl ops::Deref for AString {
@@ -419,6 +440,12 @@ impl ops::Deref for AString {
 
     fn deref(&self) -> &Self::Target {
         unsafe { AStr::from_bytes_with_nul_unchecked(self.as_bytes_with_nul()) }
+    }
+}
+
+impl ops::DerefMut for AString {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        unsafe { AStr::from_bytes_with_nul_unchecked_mut(self.as_bytes_with_nul()) }
     }
 }
 
@@ -455,6 +482,11 @@ impl AStr {
     #[inline]
     pub unsafe fn from_bytes_with_nul_unchecked(bytes: &[u8]) -> &Self {
         &*(bytes as *const [u8] as *const Self)
+    }
+
+    #[inline]
+    pub unsafe fn from_bytes_with_nul_unchecked_mut(bytes: &[u8]) -> &mut Self {
+        &mut *(bytes as *const [u8] as *mut Self)
     }
 
     #[inline]

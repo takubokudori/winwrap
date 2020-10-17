@@ -118,6 +118,42 @@ pub fn load_library_ex_w(
 }
 
 #[ansi_fn]
+pub fn get_module_file_name_a<'a, MH>(
+    h_mod: MH
+) -> OsResult<AString>
+    where
+        MH: Into<Option<&'a HModule>>
+{
+    unsafe {
+        let mut v = Vec::with_capacity(128);
+        GetModuleFileNameA(
+            h_mod.into().map_or(null_mut(), |x| x.as_c_hmodule()),
+            v.as_mut_ptr() as *mut _,
+            128,
+        )?;
+        Ok(AString::new(v))
+    }
+}
+
+#[unicode_fn]
+pub fn get_module_file_name_w<'a, MH>(
+    h_mod: MH
+) -> OsResult<WString>
+    where
+        MH: Into<Option<&'a HModule>>
+{
+    unsafe {
+        let mut v = Vec::with_capacity(128);
+        GetModuleFileNameW(
+            h_mod.into().map_or(null_mut(), |x| x.as_c_hmodule()),
+            v.as_mut_ptr() as *mut _,
+            128,
+        )?;
+        Ok(WString::new(v))
+    }
+}
+
+#[ansi_fn]
 pub fn get_module_handle_a(
     module_name: &AStr,
 ) -> OsResult<HModule> {

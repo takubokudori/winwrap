@@ -4,14 +4,14 @@ pub mod wow64apiset_tests {
     use winwrap::um::wow64apiset::{is_wow64_process, is_wow64_process2, get_system_wow64_directory_a, get_system_wow64_directory_w};
 
     #[test]
-    fn is_wow64_process_test() {
+    fn test_is_wow64_process() {
         let h = get_current_process();
-        println!("{:?}", is_wow64_process(&h));
-        println!("{:?}", is_wow64_process2(&h));
+        let _wow1 = is_wow64_process(&h);
+        let _wow2 = is_wow64_process2(&h);
     }
 
     #[test]
-    fn wow64_dir_test() {
+    fn test_wow64_dir() {
         let a = get_system_wow64_directory_a();
         let w = get_system_wow64_directory_w();
         if let (Ok(a), Ok(w)) = (&a, &w) {

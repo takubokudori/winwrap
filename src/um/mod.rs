@@ -18,4 +18,5 @@ pub mod winbase;
 pub mod winnt;
 pub mod winreg;
 pub mod winuser;
+pub mod winver;
 pub mod wow64apiset;

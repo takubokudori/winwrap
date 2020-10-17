@@ -10,7 +10,6 @@ use winapi::ctypes::c_void;
 use winapi::shared::basetsd::SIZE_T;
 use winapi::shared::minwindef::{LPBYTE, WORD, DWORD, BOOL, UINT, LPVOID};
 use winapi::shared::ntdef::{LPSTR, LPWSTR};
-use winapi::shared::winerror::ERROR_INVALID_PARAMETER;
 use winapi::um::processthreadsapi::{STARTUPINFOA, STARTUPINFOW, PROCESS_INFORMATION};
 use winwrap_derive::*;
 
@@ -156,11 +155,11 @@ pub fn get_current_process_id() -> DWORD { GetCurrentProcessId() }
 /// use winwrap::um::processthreadsapi::{create_process_a, CreationFlags, StartupInfoA};
 /// use winwrap::string::AString;
 ///
-/// let command_line = AString::from(r"C:\Windows\System32\calc.exe");
+/// let mut command_line = AString::from(r"C:\Windows\System32\calc.exe");
 /// let mut si=StartupInfoA::new();
 /// let pi = create_process_a(
 ///     None,
-///     command_line.as_c_str(),
+///     command_line.as_mut_c_str(),
 ///     None,
 ///     None,
 ///     false,
@@ -168,7 +167,7 @@ pub fn get_current_process_id() -> DWORD { GetCurrentProcessId() }
 ///     None,
 ///     None,
 ///     &mut si,
-/// )?;
+/// ).unwrap();
 /// ```
 #[ansi_fn]
 pub fn create_process_a<'a, AN, CL, PA, TA, EV, CD>(
@@ -184,25 +183,18 @@ pub fn create_process_a<'a, AN, CL, PA, TA, EV, CD>(
 ) -> OsResult<ProcessInformation>
     where
         AN: Into<Option<&'a AStr>>,
-        CL: Into<Option<&'a mut [i8]>>,
+        CL: Into<Option<&'a mut AStr>>,
         PA: Into<Option<&'a mut SecurityAttributes<'a>>>,
         TA: Into<Option<&'a mut SecurityAttributes<'a>>>,
-        EV: Into<Option<&'a mut [i8]>>,
+        EV: Into<Option<&'a mut [u8]>>,
         CD: Into<Option<&'a AStr>>,
 {
     unsafe {
         // null-terminated check
-        let mut command_line = command_line.into();
-        if let Some(x) = &mut command_line {
-            match x.iter().rev().next() {
-                Some(0) => {}
-                _ => return Err(ERROR_INVALID_PARAMETER),
-            }
-        }
         let mut pi: ProcessInformation = std::mem::zeroed();
         CreateProcessA(
             application_name.into().map_or(null(), |x| x.as_ptr()),
-            command_line.map_or(null_mut(), |x| x.as_mut_ptr()),
+            command_line.into().map_or(null_mut(), |x| x.as_mut_ptr()),
             process_attributes.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
             thread_attributes.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
             inherit_handle as BOOL,

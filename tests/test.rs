@@ -6,7 +6,7 @@ pub mod tests {
     use winapi::shared::winerror::ERROR_NO_UNICODE_TRANSLATION;
 
     #[test]
-    fn wstring_test() {
+    fn test_wstring() {
         let x = WString::new(vec![]); // empty vec
         assert_eq!(&[0x00], x.as_bytes_with_nul());
         let x = WString::new(vec![0x00]); // empty vec
@@ -33,7 +33,7 @@ pub mod tests {
     }
 
     #[test]
-    fn astring_test() {
+    fn test_astring() {
         let x = AString::new(vec![]); // empty vec
         assert_eq!(&[0x00], x.as_bytes_with_nul());
         let x = AString::new(vec![0x74, 0x65, 0x73, 0x74]); // test
@@ -55,7 +55,7 @@ pub mod tests {
     }
 
     #[test]
-    fn string_conversion_test() {
+    fn test_string_conversion() {
         let s = WString::from("testテスト");
         assert_eq!("testテスト", s.to_string_lossy());
         let s = AString::from(s);
@@ -74,7 +74,7 @@ pub mod tests {
     }
 
     #[test]
-    fn processenv_test() {
+    fn test_processenv() {
         let name = AString::from("ThisDoesNotExist");
         let value = get_environment_variable_a(name.as_c_str());
         assert_eq!(Err(ERROR_ENVVAR_NOT_FOUND), value);

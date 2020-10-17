@@ -4,7 +4,7 @@ pub mod handleapi_tests {
     use winwrap::um::processthreadsapi::get_current_process;
 
     #[test]
-    fn test() {
+    fn test_get_handle_information() {
         let proc1 = get_current_process();
         let proc2 = get_current_process();
         let info1 = get_handle_information(&proc1);

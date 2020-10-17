@@ -68,3 +68,9 @@ pub use macros::*;
 use winapi::shared::minwindef::{DWORD, WORD};
 
 pub type OsResult<T> = Result<T, u32>;
+
+#[inline]
+#[allow(non_snake_case)]
+pub const fn MAKE_QWORD(ms: DWORD, ls: DWORD) -> u64 {
+    (ms as u64) << 32 | ls as u64
+}

@@ -1,11 +1,14 @@
 #[cfg(test)]
 pub mod struct_size_tests {
+    use winwrap::raw::um::verrsrc::*;
+    use winwrap::raw::um::winver::*;
     use winwrap::shared::minwindef::*;
     use winwrap::um::jobapi2::JobObjectIoRateControlInformation;
     use winwrap::um::minwinbase::*;
     use winwrap::um::processthreadsapi::*;
     use winwrap::um::tlhelp32::*;
     use winwrap::um::winnt::*;
+    use winwrap::um::winver::*;
     use winwrap::winapi::shared::minwindef::FILETIME;
     use winwrap::winapi::um::jobapi2::JOBOBJECT_IO_RATE_CONTROL_INFORMATION;
     use winwrap::winapi::um::minwinbase::*;
@@ -21,7 +24,7 @@ pub mod struct_size_tests {
     }
 
     #[test]
-    fn size_test() {
+    fn test_struct_size() {
         // minwinbase
         assert_size!(Win32FindDataA,WIN32_FIND_DATAA);
         assert_size!(SidIdentifierAuthority,SID_IDENTIFIER_AUTHORITY);
@@ -54,10 +57,17 @@ pub mod struct_size_tests {
 
         // jobapi2
         assert_size!(JobObjectIoRateControlInformation, JOBOBJECT_IO_RATE_CONTROL_INFORMATION);
+
+        // verrsrc
+        assert_size!(VSFixedFileInfo, VS_FIXEDFILEINFO);
+
+        // winver
+        assert_size!(LangAndCodePage, LANGANDCODEPAGE);
+
     }
 
     #[test]
-    fn default_test() {
+    fn test_default() {
         let mut data = Win32FindDataA::default();
         assert_eq!(&"", &data.get_file_name().to_string_lossy());
         assert_eq!(&"", &data.get_alternate_file_name().to_string_lossy());

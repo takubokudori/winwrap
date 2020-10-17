@@ -4,7 +4,7 @@ pub mod namedpipeapi_tests {
     use winwrap::um::namedpipeapi::*;
 
     #[test]
-    fn rw_test() {
+    fn test_pipe() {
         let (read_pipe, write_pipe) = create_pipe(None, 0).unwrap();
         write_file(&write_pipe, &[1, 2, 3], None).unwrap();
         let mut buf = [0; 3];

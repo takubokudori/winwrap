@@ -22,28 +22,28 @@ pub type StartupInfo<'a> = StartupInfoW<'a>;
 make_struct! {STARTUPINFOA,
 #[derive(Debug)]
 pub struct StartupInfoA<'a> {
-    cb: DWORD,
+    pub cb: DWORD,
     reserved: LPSTR,
-    desktop: Option<&'a AString>,
-    title: Option<&'a AString>,
-    x: DWORD,
-    y: DWORD,
-    x_size: DWORD,
-    y_size: DWORD,
-    x_count_chars: DWORD,
-    y_count_chars: DWORD,
-    fill_attributes: DWORD,
-    flags: DWORD,
-    show_window: WORD,
+    pub desktop: Option<&'a AString>,
+    pub title: Option<&'a AString>,
+    pub x: DWORD,
+    pub y: DWORD,
+    pub x_size: DWORD,
+    pub y_size: DWORD,
+    pub x_count_chars: DWORD,
+    pub y_count_chars: DWORD,
+    pub fill_attributes: DWORD,
+    pub flags: DWORD,
+    pub show_window: WORD,
     cb_reserved2: WORD,
     lp_reserved2: LPBYTE,
-    std_input: StdHandle,
-    std_output: StdHandle,
-    std_error: StdHandle,
+    pub std_input: StdHandle,
+    pub std_output: StdHandle,
+    pub std_error: StdHandle,
 }}
 
-impl<'a> StartupInfoA<'a> {
-    pub fn new() -> Self {
+impl<'a> Default for StartupInfoA<'a> {
+    fn default() -> Self {
         Self {
             cb: std::mem::size_of::<Self>() as u32,
             reserved: null_mut(),
@@ -70,28 +70,28 @@ impl<'a> StartupInfoA<'a> {
 make_struct! {STARTUPINFOW,
 #[derive(Debug)]
 pub struct StartupInfoW<'a> {
-    cb: DWORD,
+    pub cb: DWORD,
     reserved: LPWSTR,
-    desktop: Option<&'a WString>,
-    title: Option<&'a WString>,
-    x: DWORD,
-    y: DWORD,
-    x_size: DWORD,
-    y_size: DWORD,
-    x_count_chars: DWORD,
-    y_count_chars: DWORD,
-    fill_attributes: DWORD,
-    flags: DWORD,
-    show_window: WORD,
+    pub desktop: Option<&'a WString>,
+    pub title: Option<&'a WString>,
+    pub x: DWORD,
+    pub y: DWORD,
+    pub x_size: DWORD,
+    pub y_size: DWORD,
+    pub x_count_chars: DWORD,
+    pub y_count_chars: DWORD,
+    pub fill_attributes: DWORD,
+    pub flags: DWORD,
+    pub show_window: WORD,
     cb_reserved2: WORD,
     lp_reserved2: LPBYTE,
-    std_input: StdHandle,
-    std_output: StdHandle,
-    std_error: StdHandle,
+    pub std_input: StdHandle,
+    pub std_output: StdHandle,
+    pub std_error: StdHandle,
 }}
 
-impl<'a> StartupInfoW<'a> {
-    pub fn new() -> Self {
+impl<'a> Default for StartupInfoW<'a> {
+    fn default() -> Self {
         Self {
             cb: std::mem::size_of::<Self>() as u32,
             reserved: null_mut(),
@@ -117,11 +117,22 @@ impl<'a> StartupInfoW<'a> {
 
 make_struct! {PROCESS_INFORMATION,
 pub struct ProcessInformation {
-    process: ProcessHandle,
-    thread: ThreadHandle,
-    process_id: DWORD,
-    thread_id: DWORD,
+    pub process: ProcessHandle,
+    pub thread: ThreadHandle,
+    pub process_id: DWORD,
+    pub thread_id: DWORD,
 }}
+
+impl Default for ProcessInformation {
+    fn default() -> Self {
+        Self {
+            process: Default::default(),
+            thread: Default::default(),
+            process_id: 0,
+            thread_id: 0,
+        }
+    }
+}
 
 bitflags::bitflags! {
 pub struct CreationFlags: DWORD{
@@ -156,7 +167,7 @@ pub fn get_current_process_id() -> DWORD { GetCurrentProcessId() }
 /// use winwrap::string::AString;
 ///
 /// let mut command_line = AString::from(r"C:\Windows\System32\calc.exe");
-/// let mut si=StartupInfoA::new();
+/// let mut si=StartupInfoA::default();
 /// let pi = create_process_a(
 ///     None,
 ///     command_line.as_mut_c_str(),

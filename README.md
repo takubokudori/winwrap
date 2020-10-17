@@ -13,14 +13,14 @@ Rust-friendly Windows API Wrappers.
 
 ```
 [dependencies]
-winwrap = "0.1.0"
+winwrap = "0.1.1"
 ```
 
 or
 
 ```
 [dependencies.winwrap]
-version = "0.1.0"
+version = "0.1.1"
 features = ["ansi"] # TCHAR == CHAR, TString == AString
 ```
 

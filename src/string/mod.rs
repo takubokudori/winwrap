@@ -314,6 +314,12 @@ impl From<&str> for AString {
     }
 }
 
+impl From<String> for AString {
+    fn from(x: String) -> Self {
+        Self::from(x.as_str())
+    }
+}
+
 impl From<&WStr> for AString {
     fn from(x: &WStr) -> Self {
         let mb = wide_char_to_multi_byte_wrap(

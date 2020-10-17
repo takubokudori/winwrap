@@ -9,6 +9,7 @@ use winapi::um::winbase::INFINITE;
 use winwrap_derive::*;
 
 #[repr(u32)]
+#[derive(Clone, Debug, Copy, Eq, PartialEq)]
 pub enum WaitStatus {
     WaitObject0 = 0x00000000,
     WaitAbandoned = 0x00000080,
@@ -62,21 +63,22 @@ pub fn wait_for_single_object_ex<DU>(
 }
 
 #[ansi_fn]
-pub fn create_event_a<'a, SA>(
+pub fn create_event_a<'a, SA, NA>(
     sec_attrs: SA,
     is_manual_reset: bool,
     is_initial_state: bool,
-    name: &AStr,
+    name: NA,
 ) -> OsResult<EventHandle>
     where
-        SA: Into<Option<&'a mut SecurityAttributes<'a>>>
+        SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
+        NA: Into<Option<&'a AStr>>,
 {
     unsafe {
         CreateEventA(
             sec_attrs.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
             is_manual_reset.into(),
             is_initial_state.into(),
-            name.as_ptr(),
+            name.into().map_or(null_mut(), |x| x.as_ptr()),
         ).and_then(|x| Ok(EventHandle::new(x)))
     }
 }

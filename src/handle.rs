@@ -122,13 +122,19 @@ pub struct FileHandle; CloseHandle }
 
 make_handle! { pub struct FileMappingHandle; CloseHandle }
 
-make_handle! { pub struct ProcessHandle; CloseHandle }
+make_handle! {
+#[derive(WaitableHandle, DuplicatableHandle)]
+pub struct ProcessHandle; CloseHandle }
 
-make_handle! { pub struct ThreadHandle; CloseHandle }
+make_handle! {
+#[derive(WaitableHandle, DuplicatableHandle)]
+pub struct ThreadHandle; CloseHandle }
 
 make_handle! { pub struct StdHandle; CloseHandle }
 
-make_handle! { pub struct EventHandle; CloseHandle }
+make_handle! {
+#[derive(WaitableHandle, DuplicatableHandle)]
+pub struct EventHandle; CloseHandle }
 
 make_handle! { pub struct MutexHandle; CloseHandle }
 

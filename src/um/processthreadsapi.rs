@@ -170,6 +170,7 @@ pub fn get_current_process_id() -> DWORD { GetCurrentProcessId() }
 /// ).unwrap();
 /// ```
 #[ansi_fn]
+#[inline]
 pub fn create_process_a<'a, AN, CL, PA, TA, EV, CD>(
     application_name: AN,
     command_line: CL,
@@ -193,6 +194,46 @@ pub fn create_process_a<'a, AN, CL, PA, TA, EV, CD>(
         // null-terminated check
         let mut pi: ProcessInformation = std::mem::zeroed();
         CreateProcessA(
+            application_name.into().map_or(null(), |x| x.as_ptr()),
+            command_line.into().map_or(null_mut(), |x| x.as_mut_ptr()),
+            process_attributes.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
+            thread_attributes.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
+            inherit_handle as BOOL,
+            creation_flags.bits,
+            env.into().map_or(null_mut(), |x| x.as_mut_ptr() as *mut _),
+            current_directory.into().map_or(null(), |x| x.as_ptr()),
+            si.as_mut_c_ptr(),
+            pi.as_mut_ptr() as *mut _,
+        )?;
+        Ok(pi)
+    }
+}
+
+#[unicode_fn]
+#[inline]
+pub fn create_process_w<'a, AN, CL, PA, TA, EV, CD>(
+    application_name: AN,
+    command_line: CL,
+    process_attributes: PA,
+    thread_attributes: TA,
+    inherit_handle: bool,
+    creation_flags: CreationFlags,
+    env: EV,
+    current_directory: CD,
+    si: &mut StartupInfoW,
+) -> OsResult<ProcessInformation>
+    where
+        AN: Into<Option<&'a WStr>>,
+        CL: Into<Option<&'a mut WStr>>,
+        PA: Into<Option<&'a mut SecurityAttributes<'a>>>,
+        TA: Into<Option<&'a mut SecurityAttributes<'a>>>,
+        EV: Into<Option<&'a mut [u8]>>,
+        CD: Into<Option<&'a WStr>>,
+{
+    unsafe {
+        // null-terminated check
+        let mut pi: ProcessInformation = std::mem::zeroed();
+        CreateProcessW(
             application_name.into().map_or(null(), |x| x.as_ptr()),
             command_line.into().map_or(null_mut(), |x| x.as_mut_ptr()),
             process_attributes.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),

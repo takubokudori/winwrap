@@ -28,7 +28,9 @@ pub mod tests {
         assert_ne!(x, WString::from("Test"));
         let x = &mut [0x0074, 0x0065, 0x0073, 0x0074, 0x0000];
         unsafe {
-            assert_eq!("test", WString::from_raw(x.as_mut_ptr()).to_string_lossy());
+            let x = WString::from_raw(x.as_mut_ptr());
+            assert_eq!("test", x.to_string_lossy());
+            std::mem::forget(x);
         }
     }
 
@@ -50,7 +52,9 @@ pub mod tests {
         assert_eq!(Err(ERROR_NO_UNICODE_TRANSLATION), x.to_string());
         let x = &mut [0x74, 0x65, 0x73, 0x74, 0x00];
         unsafe {
-            assert_eq!("test", AString::from_raw(x.as_mut_ptr()).to_string_lossy());
+            let x = AString::from_raw(x.as_mut_ptr());
+            assert_eq!("test", x.to_string_lossy());
+            std::mem::forget(x);
         }
     }
 

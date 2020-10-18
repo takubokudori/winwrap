@@ -1,7 +1,7 @@
 use crate::*;
 use crate::handle::*;
 use crate::raw::um::fileapi::*;
-use crate::shared::minwinbase::Overlapped;
+use crate::um::minwinbase::Overlapped;
 use crate::string::*;
 use crate::um::minwinbase::{Win32FindDataA, SecurityAttributes, Win32FindDataW};
 use std::mem::MaybeUninit;

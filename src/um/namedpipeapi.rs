@@ -1,7 +1,7 @@
 use crate::*;
 use crate::handle::*;
 use crate::raw::um::namedpipeapi::*;
-use crate::shared::minwinbase::Overlapped;
+use crate::um::minwinbase::Overlapped;
 use crate::string::*;
 use crate::um::minwinbase::SecurityAttributes;
 use std::ptr::null_mut;

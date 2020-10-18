@@ -1,7 +1,7 @@
 use crate::*;
 use crate::handle::*;
 use crate::raw::um::ioapiset::*;
-use crate::shared::minwinbase::Overlapped;
+use crate::um::minwinbase::Overlapped;
 use std::ptr::null_mut;
 
 pub fn device_io_control<'a, OL>(

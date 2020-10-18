@@ -32,6 +32,7 @@ pub mod struct_size_tests {
         assert_size!(Sid,SID);
         assert_size!(Acl,ACL);
         assert_size!(SecurityDescriptor,SECURITY_DESCRIPTOR);
+        assert_size!(Overlapped,OVERLAPPED);
 
         // processthreadsapi
         assert_size!(StartupInfoA,STARTUPINFOA);

@@ -4,7 +4,7 @@ use crate::raw::um::fileapi::*;
 use crate::um::minwinbase::Overlapped;
 use crate::string::*;
 use crate::um::minwinbase::{Win32FindDataA, SecurityAttributes, Win32FindDataW};
-use std::mem::MaybeUninit;
+use std::mem::{MaybeUninit, size_of};
 use std::ptr::null_mut;
 use winapi::shared::minwindef::DWORD;
 use winapi::shared::winerror::NO_ERROR;
@@ -220,9 +220,9 @@ pub fn create_file_w<'a, SA, TM>(
     }
 }
 
-pub fn read_file<'a, OL>(
+pub fn read_file<'a, OL, T>(
     handle: &impl ReadableHandle,
-    buffer: &mut [u8],
+    buf: &mut [T],
     overlapped: OL,
 ) -> OsResult<usize>
     where
@@ -231,8 +231,8 @@ pub fn read_file<'a, OL>(
         let mut number_of_bytes_read = 0;
         ReadFile(
             handle.as_c_handle(),
-            buffer.as_mut_ptr() as *mut _,
-            buffer.len() as _,
+            buf.as_mut_ptr() as *mut _,
+            (buf.len() * size_of::<T>()) as u32,
             &mut number_of_bytes_read,
             overlapped.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
         )?;
@@ -240,9 +240,9 @@ pub fn read_file<'a, OL>(
     }
 }
 
-pub fn write_file<'a, OL>(
+pub fn write_file<'a, OL, T>(
     handle: &impl WritableHandle,
-    buf: &[u8],
+    buf: &[T],
     overlapped: OL,
 ) -> OsResult<usize>
     where
@@ -252,7 +252,7 @@ pub fn write_file<'a, OL>(
         WriteFile(
             handle.as_c_handle(),
             buf.as_ptr() as *const _,
-            buf.len() as DWORD,
+            (buf.len() * size_of::<T>()) as u32,
             &mut number_of_bytes_write,
             overlapped.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
         )?;

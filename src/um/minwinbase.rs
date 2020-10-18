@@ -6,7 +6,7 @@ use crate::um::fileapi::{FileAttributeConstants};
 use std::mem::{ManuallyDrop, MaybeUninit};
 use winapi::shared::basetsd::ULONG_PTR;
 use winapi::shared::minwindef::{WORD, DWORD, BYTE, MAX_PATH};
-use winapi::um::minwinbase::{SECURITY_ATTRIBUTES, WIN32_FIND_DATAA, WIN32_FIND_DATAW,OVERLAPPED};
+use winapi::um::minwinbase::{SECURITY_ATTRIBUTES, WIN32_FIND_DATAA, WIN32_FIND_DATAW, OVERLAPPED};
 use winapi::um::winnt::{SECURITY_DESCRIPTOR_CONTROL, CHAR, SID_IDENTIFIER_AUTHORITY, SID, ACL, SECURITY_DESCRIPTOR, WCHAR};
 
 make_struct! {SID_IDENTIFIER_AUTHORITY,
@@ -193,7 +193,7 @@ impl Default for Win32FindDataW {
 }
 
 make_struct! {OVERLAPPED,
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Overlapped {
     pub internal: ULONG_PTR,
     pub internal_high: ULONG_PTR,

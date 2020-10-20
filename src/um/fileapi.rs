@@ -283,7 +283,6 @@ pub fn get_file_size(
         // if GetFileSize returns Err(NO_ERROR), the file size is 0xFFFFFFFF (INVALID_FILE_SIZE).
         let sz_low = match GetFileSize(file_handle.as_c_handle(), &mut sz_high) {
             Ok(x) => x,
-            // Err(NO_ERROR) => INVALID_FILE_SIZE,
             Err(NO_ERROR) => INVALID_FILE_SIZE,
             Err(x) => return Err(x),
         };

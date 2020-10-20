@@ -110,6 +110,9 @@ impl WString {
     pub fn as_c_str(&self) -> &WStr { &*self }
 
     #[inline]
+    pub fn as_mut_c_str(&mut self) -> &mut WStr { &mut *self }
+
+    #[inline]
     pub fn as_ptr(&self) -> *const u16 { self.inner.as_ptr() }
 
     #[inline]
@@ -197,6 +200,12 @@ impl ops::Deref for WString {
     }
 }
 
+impl ops::DerefMut for WString {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        unsafe { WStr::from_bytes_with_nul_unchecked_mut(self.as_bytes_with_nul()) }
+    }
+}
+
 impl ops::Index<ops::RangeFull> for WString {
     type Output = WStr;
 
@@ -232,6 +241,12 @@ impl From<&str> for WString {
     fn from(x: &str) -> Self { Self::_new(x.encode_utf16().collect()) }
 }
 
+impl From<String> for WString {
+    fn from(x: String) -> Self {
+        Self::from(x.as_str())
+    }
+}
+
 impl Drop for WString {
     fn drop(&mut self) {
         unsafe {
@@ -251,6 +266,11 @@ impl WStr {
     #[inline]
     pub unsafe fn from_bytes_with_nul_unchecked(bytes: &[u16]) -> &Self {
         &*(bytes as *const [u16] as *const Self)
+    }
+
+    #[inline]
+    pub unsafe fn from_bytes_with_nul_unchecked_mut(bytes: &[u16]) -> &mut Self {
+        &mut *(bytes as *const [u16] as *mut Self)
     }
 
     #[inline]

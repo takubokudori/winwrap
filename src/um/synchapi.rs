@@ -83,6 +83,27 @@ pub fn create_event_a<'a, SA, NA>(
     }
 }
 
+#[unicode_fn]
+pub fn create_event_w<'a, SA, NA>(
+    sec_attrs: SA,
+    is_manual_reset: bool,
+    is_initial_state: bool,
+    name: NA,
+) -> OsResult<EventHandle>
+    where
+        SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
+        NA: Into<Option<&'a WStr>>,
+{
+    unsafe {
+        CreateEventW(
+            sec_attrs.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
+            is_manual_reset.into(),
+            is_initial_state.into(),
+            name.into().map_or(null_mut(), |x| x.as_ptr()),
+        ).and_then(|x| Ok(EventHandle::new(x)))
+    }
+}
+
 #[ansi_fn]
 pub fn create_mutex_a<'a, SA>(
     sec_attrs: SA,

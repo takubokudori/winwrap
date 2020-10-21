@@ -267,7 +267,7 @@ pub fn GetFileType(
             FILE_TYPE_UNKNOWN => {
                 match winapi::um::errhandlingapi::GetLastError() {
                     NO_ERROR => Ok(FILE_TYPE_UNKNOWN),
-                    x => Err(x),
+                    x => Err(OsError::from_win32_error(x)),
                 }
             }
             x => Ok(x),
@@ -612,10 +612,10 @@ fn handle_err(x: DWORD, lpFileSizeHigh: LPDWORD) -> OsResult<DWORD> {
     match x {
         INVALID_FILE_SIZE => {
             let e = unsafe { winapi::um::errhandlingapi::GetLastError() };
-            if lpFileSizeHigh.is_null() { return Err(e); }
+            if lpFileSizeHigh.is_null() { return Err(OsError::from_win32_error(e)); }
             match e {
                 NO_ERROR => Ok(INVALID_FILE_SIZE),
-                x => Err(x),
+                x => Err(OsError::from_win32_error(x)),
             }
         }
         x => Ok(x),

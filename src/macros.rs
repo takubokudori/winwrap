@@ -2,13 +2,13 @@
 #[macro_export]
 macro_rules! handle {
     ($x:expr,$y:pat) => { match $x {
-        $y => Err(crate::raw::um::errhandlingapi::GetLastError()),
+        $y => Err(crate::OsError::last_os_error()),
         x=> Ok(x),
     }
     };
     // Type conversion
     ($x:expr,$match_ty:ty,$y:pat,$ret_ty:ty) => { match $x as $match_ty {
-        $y => Err(crate::raw::um::errhandlingapi::GetLastError()),
+        $y => Err(crate::OsError::last_os_error()),
         x=> Ok(x as $ret_ty),
     }
     };
@@ -18,13 +18,13 @@ macro_rules! handle {
 #[macro_export]
 macro_rules! handle2 {
     ($x:expr,$err_pat:pat) => { match $x {
-        $err_pat => Err(crate::raw::um::errhandlingapi::GetLastError()),
+        $err_pat => Err(crate::OsError::last_os_error()),
         _=> Ok(()),
     }
     };
     // Type conversion
     ($x:expr,$match_ty:ty,$err_pat:pat) => { match $x as $match_ty {
-        $err_pat => Err(crate::raw::um::errhandlingapi::GetLastError()),
+        $err_pat => Err(crate::OsError::last_os_error()),
         _=> Ok(()),
     }
     };
@@ -252,7 +252,7 @@ macro_rules! make_func_hresult {
     pub unsafe fn $func ($($p: $t,)*) -> crate::OsResult<()> {
         match $($pa::)*$func($($p,)*) as i32 {
             winapi::shared::winerror::S_OK => Ok(()),
-            x => Err(x as u32),
+            x => Err(crate::OsError::Win32(x as u32)),
         }
     }
     );
@@ -263,7 +263,7 @@ macro_rules! make_func_hresult {
     unsafe {
             match $($pa::)*$func($($p,)*) as i32 {
                 winapi::shared::winerror::S_OK => Ok(()),
-                x => Err(x as u32),
+                x => Err(crate::OsError::Win32(x as u32)),
             }
         }
     }

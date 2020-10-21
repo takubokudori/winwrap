@@ -10,6 +10,7 @@ use winapi::shared::minwindef::DWORD;
 use winapi::shared::winerror::NO_ERROR;
 use winapi::um::fileapi::INVALID_FILE_SIZE;
 use winwrap_derive::*;
+use crate::OsError::Win32;
 
 bitflags::bitflags! {
 pub struct FileAccessRights: DWORD{
@@ -283,7 +284,7 @@ pub fn get_file_size(
         // if GetFileSize returns Err(NO_ERROR), the file size is 0xFFFFFFFF (INVALID_FILE_SIZE).
         let sz_low = match GetFileSize(file_handle.as_c_handle(), &mut sz_high) {
             Ok(x) => x,
-            Err(NO_ERROR) => INVALID_FILE_SIZE,
+            Err(Win32(NO_ERROR)) => INVALID_FILE_SIZE,
             Err(x) => return Err(x),
         };
         Ok((sz_high, sz_low))

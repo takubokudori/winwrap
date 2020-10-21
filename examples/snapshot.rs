@@ -18,7 +18,7 @@ impl Iterator for ModuleIterator {
         if !self.0 {
             // first time
             if let Err(x) = module32_first(&self.1, &mut entry) {
-                println!("err: {:X}", x);
+                println!("err: {}", x);
                 return None;
             }
             self.0 = true;
@@ -46,7 +46,7 @@ impl Iterator for ModuleWIterator {
         if !self.0 {
             // first time
             if let Err(x) = module32_first_w(&self.1, &mut entry) {
-                println!("err:{:X}", x);
+                println!("err:{}", x);
                 return None;
             }
             self.0 = true;
@@ -74,7 +74,7 @@ impl Iterator for ProcessWIterator {
         if !self.0 {
             // first time
             if let Err(x) = process32_first_w(&self.1, &mut entry) {
-                println!("err:{:X}", x);
+                println!("err:{}", x);
                 return None;
             }
             self.0 = true;

@@ -4,6 +4,8 @@ pub mod tests {
     use winwrap::um::processenv::get_environment_variable_a;
     use winwrap::winapi::shared::winerror::ERROR_ENVVAR_NOT_FOUND;
     use winapi::shared::winerror::ERROR_NO_UNICODE_TRANSLATION;
+    use winwrap::OsError;
+    use winwrap::OsError::Win32;
 
     #[test]
     fn test_wstring() {
@@ -49,7 +51,7 @@ pub mod tests {
         assert_ne!(x, AString::from("Te"));
         let x = AString::new(vec![0xff]); // invalid byte
         assert_eq!("\u{f8f3}", &x.to_string_lossy());
-        assert_eq!(Err(ERROR_NO_UNICODE_TRANSLATION), x.to_string());
+        assert_eq!(Err(Win32(ERROR_NO_UNICODE_TRANSLATION)), x.to_string());
         let x = &mut [0x74, 0x65, 0x73, 0x74, 0x00];
         unsafe {
             let x = AString::from_raw(x.as_mut_ptr());
@@ -78,10 +80,22 @@ pub mod tests {
     }
 
     #[test]
+    #[allow(overflowing_literals)]
+    fn test_os_error() {
+        macro_rules! ios { ($x:expr) => { std::io::Error::from_raw_os_error($x) }}
+        macro_rules! win { ($x:expr) => { OsError::Win32($x) }}
+        macro_rules! nts { ($x:expr) => { OsError::NtStatus($x) }}
+        assert_eq!(win!(1), ios!(1));
+        assert_ne!(nts!(1), ios!(1));
+        assert_eq!(nts!(0), ios!(0));
+        assert_eq!(nts!(0xC00000B0), ios!(233));
+    }
+
+    #[test]
     fn test_processenv() {
         let name = AString::from("ThisDoesNotExist");
         let value = get_environment_variable_a(name.as_c_str());
-        assert_eq!(Err(ERROR_ENVVAR_NOT_FOUND), value);
+        assert_eq!(Err(Win32(ERROR_ENVVAR_NOT_FOUND)), value);
         let name = AString::from("NUMBER_OF_PROCESSORS");
         get_environment_variable_a(name.as_c_str()).expect("Failed to get the value");
     }

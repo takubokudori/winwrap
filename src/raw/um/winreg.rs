@@ -12,7 +12,7 @@ macro_rules! make_func_reg {
     pub unsafe fn $func ($($p: $t,)*) -> crate::OsResult<()> {
         match $($pa::)*$func($($p,)*) as u32 {
             winapi::shared::winerror::ERROR_SUCCESS => Ok(()),
-            x => Err(x),
+            x => Err(OsError::from_win32_error(x)),
         }
     }
     );
@@ -23,7 +23,7 @@ macro_rules! make_func_reg {
     unsafe {
             match $($pa::)*$func($($p,)*) as u32 {
                 winapi::shared::winerror::ERROR_SUCCESS => Ok(()),
-                x => Err(x),
+                x => Err(OsError::from_win32_error(x)),
             }
         }
     }

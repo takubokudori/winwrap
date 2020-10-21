@@ -1,5 +1,6 @@
 use winwrap::um::fileapi::*;
 use winwrap::winapi::shared::winerror::ERROR_NO_MORE_FILES;
+use winwrap::OsError::Win32;
 
 fn enumerate_files_a() {
     use winwrap::string::AString;
@@ -12,7 +13,7 @@ fn enumerate_files_a() {
         println!("----------------------------");
         data = match find_next_file_a(&handle) {
             Ok(x) => x,
-            Err(ERROR_NO_MORE_FILES) => {
+            Err(Win32(ERROR_NO_MORE_FILES)) => {
                 println!("All files enumerated!");
                 break;
             }
@@ -32,7 +33,7 @@ fn enumerate_files_w() {
         println!("----------------------------");
         data = match find_next_file_w(&handle) {
             Ok(x) => x,
-            Err(ERROR_NO_MORE_FILES) => {
+            Err(Win32(ERROR_NO_MORE_FILES)) => {
                 println!("All files enumerated!");
                 break;
             }
@@ -52,7 +53,7 @@ fn enumerate_files_t() {
         println!("----------------------------");
         data = match find_next_file(&handle) {
             Ok(x) => x,
-            Err(ERROR_NO_MORE_FILES) => {
+            Err(Win32(ERROR_NO_MORE_FILES)) => {
                 println!("All files enumerated!");
                 break;
             }

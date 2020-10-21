@@ -10,6 +10,7 @@ use winapi::shared::minwindef::{DWORD, LPVOID};
 use winapi::shared::winerror::{ERROR_INSUFFICIENT_BUFFER, ERROR_MORE_DATA};
 use winapi::um::winnt::HANDLE;
 use winwrap_derive::*;
+use crate::OsError::Win32;
 
 bitflags::bitflags! {
 pub struct FormatFlags: DWORD{
@@ -88,7 +89,7 @@ pub fn format_message_a<'a, SO, LI, AG>(
                     ret.set_len(nb as usize);
                     return Ok(AString::from(ret));
                 }
-                Err(ERROR_INSUFFICIENT_BUFFER) => ret = Vec::with_capacity(ret.capacity() * 2),
+                Err(Win32(ERROR_INSUFFICIENT_BUFFER)) => ret = Vec::with_capacity(ret.capacity() * 2),
                 Err(x) => return Err(x),
             }
         }
@@ -127,7 +128,7 @@ pub fn format_message_w<'a, SO, LI, AG>(
                     ret.set_len(nb as usize);
                     return Ok(WString::new(ret));
                 }
-                Err(ERROR_INSUFFICIENT_BUFFER) => ret = Vec::with_capacity(ret.capacity() * 2),
+                Err(Win32(ERROR_INSUFFICIENT_BUFFER)) => ret = Vec::with_capacity(ret.capacity() * 2),
                 Err(x) => return Err(x),
             }
         }
@@ -144,7 +145,7 @@ pub fn get_user_name_w() -> OsResult<WString> {
                 v.set_len((a - 1) as usize);
                 Ok(WString::new(v))
             }
-            Err(ERROR_INSUFFICIENT_BUFFER) => {
+            Err(Win32(ERROR_INSUFFICIENT_BUFFER)) => {
                 let mut v: Vec<u16> = Vec::with_capacity(a as usize);
                 GetUserNameW(v.as_mut_ptr(), &mut a)?;
                 assert_eq!(v.capacity(), a as usize);
@@ -200,7 +201,7 @@ pub fn dns_hostname_to_computer_name_a(
                 v.set_len(nb as usize - 1);
                 Ok(AString::from(v))
             }
-            Err(ERROR_MORE_DATA) => {
+            Err(Win32(ERROR_MORE_DATA)) => {
                 let mut v: Vec<u8> = Vec::with_capacity(nb as usize);
                 DnsHostnameToComputerNameA(host_name.as_ptr(),
                                            v.as_ptr() as *const _,
@@ -224,7 +225,7 @@ pub fn get_user_name_a() -> OsResult<AString> {
                 v.set_len(a as usize - 1);
                 Ok(AString::from(v))
             }
-            Err(ERROR_INSUFFICIENT_BUFFER) => {
+            Err(Win32(ERROR_INSUFFICIENT_BUFFER)) => {
                 let mut v: Vec<u8> = Vec::with_capacity(a as usize);
                 GetUserNameA(v.as_mut_ptr() as *mut i8, &mut a)?;
                 assert_eq!(v.capacity(), a as usize);

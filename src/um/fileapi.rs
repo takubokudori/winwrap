@@ -43,9 +43,12 @@ pub struct FileAccessRights: DWORD{
 
 bitflags::bitflags! {
 pub struct ShareModes: DWORD{
-    const FILE_SHARE_DELETE=winapi::um::winnt::FILE_SHARE_DELETE;
-    const FILE_SHARE_READ=winapi::um::winnt::FILE_SHARE_READ;
-    const FILE_SHARE_WRITE=winapi::um::winnt::FILE_SHARE_WRITE;
+    /// FILE_SHARE_DELETE
+    const DELETE=winapi::um::winnt::FILE_SHARE_DELETE;
+    /// FILE_SHARE_READ
+    const READ=winapi::um::winnt::FILE_SHARE_READ;
+    /// FILE_SHARE_WRITE
+    const WRITE=winapi::um::winnt::FILE_SHARE_WRITE;
     const NONE = 0x0;
 }}
 

@@ -2,7 +2,7 @@
 name = "winwrap"
 version = "0.1.1"
 authors = ["takubokudori <takubokudori@gmail.com>"]
-license = "MIT"
+license = "MIT or Apache-2.0"
 homepage = "https://github.com/takubokudori/winwrap"
 repository = "https://github.com/takubokudori/winwrap"
 keywords = ["Windows", "WinAPI", "binding"]
@@ -67,3 +67,4 @@ features = [
 
 [features]
 ansi = []
+

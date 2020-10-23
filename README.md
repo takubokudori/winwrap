@@ -56,4 +56,5 @@ fn main(){
 ```
 
 # License
-This software is released under the MIT License, see LICENSE.
+This software is released under the MIT or Apache-2.0 License, see LICENSE-MIT or LICENSE-APACHE.
+

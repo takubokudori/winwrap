@@ -60,6 +60,7 @@ pub mod shared;
 pub mod string;
 pub mod um;
 pub mod vc;
+pub mod prelude;
 
 #[macro_use]
 pub mod macros;

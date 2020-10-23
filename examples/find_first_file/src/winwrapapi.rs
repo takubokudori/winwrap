@@ -1,9 +1,8 @@
-use winwrap::um::fileapi::*;
-use winwrap::winapi::shared::winerror::ERROR_NO_MORE_FILES;
+use winwrap::prelude::*;
 use winwrap::OsError::Win32;
+use winwrap::winapi::shared::winerror::ERROR_NO_MORE_FILES;
 
 fn enumerate_files_a() {
-    use winwrap::string::AString;
     let path = AString::from(r".\*.*");
     let (handle, mut data) = find_first_file_a(&path).unwrap();
     loop {
@@ -23,7 +22,6 @@ fn enumerate_files_a() {
 }
 
 fn enumerate_files_w() {
-    use winwrap::string::WString;
     let path = WString::from(r".\*.*");
     let (handle, mut data) = find_first_file_w(&path).unwrap();
     loop {
@@ -43,7 +41,6 @@ fn enumerate_files_w() {
 }
 
 fn enumerate_files_t() {
-    use winwrap::string::TString;
     let path = TString::from(r".\*.*");
     let (handle, mut data) = find_first_file(&path).unwrap();
     loop {

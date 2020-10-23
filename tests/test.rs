@@ -4,8 +4,20 @@ pub mod tests {
     use winwrap::um::processenv::get_environment_variable_a;
     use winwrap::winapi::shared::winerror::ERROR_ENVVAR_NOT_FOUND;
     use winapi::shared::winerror::ERROR_NO_UNICODE_TRANSLATION;
-    use winwrap::OsError;
+    use winwrap::{OsError, MAKE_QWORD, SEP_QWORD};
     use winwrap::OsError::Win32;
+
+    #[test]
+    fn test_qw() {
+        assert_eq!(0x1, MAKE_QWORD(0, 1));
+        assert_eq!(0xFFFFFFFF_FFFFFFFF, MAKE_QWORD(0xFFFFFFFF, 0xFFFFFFFF));
+        assert_eq!(0x1_00000000, MAKE_QWORD(1, 0));
+        assert_eq!(0x1_00000001, MAKE_QWORD(1, 1));
+        assert_eq!((0, 1), SEP_QWORD(1));
+        assert_eq!((1, 0), SEP_QWORD(0x1_0000_0000));
+        assert_eq!((0xDEADBEEF, 0xCAFEBABE), SEP_QWORD(0xDEADBEEF_CAFEBABE));
+        assert_eq!((0xFFFFFFFF, 0xFFFFFFFF), SEP_QWORD(0xFFFFFFFF_FFFFFFFF));
+    }
 
     #[test]
     fn test_wstring() {

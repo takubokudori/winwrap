@@ -75,8 +75,15 @@ pub type OsResult<T> = Result<T, OsError>;
 
 #[inline]
 #[allow(non_snake_case)]
-pub const fn MAKE_QWORD(ms: DWORD, ls: DWORD) -> u64 {
-    (ms as u64) << 32 | ls as u64
+pub const fn MAKE_QWORD(high: DWORD, low: DWORD) -> u64 {
+    (high as u64) << 32 | low as u64
+}
+
+/// Returns `(high,low)`.
+#[inline]
+#[allow(non_snake_case)]
+pub const fn SEP_QWORD(qw: u64) -> (u32, u32) {
+    ((qw >> 32) as u32, (qw & 0xFFFFFFFF) as u32)
 }
 
 #[link(name = "ntdll")]

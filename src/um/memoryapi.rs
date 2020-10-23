@@ -11,11 +11,76 @@ use winapi::shared::minwindef::{DWORD, LPCVOID, LPVOID};
 use winapi::um::handleapi::INVALID_HANDLE_VALUE;
 use winwrap_derive::*;
 
+bitflags::bitflags! {
+    pub struct FileMappingAccessRights: u32 {
+        /// FILE_MAP_ALL_ACCESS
+        const ALL_ACCESS = winapi::um::memoryapi::FILE_MAP_ALL_ACCESS;
+        /// FILE_MAP_EXECUTE
+        const EXECUTE = winapi::um::memoryapi::FILE_MAP_EXECUTE;
+        /// FILE_MAP_READ
+        const READ = winapi::um::memoryapi::FILE_MAP_READ;
+        /// FILE_MAP_WRITE
+        const WRITE = winapi::um::memoryapi::FILE_MAP_WRITE;
+        /// FILE_MAP_COPY
+        const COPY = winapi::um::memoryapi::FILE_MAP_COPY;
+    }
+}
+
+#[repr(u32)]
+#[allow(non_camel_case_types)]
+#[derive(Clone, Debug, Copy, Eq, PartialEq)]
+pub enum FileMapProtectRight {
+    EXECUTE_READ = 0x20,
+    EXECUTE_READWRITE = 0x40,
+    EXECUTE_WRITECOPY = 0x80,
+    READONLY = 0x02,
+    READWRITE = 0x04,
+    WRITECOPY = 0x08,
+}
+
+impl From<u32> for FileMapProtectRight {
+    fn from(x: u32) -> Self {
+        match x {
+            winapi::um::winnt::PAGE_EXECUTE_READ => Self::EXECUTE_READ,
+            winapi::um::winnt::PAGE_EXECUTE_READWRITE => Self::EXECUTE_READWRITE,
+            winapi::um::winnt::PAGE_EXECUTE_WRITECOPY => Self::EXECUTE_WRITECOPY,
+            winapi::um::winnt::PAGE_READONLY => Self::READONLY,
+            winapi::um::winnt::PAGE_READWRITE => Self::READWRITE,
+            winapi::um::winnt::PAGE_WRITECOPY => Self::WRITECOPY,
+            x => panic!("Unknown protect right: {}", x),
+        }
+    }
+}
+
+impl Into<u32> for FileMapProtectRight {
+    fn into(self) -> u32 { self as u32 }
+}
+
+bitflags::bitflags! {
+    pub struct FileMapProtectOptions: u32 {
+        /// SEC_COMMIT
+        const COMMIT=winapi::um::winnt::SEC_COMMIT;
+        /// SEC_IMAGE
+        const IMAGE=winapi::um::winnt::SEC_IMAGE;
+        /// SEC_IMAGE_NO_EXECUTE
+        const IMAGE_NO_EXECUTE=winapi::um::winnt::SEC_IMAGE_NO_EXECUTE;
+        /// SEC_LARGE_PAGES
+        const LARGE_PAGES=winapi::um::winnt::SEC_LARGE_PAGES;
+        /// SEC_NOCACHE
+        const NOCACHE=winapi::um::winnt::SEC_NOCACHE;
+        /// SEC_RESERVE
+        const RESERVE=winapi::um::winnt::SEC_RESERVE;
+        /// SEC_WRITECOMBINE
+        const WRITECOMBINE=winapi::um::winnt::SEC_WRITECOMBINE;
+    }
+}
+
 #[unicode_fn]
 pub fn create_file_mapping_w<'a, FH, SA>(
     file_handle: FH,
     sec_attrs: SA,
-    protect: DWORD,
+    protect_right: FileMapProtectRight,
+    protect_options: FileMapProtectOptions,
     maximum_size_high: DWORD,
     maximum_size_low: DWORD,
     name: &WStr,
@@ -28,7 +93,7 @@ pub fn create_file_mapping_w<'a, FH, SA>(
         CreateFileMappingW(
             file_handle.into().map_or(INVALID_HANDLE_VALUE, |x| x.as_c_handle()),
             sec_attrs.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
-            protect,
+            protect_right as u32 | protect_options.bits,
             maximum_size_high,
             maximum_size_low,
             name.as_ptr(),
@@ -36,24 +101,44 @@ pub fn create_file_mapping_w<'a, FH, SA>(
     }
 }
 
+
 #[unicode_fn]
 pub fn open_file_mapping_w(
-    desired_access: DWORD,
+    desired_access: FileMappingAccessRights,
     is_inherit_handle: bool,
     name: &WStr,
 ) -> OsResult<FileMappingHandle> {
     unsafe {
         OpenFileMappingW(
-            desired_access,
+            desired_access.bits,
             is_inherit_handle.into(),
             name.as_ptr(),
         ).and_then(|x| Ok(FileMappingHandle::new(x)))
     }
 }
 
+bitflags::bitflags! {
+    pub struct MapViewAccessRights: u32 {
+        /// FILE_MAP_ALL_ACCESS
+        const ALL_ACCESS = winapi::um::memoryapi::FILE_MAP_ALL_ACCESS;
+        /// FILE_MAP_READ
+        const READ = winapi::um::memoryapi::FILE_MAP_READ;
+        /// FILE_MAP_WRITE
+        const WRITE = winapi::um::memoryapi::FILE_MAP_WRITE;
+        /// FILE_MAP_COPY
+        const COPY = winapi::um::memoryapi::FILE_MAP_COPY;
+        /// FILE_MAP_EXECUTE
+        const EXECUTE = winapi::um::memoryapi::FILE_MAP_EXECUTE;
+        /// FILE_MAP_LARGE_PAGES
+        const LARGE_PAGES = winapi::um::memoryapi::FILE_MAP_LARGE_PAGES;
+        /// FILE_MAP_TARGETS_INVALID
+        const TARGETS_INVALID = winapi::um::memoryapi::FILE_MAP_TARGETS_INVALID;
+    }
+}
+
 pub fn map_view_of_file(
     file_mapping_handle: &FileMappingHandle,
-    desired_access: DWORD,
+    desired_access: MapViewAccessRights,
     file_offset_high: DWORD,
     file_offset_low: DWORD,
     number_of_bytes_to_map: SIZE_T,
@@ -61,7 +146,7 @@ pub fn map_view_of_file(
     unsafe {
         MapViewOfFile(
             file_mapping_handle.as_c_handle(),
-            desired_access,
+            desired_access.bits,
             file_offset_high,
             file_offset_low,
             number_of_bytes_to_map,

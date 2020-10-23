@@ -117,6 +117,10 @@ impl Win32FindDataA {
             ManuallyDrop::new(AString::from_raw(self.alternate_file_name.as_mut_ptr() as *mut _))
         }
     }
+
+    pub fn get_file_size(&self) -> u64 {
+        MAKE_QWORD(self.file_size_high, self.file_size_low)
+    }
 }
 
 impl Default for Win32FindDataA {
@@ -167,6 +171,10 @@ impl Win32FindDataW {
         unsafe {
             ManuallyDrop::new(WString::from_raw(self.alternate_file_name.as_mut_ptr() as *mut _))
         }
+    }
+
+    pub fn get_file_size(&self) -> u64 {
+        MAKE_QWORD(self.file_size_high, self.file_size_low)
     }
 }
 

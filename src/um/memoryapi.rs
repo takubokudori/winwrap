@@ -81,8 +81,7 @@ pub fn create_file_mapping_w<'a, FH, SA>(
     sec_attrs: SA,
     protect_right: FileMapProtectRight,
     protect_options: FileMapProtectOptions,
-    maximum_size_high: DWORD,
-    maximum_size_low: DWORD,
+    maximum_size: u64,
     name: &WStr,
 ) -> OsResult<FileMappingHandle>
     where
@@ -90,6 +89,7 @@ pub fn create_file_mapping_w<'a, FH, SA>(
         SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
 {
     unsafe {
+        let (maximum_size_high, maximum_size_low) = SEP_QWORD(maximum_size);
         CreateFileMappingW(
             file_handle.into().map_or(INVALID_HANDLE_VALUE, |x| x.as_c_handle()),
             sec_attrs.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
@@ -139,11 +139,11 @@ bitflags::bitflags! {
 pub fn map_view_of_file(
     file_mapping_handle: &FileMappingHandle,
     desired_access: MapViewAccessRights,
-    file_offset_high: DWORD,
-    file_offset_low: DWORD,
+    file_offset: u64,
     number_of_bytes_to_map: SIZE_T,
 ) -> OsResult<LPVOID> {
     unsafe {
+        let (file_offset_high, file_offset_low) = SEP_QWORD(file_offset);
         MapViewOfFile(
             file_mapping_handle.as_c_handle(),
             desired_access.bits,

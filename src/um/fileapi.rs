@@ -281,7 +281,7 @@ pub fn delete_file_w(
 /// Returns `(file_size_high,file_size_low)` .
 pub fn get_file_size(
     file_handle: &FileHandle,
-) -> OsResult<(DWORD, DWORD)> {
+) -> OsResult<u64> {
     unsafe {
         let mut sz_high = 0;
         // if GetFileSize returns Err(NO_ERROR), the file size is 0xFFFFFFFF (INVALID_FILE_SIZE).
@@ -290,7 +290,7 @@ pub fn get_file_size(
             Err(Win32(NO_ERROR)) => INVALID_FILE_SIZE,
             Err(x) => return Err(x),
         };
-        Ok((sz_high, sz_low))
+        Ok(MAKE_QWORD(sz_high, sz_low))
     }
 }
 

@@ -126,6 +126,8 @@ make_handle! {
 #[derive(WaitableHandle, DuplicatableHandle)]
 pub struct ProcessHandle; CloseHandle }
 
+make_handle! { pub struct TokenHandle; CloseHandle }
+
 make_handle! {
 #[derive(WaitableHandle, DuplicatableHandle)]
 pub struct ThreadHandle; CloseHandle }

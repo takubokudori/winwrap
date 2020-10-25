@@ -349,6 +349,39 @@ pub fn open_process(
     ))
 }
 
+bitflags::bitflags! {
+    pub struct TokenAccessRights: u32 {
+        const ADJUST_DEFAULT = winapi::um::winnt::TOKEN_ADJUST_DEFAULT;
+        const ADJUST_GROUPS = winapi::um::winnt::TOKEN_ADJUST_GROUPS;
+        const ADJUST_PRIVILEGES = winapi::um::winnt::TOKEN_ADJUST_PRIVILEGES;
+        const ADJUST_SESSIONID = winapi::um::winnt::TOKEN_ADJUST_SESSIONID;
+        const ASSIGN_PRIMARY = winapi::um::winnt::TOKEN_ASSIGN_PRIMARY;
+        const DUPLICATE = winapi::um::winnt::TOKEN_DUPLICATE;
+        const EXECUTE = winapi::um::winnt::TOKEN_EXECUTE;
+        const IMPRERSONATE = winapi::um::winnt::TOKEN_IMPERSONATE;
+        const QUERY = winapi::um::winnt::TOKEN_QUERY;
+        const QUERY_SOURCE = winapi::um::winnt::TOKEN_QUERY_SOURCE;
+        const READ = winapi::um::winnt::TOKEN_READ;
+        const WRITE = winapi::um::winnt::TOKEN_WRITE;
+        const ALL_ACCESS = winapi::um::winnt::TOKEN_ALL_ACCESS;
+    }
+}
+
+pub fn open_process_token(
+    handle: &ProcessHandle,
+    access: TokenAccessRights,
+) -> OsResult<TokenHandle> {
+    unsafe {
+        let mut ret = null_mut();
+        OpenProcessToken(
+            handle.as_c_handle(),
+            access.bits,
+            &mut ret,
+        )?;
+        Ok(TokenHandle::new(ret))
+    }
+}
+
 pub fn get_process_id(
     handle: &ProcessHandle,
 ) -> OsResult<DWORD> {

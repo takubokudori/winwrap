@@ -88,13 +88,13 @@ pub fn wide_char_to_multi_byte<'a, DC, UDC>(
     wc_flags: WCFlags,
     wc_bytes: &[u16],
     mb_bytes: &mut [u8],
-    defalut_char: DC,
+    default_char: DC,
     used_default_char: UDC,
 ) -> OsResult<usize>
     where
         DC: Into<Option<char>>,
         UDC: Into<Option<&'a mut bool>> {
-    let dc = defalut_char.into().map_or(null(), |x| &x);
+    let dc = default_char.into().map_or(null(), |x| &x);
     unsafe {
         WideCharToMultiByte(
             code_page.into(),

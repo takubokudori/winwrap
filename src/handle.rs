@@ -1,3 +1,5 @@
+// Copyright takubokudori.
+// This source code is licensed under the MIT or Apache-2.0 license.
 use crate::raw::um::fileapi::FindClose;
 use crate::raw::um::handleapi::CloseHandle;
 use std::fmt;

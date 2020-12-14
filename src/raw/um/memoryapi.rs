@@ -1,3 +1,5 @@
+// Copyright takubokudori.
+// This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
 use winapi::shared::basetsd::{SIZE_T, PSIZE_T, ULONG_PTR};
 use winapi::shared::minwindef::{LPVOID, DWORD, PDWORD, LPCVOID, BOOL, LPDWORD, UINT};

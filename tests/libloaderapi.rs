@@ -1,3 +1,5 @@
+// Copyright takubokudori.
+// This source code is licensed under the MIT or Apache-2.0 license.
 #[cfg(test)]
 pub mod libloaderapi_tests {
     use winwrap::um::libloaderapi::{get_module_file_name_a, get_module_file_name_w};

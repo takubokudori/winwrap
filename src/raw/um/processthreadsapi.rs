@@ -1,3 +1,5 @@
+// Copyright takubokudori.
+// This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
 use std::os::raw::c_int;
 use winapi::shared::basetsd::{ULONG_PTR, SIZE_T, PSIZE_T, DWORD_PTR, PULONG_PTR};

@@ -1,3 +1,5 @@
+// Copyright takubokudori.
+// This source code is licensed under the MIT or Apache-2.0 license.
 use winwrap::handle::SnapshotHandle;
 use winwrap::um::processthreadsapi::get_current_process_id;
 use winwrap::um::tlhelp32::*;

@@ -1,4 +1,5 @@
 # Winwrap
+
 Rust-friendly Windows API Wrappers.
 
 # Features
@@ -32,7 +33,7 @@ use winwrap::winapi::shared::winerror::ERROR_NO_MORE_FILES;
 
 fn enumerate_files_w() {
     use winwrap::string::WString;
-    let path = WString::from(r".\*.*");
+    let path = WString::from_str_lossy(r".\*.*");
     let (handle, mut data) = find_first_file_w(&path).unwrap();
     loop {
         println!("name: {:?}", data.get_file_name().to_string_lossy());
@@ -50,11 +51,11 @@ fn enumerate_files_w() {
     }
 }
 
-fn main(){
+fn main() {
     enumerate_files_w();
 }
 ```
 
 # License
-This software is released under the MIT or Apache-2.0 License, see LICENSE-MIT or LICENSE-APACHE.
 
+This software is released under the MIT or Apache-2.0 License, see LICENSE-MIT or LICENSE-APACHE.

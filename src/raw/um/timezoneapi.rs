@@ -1,3 +1,5 @@
+// Copyright takubokudori.
+// This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
 use winapi::um::minwinbase::{LPSYSTEMTIME, SYSTEMTIME};
 use winapi::um::timezoneapi::{TIME_ZONE_ID_INVALID, TIME_ZONE_INFORMATION, LPTIME_ZONE_INFORMATION, DYNAMIC_TIME_ZONE_INFORMATION, PDYNAMIC_TIME_ZONE_INFORMATION};

@@ -1,3 +1,5 @@
+// Copyright takubokudori.
+// This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
 use winapi::shared::minwindef::{HKEY, PHKEY, LPDWORD, BOOL, PFILETIME, LPBYTE, BYTE, LPCVOID, DWORD};
 use winapi::shared::ntdef::{HANDLE, LPCSTR, LPCWSTR, ULONG, LPSTR, PVOID, LPWSTR, PLONG};

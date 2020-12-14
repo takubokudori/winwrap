@@ -1,3 +1,5 @@
+// Copyright takubokudori.
+// This source code is licensed under the MIT or Apache-2.0 license.
 #[cfg(test)]
 pub mod namedpipeapi_tests {
     use winwrap::um::fileapi::{write_file, read_file};

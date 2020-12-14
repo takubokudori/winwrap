@@ -1,3 +1,5 @@
+// Copyright takubokudori.
+// This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
 use winapi::shared::minwindef::{DWORD, BOOL, UINT, LPVOID, LPDWORD};
 use winapi::shared::ntdef::NULL;

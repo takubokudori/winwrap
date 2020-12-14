@@ -1,3 +1,5 @@
+// Copyright takubokudori.
+// This source code is licensed under the MIT or Apache-2.0 license.
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput, Data, FnArg, ItemFn};
 

@@ -1,3 +1,5 @@
+// Copyright takubokudori.
+// This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
 use winapi::ctypes::c_int;
 use winapi::shared::basetsd::{UINT_PTR, SIZE_T, PSIZE_T, PDWORD_PTR, DWORD_PTR, DWORD64};

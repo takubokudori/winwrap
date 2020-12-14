@@ -1,3 +1,5 @@
+// Copyright takubokudori.
+// This source code is licensed under the MIT or Apache-2.0 license.
 #[repr(i32)]
 #[allow(non_camel_case_types)]
 #[derive(Clone, Debug, Copy, Eq, PartialEq)]

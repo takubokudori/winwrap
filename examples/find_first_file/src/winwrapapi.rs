@@ -1,3 +1,5 @@
+// Copyright takubokudori.
+// This source code is licensed under the MIT or Apache-2.0 license.
 use winwrap::prelude::*;
 use winwrap::OsError::Win32;
 use winwrap::winapi::shared::winerror::ERROR_NO_MORE_FILES;

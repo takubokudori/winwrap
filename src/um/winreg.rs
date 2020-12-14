@@ -2,7 +2,7 @@ use crate::*;
 use crate::handle::*;
 use crate::string::*;
 use crate::um::minwinbase::SecurityAttributes;
-use raw::um::winreg::*;
+use crate::raw::um::winreg::*;
 use std::fmt::Debug;
 use std::ptr::null_mut;
 use winapi::shared::basetsd::DWORD64;
@@ -201,7 +201,7 @@ impl HKeyType for HKeyFlags {
 /// use winwrap::um::winreg::{reg_create_key_a, HKeyFlags};
 /// use winwrap::string::AString;
 ///
-/// let sub_key = AString::from("Environment");
+/// let sub_key = AString::from_str_lossy("Environment");
 /// reg_create_key_a(&HKeyFlags::CURRENT_USER,sub_key.as_c_str()).expect("Failed to reg_create_key_a");
 /// ```
 #[ansi_fn]
@@ -437,7 +437,7 @@ pub fn reg_query_value_ex_a(
         )?;
         Ok(
             match ty {
-                REG_SZ => RegQuery::SZ(AString::new(data)),
+                REG_SZ => RegQuery::SZ(AString::new_unchecked(data)),
                 REG_DWORD => RegQuery::DWORD(*(data.as_ptr() as *const DWORD)),
                 _ => RegQuery::NONE,
             }

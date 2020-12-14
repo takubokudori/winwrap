@@ -12,8 +12,8 @@ pub mod winver_tests {
 
     #[test]
     fn test_ver_query_value() {
-        let file_name_a = AString::from("ntdll.dll");
-        let file_name_w = WString::from("ntdll.dll");
+        let file_name_a = AString::from_str_lossy("ntdll.dll");
+        let file_name_w = WString::from_str_lossy("ntdll.dll");
         let len_a = get_file_version_info_size_a(&file_name_a).unwrap();
         let len_w = get_file_version_info_size_w(&file_name_w).unwrap();
         let fvi_a = get_file_version_info_a(&file_name_a, len_a).unwrap();

@@ -131,7 +131,7 @@ pub fn get_module_file_name_a<'a, MH>(
             v.as_mut_ptr() as *mut _,
             128,
         )?;
-        Ok(AString::new(v))
+        Ok(AString::new_unchecked(v))
     }
 }
 
@@ -149,7 +149,7 @@ pub fn get_module_file_name_w<'a, MH>(
             v.as_mut_ptr() as *mut _,
             128,
         )?;
-        Ok(WString::new(v))
+        Ok(WString::new_unchecked(v))
     }
 }
 

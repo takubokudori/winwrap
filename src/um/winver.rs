@@ -114,11 +114,11 @@ pub enum VerQuerySubBlock {
 impl VerQuerySubBlock {
     pub fn as_c_sub_block_a(&self) -> AString {
         match self {
-            Self::Root => AString::from(r"\"),
-            Self::VarFileInfo => AString::from(r"\VarFileInfo\Translation"),
+            Self::Root => AString::from_str_lossy(r"\"),
+            Self::VarFileInfo => AString::from_str_lossy(r"\VarFileInfo\Translation"),
             Self::StringFileInfo(lang, codepage, string_name) => {
-                AString::from(
-                    format!(r"\StringFileInfo\{:04x}{:04x}\{}", lang, codepage, string_name).as_str()
+                AString::from_str_lossy(
+                    &format!(r"\StringFileInfo\{:04x}{:04x}\{}", lang, codepage, string_name).as_str()
                 )
             }
         }
@@ -126,11 +126,11 @@ impl VerQuerySubBlock {
 
     pub fn as_c_sub_block_w(&self) -> WString {
         match self {
-            Self::Root => WString::from(r"\"),
-            Self::VarFileInfo => WString::from(r"\VarFileInfo\Translation"),
+            Self::Root => WString::from_str_lossy(r"\"),
+            Self::VarFileInfo => WString::from_str_lossy(r"\VarFileInfo\Translation"),
             Self::StringFileInfo(lang, codepage, string_name) => {
-                WString::from(
-                    format!(r"\StringFileInfo\{:04x}{:04x}\{}", lang, codepage, string_name).as_str()
+                WString::from_str_lossy(
+                    &format!(r"\StringFileInfo\{:04x}{:04x}\{}", lang, codepage, string_name).as_str()
                 )
             }
         }
@@ -170,7 +170,7 @@ impl<'a> VerQueryValueA<'a> {
     /// ```
     /// use winwrap::um::winver::*;
     /// use winwrap::string::*;
-    /// let file_name = AString::from("ntdll.dll");
+    /// let file_name = AString::from_str_lossy("ntdll.dll");
     /// let len = get_file_version_info_size_a(&file_name).unwrap();
     /// let x = get_file_version_info_a(&file_name, len).unwrap();
     /// let root = ver_query_value_a(&x, VerQuerySubBlock::Root).unwrap();
@@ -189,7 +189,7 @@ impl<'a> VerQueryValueA<'a> {
     /// ```
     /// use winwrap::um::winver::*;
     /// use winwrap::string::*;
-    /// let file_name = AString::from("ntdll.dll");
+    /// let file_name = AString::from_str_lossy("ntdll.dll");
     /// let len = get_file_version_info_size_a(&file_name).unwrap();
     /// let x = get_file_version_info_a(&file_name, len).unwrap();
     /// let vfi = ver_query_value_a(&x, VerQuerySubBlock::VarFileInfo).unwrap();
@@ -208,7 +208,7 @@ impl<'a> VerQueryValueA<'a> {
     /// ```
     /// use winwrap::um::winver::*;
     /// use winwrap::string::*;
-    /// let file_name = AString::from("ntdll.dll");
+    /// let file_name = AString::from_str_lossy("ntdll.dll");
     /// let len = get_file_version_info_size_a(&file_name).unwrap();
     /// let x = get_file_version_info_a(&file_name, len).unwrap();
     /// let vfi = ver_query_value_a(&x, VerQuerySubBlock::VarFileInfo).unwrap();
@@ -262,7 +262,7 @@ impl<'a> VerQueryValueW<'a> {
     /// ```
     /// use winwrap::um::winver::*;
     /// use winwrap::string::*;
-    /// let file_name = WString::from("ntdll.dll");
+    /// let file_name = WString::from_str_lossy("ntdll.dll");
     /// let len = get_file_version_info_size_w(&file_name).unwrap();
     /// let x = get_file_version_info_w(&file_name, len).unwrap();
     /// let root = ver_query_value_w(&x, VerQuerySubBlock::Root).unwrap();
@@ -281,7 +281,7 @@ impl<'a> VerQueryValueW<'a> {
     /// ```
     /// use winwrap::um::winver::*;
     /// use winwrap::string::*;
-    /// let file_name = WString::from("ntdll.dll");
+    /// let file_name = WString::from_str_lossy("ntdll.dll");
     /// let len = get_file_version_info_size_w(&file_name).unwrap();
     /// let x = get_file_version_info_w(&file_name, len).unwrap();
     /// let vfi = ver_query_value_w(&x, VerQuerySubBlock::VarFileInfo).unwrap();
@@ -300,7 +300,7 @@ impl<'a> VerQueryValueW<'a> {
     /// ```
     /// use winwrap::um::winver::*;
     /// use winwrap::string::*;
-    /// let file_name = WString::from("ntdll.dll");
+    /// let file_name = WString::from_str_lossy("ntdll.dll");
     /// let len = get_file_version_info_size_w(&file_name).unwrap();
     /// let x = get_file_version_info_w(&file_name, len).unwrap();
     /// let vfi = ver_query_value_w(&x, VerQuerySubBlock::VarFileInfo).unwrap();
@@ -362,7 +362,7 @@ pub fn ver_query_value_w<'a>(
 #[ansi_fn]
 pub fn ver_language_name_a(
     lang: DWORD,
-) -> OsResult<ManuallyDrop<AString>>
+) -> OsResult<AString>
 {
     unsafe {
         let mut v: Vec<u8> = Vec::with_capacity(128);
@@ -371,14 +371,14 @@ pub fn ver_language_name_a(
             v.as_mut_ptr() as *mut _,
             128)?;
         v.set_len(len as usize);
-        Ok(ManuallyDrop::new(AString::new(v)))
+        Ok(AString::new_unchecked(v))
     }
 }
 
 #[unicode_fn]
 pub fn ver_language_name_w(
     lang: DWORD,
-) -> OsResult<ManuallyDrop<WString>>
+) -> OsResult<WString>
 {
     unsafe {
         let mut v: Vec<u16> = Vec::with_capacity(128);
@@ -387,6 +387,6 @@ pub fn ver_language_name_w(
             v.as_mut_ptr() as *mut _,
             128)?;
         v.set_len(len as usize);
-        Ok(ManuallyDrop::new(WString::new(v)))
+        Ok(WString::new_unchecked(v))
     }
 }

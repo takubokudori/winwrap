@@ -11,7 +11,7 @@ use winwrap_derive::*;
 /// use winwrap::um::processenv::get_environment_variable_a;
 /// use winwrap::string::AString;
 ///
-/// let name = AString::from("path");
+/// let name = AString::from_str_lossy("path");
 /// let s = get_environment_variable_a(name.as_c_str()).unwrap();
 /// println!("{:?}",s);
 /// ```
@@ -35,6 +35,6 @@ pub fn get_environment_variable_a(
             nb
         } else { nb };
         ret.set_len(nb as usize);
-        Ok(AString::new(ret))
+        Ok(AString::new_unchecked(ret))
     }
 }

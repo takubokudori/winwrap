@@ -47,7 +47,7 @@ pub fn get_system_wow64_directory_a() -> OsResult<AString> {
             nb
         } else { nb };
         ret.set_len(nb as usize);
-        Ok(AString::from(ret))
+        Ok(AString::new_unchecked(ret))
     }
 }
 
@@ -67,6 +67,6 @@ pub fn get_system_wow64_directory_w() -> OsResult<WString> {
             nb
         } else { nb };
         ret.set_len(nb as usize);
-        Ok(WString::new(ret))
+        Ok(WString::new_unchecked(ret))
     }
 }

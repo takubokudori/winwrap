@@ -87,7 +87,7 @@ pub fn format_message_a<'a, SO, LI, AG>(
                 Ok(nb) => {
                     assert!(ret.capacity() >= nb as usize);
                     ret.set_len(nb as usize);
-                    return Ok(AString::from(ret));
+                    return Ok(AString::new_unchecked(ret));
                 }
                 Err(Win32(ERROR_INSUFFICIENT_BUFFER)) => ret = Vec::with_capacity(ret.capacity() * 2),
                 Err(x) => return Err(x),
@@ -126,7 +126,7 @@ pub fn format_message_w<'a, SO, LI, AG>(
                 Ok(nb) => {
                     assert!(ret.capacity() >= nb as usize);
                     ret.set_len(nb as usize);
-                    return Ok(WString::new(ret));
+                    return Ok(WString::new_unchecked(ret));
                 }
                 Err(Win32(ERROR_INSUFFICIENT_BUFFER)) => ret = Vec::with_capacity(ret.capacity() * 2),
                 Err(x) => return Err(x),
@@ -143,14 +143,14 @@ pub fn get_user_name_w() -> OsResult<WString> {
         match GetUserNameW(v.as_mut_ptr(), &mut a) {
             Ok(()) => {
                 v.set_len((a - 1) as usize);
-                Ok(WString::new(v))
+                Ok(WString::new_unchecked(v))
             }
             Err(Win32(ERROR_INSUFFICIENT_BUFFER)) => {
                 let mut v: Vec<u16> = Vec::with_capacity(a as usize);
                 GetUserNameW(v.as_mut_ptr(), &mut a)?;
                 assert_eq!(v.capacity(), a as usize);
                 v.set_len((a - 1) as usize);
-                Ok(WString::new(v))
+                Ok(WString::new_unchecked(v))
             }
             Err(x) => Err(x),
         }
@@ -199,7 +199,7 @@ pub fn dns_hostname_to_computer_name_a(
         ) {
             Ok(_) => {
                 v.set_len(nb as usize - 1);
-                Ok(AString::from(v))
+                Ok(AString::new_unchecked(v))
             }
             Err(Win32(ERROR_MORE_DATA)) => {
                 let mut v: Vec<u8> = Vec::with_capacity(nb as usize);
@@ -208,7 +208,7 @@ pub fn dns_hostname_to_computer_name_a(
                                            &mut nb)?;
                 assert_eq!(v.capacity(), nb as usize);
                 v.set_len(nb as usize - 1);
-                Ok(AString::from(v))
+                Ok(AString::new_unchecked(v))
             }
             Err(x) => Err(x),
         }
@@ -223,14 +223,14 @@ pub fn get_user_name_a() -> OsResult<AString> {
         match GetUserNameA(v.as_mut_ptr() as *mut i8, &mut a) {
             Ok(()) => {
                 v.set_len(a as usize - 1);
-                Ok(AString::from(v))
+                Ok(AString::new_unchecked(v))
             }
             Err(Win32(ERROR_INSUFFICIENT_BUFFER)) => {
                 let mut v: Vec<u8> = Vec::with_capacity(a as usize);
                 GetUserNameA(v.as_mut_ptr() as *mut i8, &mut a)?;
                 assert_eq!(v.capacity(), a as usize);
                 v.set_len(a as usize - 1);
-                Ok(AString::from(v))
+                Ok(AString::new_unchecked(v))
             }
             Err(x) => Err(x),
         }

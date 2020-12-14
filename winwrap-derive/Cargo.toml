@@ -2,7 +2,7 @@
 name = "winwrap-derive"
 version = "0.1.0"
 authors = ["takubokudori <takubokudori@gmail.com>"]
-license = "MIT"
+license = "MIT OR Apache-2.0"
 homepage = "https://github.com/takubokudori/winwrap"
 repository = "https://github.com/takubokudori/winwrap"
 description = "winwrap derives"

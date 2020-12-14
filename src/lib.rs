@@ -24,7 +24,7 @@
 //! fn enumerate_files_w() {
 //!     use winwrap::string::WString;
 //!     use winwrap::OsError::Win32;
-//!     let path = WString::from(r".\*.*");
+//!     let path = WString::from_str_lossy(r".\*.*");
 //!     let (handle, mut data) = find_first_file_w(&path).unwrap();
 //!     loop {
 //!         println!("name: {:?}", data.get_file_name().to_string_lossy());
@@ -53,11 +53,11 @@
 #![cfg(windows)]
 
 pub use winapi;
+pub use windy as string;
 
 pub mod handle;
 pub mod raw;
 pub mod shared;
-pub mod string;
 pub mod um;
 pub mod vc;
 pub mod prelude;
@@ -71,6 +71,16 @@ use winapi::shared::minwindef::{DWORD, WORD};
 use winapi::shared::ntdef::{NTSTATUS, ULONG};
 use winapi::shared::winerror::ERROR_MR_MID_NOT_FOUND;
 use std::fmt;
+
+#[cfg(feature = "ansi")]
+pub type TString = windy::AString;
+#[cfg(not(feature = "ansi"))]
+pub type TString = windy::WString;
+
+#[cfg(feature = "ansi")]
+pub type TStr = windy::AStr;
+#[cfg(not(feature = "ansi"))]
+pub type TStr = windy::WStr;
 
 pub type OsResult<T> = Result<T, OsError>;
 

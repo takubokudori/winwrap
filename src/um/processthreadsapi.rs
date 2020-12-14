@@ -166,11 +166,11 @@ pub fn get_current_process_id() -> DWORD { GetCurrentProcessId() }
 /// use winwrap::um::processthreadsapi::{create_process_a, CreationFlags, StartupInfoA};
 /// use winwrap::string::AString;
 ///
-/// let mut command_line = AString::from(r"C:\Windows\System32\calc.exe");
+/// let mut command_line = AString::from_str_lossy(r"C:\Windows\System32\calc.exe");
 /// let mut si=StartupInfoA::default();
 /// let pi = create_process_a(
 ///     None,
-///     command_line.as_mut_c_str(),
+///     unsafe { command_line.as_mut_c_str() },
 ///     None,
 ///     None,
 ///     false,

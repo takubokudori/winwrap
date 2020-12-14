@@ -3,7 +3,7 @@ use winwrap::OsError::Win32;
 use winwrap::winapi::shared::winerror::ERROR_NO_MORE_FILES;
 
 fn enumerate_files_a() {
-    let path = AString::from(r".\*.*");
+    let path = AString::from_str_lossy(r".\*.*");
     let (handle, mut data) = find_first_file_a(&path).unwrap();
     loop {
         println!("name: {:?}", data.get_file_name().to_string_lossy());
@@ -22,7 +22,7 @@ fn enumerate_files_a() {
 }
 
 fn enumerate_files_w() {
-    let path = WString::from(r".\*.*");
+    let path = WString::from_str_lossy(r".\*.*");
     let (handle, mut data) = find_first_file_w(&path).unwrap();
     loop {
         println!("name: {:?}", data.get_file_name().to_string_lossy());
@@ -41,7 +41,7 @@ fn enumerate_files_w() {
 }
 
 fn enumerate_files_t() {
-    let path = TString::from(r".\*.*");
+    let path = TString::from_str_lossy(r".\*.*");
     let (handle, mut data) = find_first_file(&path).unwrap();
     loop {
         println!("name: {:?}", data.get_file_name().to_string());

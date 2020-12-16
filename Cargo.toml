@@ -24,7 +24,7 @@ members = ["winwrap-derive", "examples/find_first_file"]
 [dependencies]
 winwrap-derive = { path = "winwrap-derive", version = "0.1" }
 bitflags = "1.2"
-windy = "0.1.0"
+windy = "0.1.1"
 
 [dependencies.winapi]
 version = "0.3.9"

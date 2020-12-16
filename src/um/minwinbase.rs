@@ -110,13 +110,13 @@ pub struct Win32FindDataA {
 impl Win32FindDataA {
     pub fn get_file_name(&mut self) -> ManuallyDrop<AString> {
         unsafe {
-            ManuallyDrop::new(AString::from_raw(self.file_name.as_mut_ptr() as *mut _))
+            AString::from_raw(self.file_name.as_mut_ptr() as *mut _)
         }
     }
 
     pub fn get_alternate_file_name(&mut self) -> ManuallyDrop<AString> {
         unsafe {
-            ManuallyDrop::new(AString::from_raw(self.alternate_file_name.as_mut_ptr() as *mut _))
+            AString::from_raw(self.alternate_file_name.as_mut_ptr() as *mut _)
         }
     }
 
@@ -165,13 +165,13 @@ pub struct Win32FindDataW {
 impl Win32FindDataW {
     pub fn get_file_name(&mut self) -> ManuallyDrop<WString> {
         unsafe {
-            ManuallyDrop::new(WString::from_raw(self.file_name.as_mut_ptr() as *mut _))
+            WString::from_raw(self.file_name.as_mut_ptr() as *mut _)
         }
     }
 
     pub fn get_alternate_file_name(&mut self) -> ManuallyDrop<WString> {
         unsafe {
-            ManuallyDrop::new(WString::from_raw(self.alternate_file_name.as_mut_ptr() as *mut _))
+            WString::from_raw(self.alternate_file_name.as_mut_ptr() as *mut _)
         }
     }
 

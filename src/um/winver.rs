@@ -160,9 +160,9 @@ impl<'a> VerQueryValueA<'a> {
             }
             VerQuerySubBlock::StringFileInfo(_, _, _) => {
                 let buf = buf as *mut u8;
-                Self::StringFileInfo(ManuallyDrop::new(
+                Self::StringFileInfo(
                     AString::from_raw_s(buf as *mut _, len as usize)
-                ))
+                )
             }
         }
     }
@@ -252,9 +252,9 @@ impl<'a> VerQueryValueW<'a> {
             }
             VerQuerySubBlock::StringFileInfo(_, _, _) => {
                 let buf = buf as *mut u8;
-                Self::StringFileInfo(ManuallyDrop::new(
+                Self::StringFileInfo(
                     WString::from_raw_s(buf as *mut _, len as usize)
-                ))
+                )
             }
         }
     }

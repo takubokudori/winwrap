@@ -148,7 +148,7 @@ impl Default for ProcessEntry32W {
 impl ProcessEntry32W {
     pub fn get_exe_file(&mut self) -> ManuallyDrop<WString> {
         unsafe {
-            ManuallyDrop::new(WString::from_raw(self.exe_file.as_mut_ptr() as *mut _))
+            WString::from_raw(self.exe_file.as_mut_ptr() as *mut _)
         }
     }
 }
@@ -201,7 +201,7 @@ impl Default for ProcessEntry32 {
 impl ProcessEntry32 {
     pub fn get_exe_file(&mut self) -> ManuallyDrop<AString> {
         unsafe {
-            ManuallyDrop::new(AString::from_raw(self.exe_file.as_mut_ptr() as *mut _))
+            AString::from_raw(self.exe_file.as_mut_ptr() as *mut _)
         }
     }
 }
@@ -245,13 +245,13 @@ impl Default for ModuleEntry32 {
 impl ModuleEntry32 {
     pub fn get_module_name(&mut self) -> ManuallyDrop<AString> {
         unsafe {
-            ManuallyDrop::new(AString::from_raw(self.module_name.as_mut_ptr() as *mut _))
+            AString::from_raw(self.module_name.as_mut_ptr() as *mut _)
         }
     }
 
     pub fn get_exe_path(&mut self) -> ManuallyDrop<AString> {
         unsafe {
-            ManuallyDrop::new(AString::from_raw(self.exe_path.as_mut_ptr() as *mut _))
+            AString::from_raw(self.exe_path.as_mut_ptr() as *mut _)
         }
     }
 }
@@ -285,13 +285,13 @@ pub struct ModuleEntry32W{
 impl ModuleEntry32W {
     pub fn get_module_name(&mut self) -> ManuallyDrop<WString> {
         unsafe {
-            ManuallyDrop::new(WString::from_raw(self.module_name.as_mut_ptr() as *mut _))
+            WString::from_raw(self.module_name.as_mut_ptr() as *mut _)
         }
     }
 
     pub fn get_exe_path(&mut self) -> ManuallyDrop<WString> {
         unsafe {
-            ManuallyDrop::new(WString::from_raw(self.exe_path.as_mut_ptr() as *mut _))
+            WString::from_raw(self.exe_path.as_mut_ptr() as *mut _)
         }
     }
 }

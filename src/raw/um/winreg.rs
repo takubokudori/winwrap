@@ -11,7 +11,7 @@ macro_rules! make_func_reg {
     // unsafe
     ($($pa:ident)::*, pub $(unsafe)? fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;) => (
     #[allow(non_snake_case)]
-    pub unsafe fn $func ($($p: $t,)*) -> crate::OsResult<()> {
+    pub unsafe fn $func ($($p: $t,)*) -> $crate::OsResult<()> {
         match $($pa::)*$func($($p,)*) as u32 {
             winapi::shared::winerror::ERROR_SUCCESS => Ok(()),
             x => Err(OsError::from_win32_error(x)),

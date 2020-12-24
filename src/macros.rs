@@ -5,13 +5,13 @@
 #[macro_export]
 macro_rules! handle {
     ($x:expr,$y:pat) => { match $x {
-        $y => Err(crate::OsError::last_os_error()),
+        $y => Err($crate::OsError::last_os_error()),
         x=> Ok(x),
     }
     };
     // Type conversion
     ($x:expr,$match_ty:ty,$y:pat,$ret_ty:ty) => { match $x as $match_ty {
-        $y => Err(crate::OsError::last_os_error()),
+        $y => Err($crate::OsError::last_os_error()),
         x=> Ok(x as $ret_ty),
     }
     };
@@ -21,13 +21,13 @@ macro_rules! handle {
 #[macro_export]
 macro_rules! handle2 {
     ($x:expr,$err_pat:pat) => { match $x {
-        $err_pat => Err(crate::OsError::last_os_error()),
+        $err_pat => Err($crate::OsError::last_os_error()),
         _=> Ok(()),
     }
     };
     // Type conversion
     ($x:expr,$match_ty:ty,$err_pat:pat) => { match $x as $match_ty {
-        $err_pat => Err(crate::OsError::last_os_error()),
+        $err_pat => Err($crate::OsError::last_os_error()),
         _=> Ok(()),
     }
     };
@@ -72,24 +72,24 @@ macro_rules! make_func {
     ($($pa:ident)::*, $(#[$outer:meta])* pub fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;$err_pat:pat$(,)?) => (
     #[allow(non_snake_case)]
     $(#[$outer])*
-    pub unsafe fn $func ($($p: $t,)*) -> crate::OsResult<$ret> {
-        crate::handle!($($pa::)*$func($($p,)*),$err_pat)
+    pub unsafe fn $func ($($p: $t,)*) -> $crate::OsResult<$ret> {
+        $crate::handle!($($pa::)*$func($($p,)*),$err_pat)
     }
     );
     // unsafe
     ($($pa:ident)::*, $(#[$outer:meta])* pub unsafe fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;$err_pat:pat$(,)?) => (
     #[allow(non_snake_case)]
     $(#[$outer])*
-    pub unsafe fn $func ($($p: $t,)*) -> crate::OsResult<$ret> {
-        crate::handle!($($pa::)*$func($($p,)*),$err_pat)
+    pub unsafe fn $func ($($p: $t,)*) -> $crate::OsResult<$ret> {
+        $crate::handle!($($pa::)*$func($($p,)*),$err_pat)
     }
     );
     // safe
     ($($pa:ident)::*, $(#[$outer:meta])* pub safe fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;$err_pat:pat$(,)?) => (
     #[allow(non_snake_case)]
     $(#[$outer])*
-    pub fn $func ($($p: $t,)*) -> crate::OsResult<$ret> {
-        unsafe { crate::handle!($($pa::)*$func($($p,)*),$err_pat) }
+    pub fn $func ($($p: $t,)*) -> $crate::OsResult<$ret> {
+        unsafe { $crate::handle!($($pa::)*$func($($p,)*),$err_pat) }
     }
     );
 }
@@ -101,23 +101,23 @@ macro_rules! make_func2 {
     ($($pa:ident)::*, $(#[$outer:meta])* pub fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;$err_pat:pat$(,)?) => (
     #[allow(non_snake_case)]
     $(#[$outer])*
-    pub unsafe fn $func ($($p: $t,)*) -> crate::OsResult<()> {
-        crate::handle2!($($pa::)*$func($($p,)*),$err_pat)
+    pub unsafe fn $func ($($p: $t,)*) -> $crate::OsResult<()> {
+        $crate::handle2!($($pa::)*$func($($p,)*),$err_pat)
     }
     );
     // unsafe
     ($($pa:ident)::*, $(#[$outer:meta])* pub unsafe fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;$err_pat:pat$(,)?) => (
     #[allow(non_snake_case)]
     $(#[$outer])*
-    pub unsafe fn $func ($($p: $t,)*) -> crate::OsResult<()> {
-        crate::handle2!($($pa::)*$func($($p,)*),$err_pat)
+    pub unsafe fn $func ($($p: $t,)*) -> $crate::OsResult<()> {
+        $crate::handle2!($($pa::)*$func($($p,)*),$err_pat)
     }
     );
     // safe
     ($($pa:ident)::*, $(#[$outer:meta])* pub safe fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;$err_pat:pat$(,)?) => (
     #[allow(non_snake_case)]
     $(#[$outer])*
-    pub fn $func ($($p: $t,)*) -> crate::OsResult<()> {
+    pub fn $func ($($p: $t,)*) -> $crate::OsResult<()> {
         unsafe { handle2!($($pa::)*$func($($p,)*),$err_pat) }
     }
     );
@@ -195,7 +195,7 @@ macro_rules! e_make_func {
     #[allow(non_snake_case)]
     $(#[$outer])*
     pub unsafe fn $func ($($p: $t,)*) -> Result<$ret, ()> {
-        crate::e_handle_internal!($($pa::)*$func($($p,)*),$err_pat)
+        $crate::e_handle_internal!($($pa::)*$func($($p,)*),$err_pat)
     }
     );
     // unsafe
@@ -203,7 +203,7 @@ macro_rules! e_make_func {
     #[allow(non_snake_case)]
     $(#[$outer])*
     pub unsafe fn $func ($($p: $t,)*) -> Result<$ret, ()> {
-        crate::e_handle_internal!($($pa::)*$func($($p,)*),$err_pat)
+        $crate::e_handle_internal!($($pa::)*$func($($p,)*),$err_pat)
     }
     );
     // safe
@@ -211,7 +211,7 @@ macro_rules! e_make_func {
     #[allow(non_snake_case)]
     $(#[$outer])*
     pub fn $func ($($p: $t,)*) -> Result<$ret, ()> {
-        unsafe { crate::e_handle_internal!($($pa::)*$func($($p,)*),$err_pat) }
+        unsafe { $crate::e_handle_internal!($($pa::)*$func($($p,)*),$err_pat) }
     }
     );
 }
@@ -226,7 +226,7 @@ macro_rules! e_make_func2 {
     #[allow(non_snake_case)]
     $(#[$outer])*
     pub unsafe fn $func ($($p: $t,)*) -> Result<(), ()> {
-        crate::e_handle2_internal!($($pa::)*$func($($p,)*),$err_pat)
+        $crate::e_handle2_internal!($($pa::)*$func($($p,)*),$err_pat)
     }
     );
     // unsafe
@@ -234,7 +234,7 @@ macro_rules! e_make_func2 {
     #[allow(non_snake_case)]
     $(#[$outer])*
     pub unsafe fn $func ($($p: $t,)*) -> Result<(), ()> {
-        crate::e_handle2_internal!($($pa::)*$func($($p,)*),$err_pat)
+        $crate::e_handle2_internal!($($pa::)*$func($($p,)*),$err_pat)
     }
     );
     // safe
@@ -252,21 +252,21 @@ macro_rules! make_func_hresult {
     // unsafe
     ($($pa:ident)::*, pub $(unsafe)? fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;) => (
     #[allow(non_snake_case)]
-    pub unsafe fn $func ($($p: $t,)*) -> crate::OsResult<()> {
+    pub unsafe fn $func ($($p: $t,)*) -> $crate::OsResult<()> {
         match $($pa::)*$func($($p,)*) as i32 {
             winapi::shared::winerror::S_OK => Ok(()),
-            x => Err(crate::OsError::Win32(x as u32)),
+            x => Err($crate::OsError::Win32(x as u32)),
         }
     }
     );
     // safe
     ($($pa:ident)::*, pub safe fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;) => (
     #[allow(non_snake_case)]
-    pub fn $func ($($p: $t,)*) -> crate::OsResult<()> {
+    pub fn $func ($($p: $t,)*) -> $crate::OsResult<()> {
     unsafe {
             match $($pa::)*$func($($p,)*) as i32 {
                 winapi::shared::winerror::S_OK => Ok(()),
-                x => Err(crate::OsError::Win32(x as u32)),
+                x => Err($crate::OsError::Win32(x as u32)),
             }
         }
     }

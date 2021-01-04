@@ -15,7 +15,7 @@ pub fn load_library_a(
 ) -> OsResult<HModule> {
     unsafe {
         LoadLibraryA(file_name.as_ptr())
-            .and_then(|x| Ok(HModule::new(x)))
+            .map(HModule::new)
     }
 }
 
@@ -25,7 +25,7 @@ pub fn load_library_w(
 ) -> OsResult<HModule> {
     unsafe {
         LoadLibraryW(file_name.as_ptr())
-            .and_then(|x| Ok(HModule::new(x)))
+            .map(HModule::new)
     }
 }
 
@@ -101,7 +101,7 @@ pub fn load_library_ex_a(
             file_name.as_ptr(),
             null_mut(),
             load_flag.bits,
-        ).and_then(|x| Ok(HModule::new(x)))
+        ).map(HModule::new)
     }
 }
 
@@ -115,7 +115,7 @@ pub fn load_library_ex_w(
             file_name.as_ptr(),
             null_mut(),
             load_flag.bits,
-        ).and_then(|x| Ok(HModule::new(x)))
+        ).map(HModule::new)
     }
 }
 
@@ -161,7 +161,7 @@ pub fn get_module_handle_a(
 ) -> OsResult<HModule> {
     unsafe {
         GetModuleHandleA(module_name.as_ptr())
-            .and_then(|x| Ok(HModule::new(x)))
+            .map(HModule::new)
     }
 }
 
@@ -171,7 +171,7 @@ pub fn get_module_handle_w(
 ) -> OsResult<HModule> {
     unsafe {
         GetModuleHandleW(module_name.as_ptr())
-            .and_then(|x| Ok(HModule::new(x)))
+            .map(HModule::new)
     }
 }
 

@@ -54,6 +54,10 @@
 
 #![cfg(windows)]
 
+#![allow(clippy::too_many_arguments)]
+#![allow(clippy::result_unit_err)]
+#![allow(clippy::uninit_assumed_init)]
+
 pub use winapi;
 pub use windy as string;
 

@@ -91,7 +91,7 @@ pub fn create_named_pipe_w<'a, SA>(
             in_buffer_size,
             default_timeout,
             sec_attrs.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
-        ).and_then(|x| Ok(PipeHandle::new(x)))
+        ).map(PipeHandle::new)
     }
 }
 

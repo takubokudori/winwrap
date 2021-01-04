@@ -70,7 +70,7 @@ pub fn multi_byte_to_wide_char(
             mb_bytes.len() as i32,
             wc_bytes.as_mut_ptr(),
             wc_bytes.len() as i32,
-        ).and_then(|x| Ok(x as usize))
+        ).map(|x| x as usize)
     }
 }
 
@@ -107,6 +107,6 @@ pub fn wide_char_to_multi_byte<'a, DC, UDC>(
             mb_bytes.len() as i32,
             dc as *const i8,
             used_default_char.into().map_or(null_mut(), |x| x as *mut _ as *mut _),
-        ).and_then(|x| Ok(x as usize))
+        ).map(|x| x as usize)
     }
 }

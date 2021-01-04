@@ -20,7 +20,7 @@ pub fn duplicate_handle<T: Handle>(
     options: DWORD,
 ) -> OsResult<T> {
     unsafe {
-        let mut handle = 0 as *mut _;
+        let mut handle = std::ptr::null_mut();
         DuplicateHandle(
             src_proc_handle.as_c_handle(),
             src_handle.as_c_handle(),
@@ -49,14 +49,11 @@ pub fn compare_object_handles(
 /// # Example
 ///
 /// ```rust
-///
-/// fn main(){
-///     use winwrap::um::handleapi::get_handle_information;
-///     use winwrap::um::processthreadsapi::get_current_process;
-///     let proc = get_current_process();
-///     let info = get_handle_information(&proc);
-///     println!("{:?}", info);
-/// }
+/// use winwrap::um::handleapi::get_handle_information;
+/// use winwrap::um::processthreadsapi::get_current_process;
+/// let proc = get_current_process();
+/// let info = get_handle_information(&proc);
+/// println!("{:?}", info);
 /// ```
 pub fn get_handle_information(
     handle: &impl Handle,

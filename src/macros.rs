@@ -71,6 +71,8 @@ macro_rules! make_func {
     // unsafe
     ($($pa:ident)::*, $(#[$outer:meta])* pub fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;$err_pat:pat$(,)?) => (
     #[allow(non_snake_case)]
+    #[allow(clippy::missing_safety_doc)]
+    #[inline]
     $(#[$outer])*
     pub unsafe fn $func ($($p: $t,)*) -> $crate::OsResult<$ret> {
         $crate::handle!($($pa::)*$func($($p,)*),$err_pat)
@@ -79,6 +81,8 @@ macro_rules! make_func {
     // unsafe
     ($($pa:ident)::*, $(#[$outer:meta])* pub unsafe fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;$err_pat:pat$(,)?) => (
     #[allow(non_snake_case)]
+    #[allow(clippy::missing_safety_doc)]
+    #[inline]
     $(#[$outer])*
     pub unsafe fn $func ($($p: $t,)*) -> $crate::OsResult<$ret> {
         $crate::handle!($($pa::)*$func($($p,)*),$err_pat)
@@ -87,6 +91,7 @@ macro_rules! make_func {
     // safe
     ($($pa:ident)::*, $(#[$outer:meta])* pub safe fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;$err_pat:pat$(,)?) => (
     #[allow(non_snake_case)]
+    #[inline]
     $(#[$outer])*
     pub fn $func ($($p: $t,)*) -> $crate::OsResult<$ret> {
         unsafe { $crate::handle!($($pa::)*$func($($p,)*),$err_pat) }
@@ -100,6 +105,8 @@ macro_rules! make_func2 {
     // unsafe
     ($($pa:ident)::*, $(#[$outer:meta])* pub fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;$err_pat:pat$(,)?) => (
     #[allow(non_snake_case)]
+    #[allow(clippy::missing_safety_doc)]
+    #[inline]
     $(#[$outer])*
     pub unsafe fn $func ($($p: $t,)*) -> $crate::OsResult<()> {
         $crate::handle2!($($pa::)*$func($($p,)*),$err_pat)
@@ -108,6 +115,8 @@ macro_rules! make_func2 {
     // unsafe
     ($($pa:ident)::*, $(#[$outer:meta])* pub unsafe fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;$err_pat:pat$(,)?) => (
     #[allow(non_snake_case)]
+    #[allow(clippy::missing_safety_doc)]
+    #[inline]
     $(#[$outer])*
     pub unsafe fn $func ($($p: $t,)*) -> $crate::OsResult<()> {
         $crate::handle2!($($pa::)*$func($($p,)*),$err_pat)
@@ -116,6 +125,7 @@ macro_rules! make_func2 {
     // safe
     ($($pa:ident)::*, $(#[$outer:meta])* pub safe fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;$err_pat:pat$(,)?) => (
     #[allow(non_snake_case)]
+    #[inline]
     $(#[$outer])*
     pub fn $func ($($p: $t,)*) -> $crate::OsResult<()> {
         unsafe { handle2!($($pa::)*$func($($p,)*),$err_pat) }
@@ -129,6 +139,7 @@ macro_rules! tp_func {
     // safe
     ($($pa:ident)::*, $(#[$outer:meta])* pub fn $func:ident($($p:ident: $t:ty,)*) $(-> $ret:ty)?$(;)?) => (
     #[allow(non_snake_case)]
+    #[allow(clippy::missing_safety_doc)]
     #[inline]
     $(#[$outer])*
     pub unsafe fn $func ($($p: $t,)*) $(-> $ret)? { $($pa::)*$func($($p,)*) }
@@ -136,6 +147,7 @@ macro_rules! tp_func {
     // unsafe
     ($($pa:ident)::*, $(#[$outer:meta])* pub unsafe fn $func:ident($($p:ident: $t:ty,)*) $(-> $ret:ty)?$(;)?) => (
     #[allow(non_snake_case)]
+    #[allow(clippy::missing_safety_doc)]
     #[inline]
     $(#[$outer])*
     pub unsafe fn $func ($($p: $t,)*) $(-> $ret)? { $($pa::)*$func($($p,)*) }
@@ -193,6 +205,8 @@ macro_rules! e_make_func {
     // unsafe
     ($($pa:ident)::*, $(#[$outer:meta])* pub fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;$err_pat:pat$(,)?) => (
     #[allow(non_snake_case)]
+    #[allow(clippy::missing_safety_doc)]
+    #[inline]
     $(#[$outer])*
     pub unsafe fn $func ($($p: $t,)*) -> Result<$ret, ()> {
         $crate::e_handle_internal!($($pa::)*$func($($p,)*),$err_pat)
@@ -201,6 +215,8 @@ macro_rules! e_make_func {
     // unsafe
     ($($pa:ident)::*, $(#[$outer:meta])* pub unsafe fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;$err_pat:pat$(,)?) => (
     #[allow(non_snake_case)]
+    #[allow(clippy::missing_safety_doc)]
+    #[inline]
     $(#[$outer])*
     pub unsafe fn $func ($($p: $t,)*) -> Result<$ret, ()> {
         $crate::e_handle_internal!($($pa::)*$func($($p,)*),$err_pat)
@@ -209,6 +225,8 @@ macro_rules! e_make_func {
     // safe
     ($($pa:ident)::*, $(#[$outer:meta])* pub safe fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;$err_pat:pat$(,)?) => (
     #[allow(non_snake_case)]
+    #[allow(clippy::missing_safety_doc)]
+    #[inline]
     $(#[$outer])*
     pub fn $func ($($p: $t,)*) -> Result<$ret, ()> {
         unsafe { $crate::e_handle_internal!($($pa::)*$func($($p,)*),$err_pat) }
@@ -224,6 +242,8 @@ macro_rules! e_make_func2 {
     // unsafe
     ($($pa:ident)::*, $(#[$outer:meta])* pub fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;$err_pat:pat$(,)?) => (
     #[allow(non_snake_case)]
+    #[allow(clippy::missing_safety_doc)]
+    #[inline]
     $(#[$outer])*
     pub unsafe fn $func ($($p: $t,)*) -> Result<(), ()> {
         $crate::e_handle2_internal!($($pa::)*$func($($p,)*),$err_pat)
@@ -232,6 +252,8 @@ macro_rules! e_make_func2 {
     // unsafe
     ($($pa:ident)::*, $(#[$outer:meta])* pub unsafe fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;$err_pat:pat$(,)?) => (
     #[allow(non_snake_case)]
+    #[allow(clippy::missing_safety_doc)]
+    #[inline]
     $(#[$outer])*
     pub unsafe fn $func ($($p: $t,)*) -> Result<(), ()> {
         $crate::e_handle2_internal!($($pa::)*$func($($p,)*),$err_pat)
@@ -240,6 +262,7 @@ macro_rules! e_make_func2 {
     // safe
     ($($pa:ident)::*, $(#[$outer:meta])* pub safe fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;$err_pat:pat$(,)?) => (
     #[allow(non_snake_case)]
+    #[inline]
     $(#[$outer])*
     pub fn $func ($($p: $t,)*) -> Result<(), ()> {
         unsafe { e_handle2_internal!($($pa::)*$func($($p,)*),$err_pat) }
@@ -252,6 +275,8 @@ macro_rules! make_func_hresult {
     // unsafe
     ($($pa:ident)::*, pub $(unsafe)? fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;) => (
     #[allow(non_snake_case)]
+    #[allow(clippy::missing_safety_doc)]
+    #[inline]
     pub unsafe fn $func ($($p: $t,)*) -> $crate::OsResult<()> {
         match $($pa::)*$func($($p,)*) as i32 {
             winapi::shared::winerror::S_OK => Ok(()),
@@ -262,6 +287,7 @@ macro_rules! make_func_hresult {
     // safe
     ($($pa:ident)::*, pub safe fn $func:ident($($p:ident: $t:ty,)*) -> $ret:ty;) => (
     #[allow(non_snake_case)]
+    #[inline]
     pub fn $func ($($p: $t,)*) -> $crate::OsResult<()> {
     unsafe {
             match $($pa::)*$func($($p,)*) as i32 {

@@ -324,7 +324,7 @@ impl<'a> VerQueryValueW<'a> {
 }
 
 #[ansi_fn]
-pub fn ver_query_value_a<'a>(
+pub fn ver_query_value_a(
     block: &FileVersionInfo,
     sub_block: VerQuerySubBlock,
 ) -> OsResult<VerQueryValueA> {
@@ -343,7 +343,7 @@ pub fn ver_query_value_a<'a>(
 }
 
 #[unicode_fn]
-pub fn ver_query_value_w<'a>(
+pub fn ver_query_value_w(
     block: &FileVersionInfo,
     sub_block: VerQuerySubBlock,
 ) -> OsResult<VerQueryValueW> {

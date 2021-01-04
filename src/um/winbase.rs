@@ -60,7 +60,7 @@ pub fn get_system_dep_policy() -> DEPSystemPolicyType {
 }
 
 #[ansi_fn]
-pub fn format_message_a<'a, SO, LI, AG>(
+pub fn format_message_a<SO, LI, AG>(
     flags: FormatFlags,
     source: SO,
     message_id: DWORD,
@@ -99,7 +99,7 @@ pub fn format_message_a<'a, SO, LI, AG>(
 }
 
 #[unicode_fn]
-pub fn format_message_w<'a, SO, LI, AG>(
+pub fn format_message_w<SO, LI, AG>(
     flags: FormatFlags,
     source: SO,
     message_id: DWORD,
@@ -183,7 +183,7 @@ pub fn create_named_pipe_a<'a, SA>(
             in_buffer_size,
             default_timeout,
             sec_attrs.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
-        ).and_then(|x| Ok(PipeHandle::new(x)))
+        ).map(PipeHandle::new)
     }
 }
 

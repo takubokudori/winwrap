@@ -53,7 +53,7 @@ fn generate_fn(ast: proc_macro::TokenStream, is_ansi: bool) -> proc_macro::Token
 
     let (impl_generics, _, where_clause) = orig_fn.sig.generics.split_for_impl();
     let vis = orig_fn.vis.clone(); // Visibility
-    let unsafety = orig_fn.sig.unsafety.clone(); // Unsafety
+    let unsafety = orig_fn.sig.unsafety; // Unsafety
 
     // generates argument tokens.
     let mut idents = proc_macro2::TokenStream::new();

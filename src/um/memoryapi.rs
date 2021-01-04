@@ -99,7 +99,7 @@ pub fn create_file_mapping_w<'a, FH, SA>(
             maximum_size_high,
             maximum_size_low,
             name.as_ptr(),
-        ).and_then(|x| Ok(FileMappingHandle::new(x)))
+        ).map(FileMappingHandle::new)
     }
 }
 
@@ -115,7 +115,7 @@ pub fn open_file_mapping_w(
             desired_access.bits,
             is_inherit_handle.into(),
             name.as_ptr(),
-        ).and_then(|x| Ok(FileMappingHandle::new(x)))
+        ).map(FileMappingHandle::new)
     }
 }
 

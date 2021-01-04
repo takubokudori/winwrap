@@ -21,7 +21,7 @@ pub fn find_window_a<'a, CN, WN>(
         FindWindowA(
             class_name.into().map_or(null_mut(), |x| x.as_ptr()),
             window_name.into().map_or(null_mut(), |x| x.as_ptr()),
-        ).and_then(|x| Ok(HWnd::new(x)))
+        ).map(HWnd::new)
     }
 }
 
@@ -38,7 +38,7 @@ pub fn find_window_w<'a, CN, WN>(
         FindWindowW(
             class_name.into().map_or(null_mut(), |x| x.as_ptr()),
             window_name.into().map_or(null_mut(), |x| x.as_ptr()),
-        ).and_then(|x| Ok(HWnd::new(x)))
+        ).map(HWnd::new)
     }
 }
 
@@ -60,7 +60,7 @@ pub fn find_window_ex_a<'a, HP, HC, WN>(
             hwnd_child_after.into().map_or(null_mut(), |x| x.as_c_hwnd()),
             class.as_ptr(),
             window.into().map_or(null_mut(), |x| x.as_ptr()),
-        ).and_then(|x| Ok(HWnd::new(x)))
+        ).map(HWnd::new)
     }
 }
 
@@ -82,7 +82,7 @@ pub fn find_window_ex_w<'a, HP, HC, WN>(
             hwnd_child_after.into().map_or(null_mut(), |x| x.as_c_hwnd()),
             class.as_ptr(),
             window.into().map_or(null_mut(), |x| x.as_ptr()),
-        ).and_then(|x| Ok(HWnd::new(x)))
+        ).map(HWnd::new)
     }
 }
 

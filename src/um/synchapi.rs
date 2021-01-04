@@ -43,7 +43,7 @@ pub fn wait_for_single_object<DU>(
         WaitForSingleObject(
             handle.as_c_handle(),
             duration.into().map_or(INFINITE, |x| x.as_millis() as DWORD),
-        ).and_then(|x| Ok(WaitStatus::from(x)))
+        ).map(WaitStatus::from)
     }
 }
 
@@ -60,7 +60,7 @@ pub fn wait_for_single_object_ex<DU>(
             handle.as_c_handle(),
             duration.into().map_or(INFINITE, |x| x.as_millis() as DWORD),
             i32::from(is_alertable),
-        ).and_then(|x| Ok(WaitStatus::from(x)))
+        ).map(WaitStatus::from)
     }
 }
 
@@ -81,7 +81,7 @@ pub fn create_event_a<'a, SA, NA>(
             is_manual_reset.into(),
             is_initial_state.into(),
             name.into().map_or(null_mut(), |x| x.as_ptr()),
-        ).and_then(|x| Ok(EventHandle::new(x)))
+        ).map(EventHandle::new)
     }
 }
 
@@ -102,7 +102,7 @@ pub fn create_event_w<'a, SA, NA>(
             is_manual_reset.into(),
             is_initial_state.into(),
             name.into().map_or(null_mut(), |x| x.as_ptr()),
-        ).and_then(|x| Ok(EventHandle::new(x)))
+        ).map(EventHandle::new)
     }
 }
 
@@ -120,7 +120,7 @@ pub fn create_mutex_a<'a, SA>(
             sec_attrs.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
             initial_owner.into(),
             name.as_ptr(),
-        ).and_then(|x| Ok(MutexHandle::new(x)))
+        ).map(MutexHandle::new)
     }
 }
 
@@ -138,7 +138,7 @@ pub fn create_mutex_w<'a, SA>(
             sec_attrs.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
             initial_owner.into(),
             name.as_ptr(),
-        ).and_then(|x| Ok(MutexHandle::new(x)))
+        ).map(MutexHandle::new)
     }
 }
 

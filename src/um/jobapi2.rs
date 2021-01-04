@@ -23,7 +23,7 @@ pub fn create_job_object_w<'a, SA>(
         CreateJobObjectW(
             sec_attr.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
             name.as_ptr(),
-        ).and_then(|x| Ok(JobHandle::new(x)))
+        ).map(JobHandle::new)
     }
 }
 
@@ -55,7 +55,7 @@ pub fn open_job_object_w(
             desired_access,
             i32::from(inherit_handle),
             job_name.as_ptr(),
-        ).and_then(|x| Ok(JobHandle::new(x)))
+        ).map(JobHandle::new)
     }
 }
 

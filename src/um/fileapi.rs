@@ -196,7 +196,7 @@ pub fn create_file_a<'a, SA, TM>(
             creation_disposition.bits,
             0,
             template.into().map_or(null_mut(), |x| x.0),
-        ).and_then(|x| Ok(FileHandle::new(x)))
+        ).map(FileHandle::new)
     }
 }
 
@@ -222,7 +222,7 @@ pub fn create_file_w<'a, SA, TM>(
             creation_disposition.bits,
             0,
             template.into().map_or(null_mut(), |x| x.0),
-        ).and_then(|x| Ok(FileHandle::new(x)))
+        ).map(FileHandle::new)
     }
 }
 

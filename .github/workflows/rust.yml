@@ -1,0 +1,19 @@
+name: Rust
+
+on: [ push ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Run tests
+        run: cargo test --release --verbose
+      - name: Install i686 toolchain
+        run: rustup install stable-i686-pc-windows-msvc
+      - name: Add i686 target
+        run: rustup target add i686-pc-windows-msvc
+      - name: Run tests on i686
+        run: cargo test --release --verbose --target=i686-pc-windows-msvc

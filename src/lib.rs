@@ -77,6 +77,7 @@ use winapi::shared::minwindef::{DWORD, WORD};
 use winapi::shared::ntdef::{NTSTATUS, ULONG};
 use winapi::shared::winerror::ERROR_MR_MID_NOT_FOUND;
 use std::fmt;
+use windy::ConvertError;
 
 #[cfg(feature = "ansi")]
 pub type TString = windy::AString;
@@ -90,13 +91,14 @@ pub type TStr = windy::WStr;
 
 pub type OsResult<T> = Result<T, OsError>;
 
+/// Returns QWORD.
 #[inline]
 #[allow(non_snake_case)]
 pub const fn MAKE_QWORD(high: DWORD, low: DWORD) -> u64 {
     (high as u64) << 32 | low as u64
 }
 
-/// Returns `(high,low)`.
+/// Returns `(high, low)` DWORD values.
 #[inline]
 #[allow(non_snake_case)]
 pub const fn SEP_QWORD(qw: u64) -> (u32, u32) {
@@ -108,6 +110,7 @@ extern "system" {
     fn RtlNtStatusToDosError(status: NTSTATUS) -> ULONG;
 }
 
+/// Represents a Windows OS error code.
 #[derive(Clone, Copy, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub enum OsError {
     /// Represents a system error code (a.k.a. `Win32Error`, `DosError`).
@@ -187,20 +190,18 @@ impl OsError {
         }
     }
 
-    /// Converts OsError to Win32Error code.
+    /// Gets Win32Error code.
+    ///
+    /// If NtStatus is contained, Converts Win32Error code.
     #[inline]
-    fn to_win32_error(&self) -> Option<ULONG> {
+    pub fn to_win32_error(&self) -> Option<ULONG> {
         match self {
             Self::Win32(x) => Some(*x),
             Self::NtStatus(x) => Self::nt_status_to_win32_error(*x),
         }
     }
 
-    /// Gets Win32Error code.
-    #[inline]
-    pub fn get_win32_error(&self) -> Option<ULONG> { self.to_win32_error() }
-
-    /// Gets NTSTATUS error code.
+    /// Returns the NTSTATUS error code if `NtStatus` contained.
     #[inline]
     pub fn get_nt_status(&self) -> Option<NTSTATUS> {
         match self {
@@ -209,12 +210,13 @@ impl OsError {
         }
     }
 
+    /// Gets the raw error code.
     #[inline]
-    pub fn get_error_code(&self) -> Option<u32> {
-        Some(match self {
+    pub fn get_error_code(&self) -> u32 {
+        match self {
             OsError::Win32(x) => *x,
             OsError::NtStatus(x) => *x as u32
-        })
+        }
     }
 
     /// Converts OsError to std::io::Error.
@@ -234,6 +236,12 @@ impl Into<std::io::Error> for OsError {
 impl From<std::io::Error> for OsError {
     fn from(x: std::io::Error) -> Self {
         Self::Win32(x.raw_os_error().unwrap() as u32)
+    }
+}
+
+impl From<windy::ConvertError> for OsError {
+    fn from(x: ConvertError) -> Self {
+        Self::Win32(x.to_error_code())
     }
 }
 

@@ -1,11 +1,17 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::shared::basetsd::{SIZE_T, PSIZE_T, ULONG_PTR};
-use winapi::shared::minwindef::{LPVOID, DWORD, PDWORD, LPCVOID, BOOL, LPDWORD, UINT};
-use winapi::shared::ntdef::{NULL, PVOID};
-use winapi::um::minwinbase::LPSECURITY_ATTRIBUTES;
-use winapi::um::winnt::{HANDLE, PMEMORY_BASIC_INFORMATION, LPCWSTR};
+use winapi::{
+    shared::{
+        basetsd::{PSIZE_T, SIZE_T, ULONG_PTR},
+        minwindef::{BOOL, DWORD, LPCVOID, LPDWORD, LPVOID, PDWORD, UINT},
+        ntdef::{NULL, PVOID},
+    },
+    um::{
+        minwinbase::LPSECURITY_ATTRIBUTES,
+        winnt::{HANDLE, LPCWSTR, PMEMORY_BASIC_INFORMATION},
+    },
+};
 
 make_func! {winapi::um::memoryapi,
 pub fn VirtualAlloc(

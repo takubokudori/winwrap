@@ -1,16 +1,32 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::ctypes::c_int;
-use winapi::shared::basetsd::LONG_PTR;
-use winapi::shared::minwindef::{HMODULE, WORD, DWORD, BOOL, HGLOBAL, FARPROC, HRSRC, HINSTANCE, UINT, LPVOID};
-use winapi::shared::ntdef::NULL;
-use winapi::um::libloaderapi::{DLL_DIRECTORY_COOKIE, ENUMRESLANGPROCA, ENUMRESLANGPROCW, ENUMRESNAMEPROCA, ENUMRESTYPEPROCW, ENUMRESTYPEPROCA, ENUMRESNAMEPROCW};
-use winapi::um::winnt::{LPCWSTR, LPSTR, LPWSTR, LPCSTR, HANDLE, PCWSTR, LANGID};
+use winapi::{
+    ctypes::c_int,
+    shared::{
+        basetsd::LONG_PTR,
+        minwindef::{
+            BOOL, DWORD, FARPROC, HGLOBAL, HINSTANCE, HMODULE, HRSRC, LPVOID,
+            UINT, WORD,
+        },
+        ntdef::NULL,
+    },
+    um::{
+        libloaderapi::{
+            DLL_DIRECTORY_COOKIE, ENUMRESLANGPROCA, ENUMRESLANGPROCW,
+            ENUMRESNAMEPROCA, ENUMRESNAMEPROCW, ENUMRESTYPEPROCA,
+            ENUMRESTYPEPROCW,
+        },
+        winnt::{HANDLE, LANGID, LPCSTR, LPCWSTR, LPSTR, LPWSTR, PCWSTR},
+    },
+};
 
-const HRSRC_NULL: winapi::shared::minwindef::HRSRC = NULL as winapi::shared::minwindef::HRSRC;
-const HMODULE_NULL: winapi::shared::minwindef::HINSTANCE = NULL as winapi::shared::minwindef::HINSTANCE;
-const FARPROC_NULL: *mut winapi::shared::minwindef::__some_function = NULL as *mut winapi::shared::minwindef::__some_function;
+const HRSRC_NULL: winapi::shared::minwindef::HRSRC =
+    NULL as winapi::shared::minwindef::HRSRC;
+const HMODULE_NULL: winapi::shared::minwindef::HINSTANCE =
+    NULL as winapi::shared::minwindef::HINSTANCE;
+const FARPROC_NULL: *mut winapi::shared::minwindef::__some_function =
+    NULL as *mut winapi::shared::minwindef::__some_function;
 
 make_func2! {winapi::um::libloaderapi,
 pub fn DisableThreadLibraryCalls(

@@ -1,9 +1,13 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::shared::minwindef::{PBOOL, BOOL};
-use winapi::shared::ntdef::{LPCSTR, LPCWSTR, HANDLE};
-use winapi::um::minwinbase::LPDEBUG_EVENT;
+use winapi::{
+    shared::{
+        minwindef::{BOOL, PBOOL},
+        ntdef::{HANDLE, LPCSTR, LPCWSTR},
+    },
+    um::minwinbase::LPDEBUG_EVENT,
+};
 
 tp_func! {winapi::um::debugapi,
 pub safe fn IsDebuggerPresent() -> BOOL;}

@@ -1,7 +1,6 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use crate::*;
-use crate::raw::um::stringapiset::*;
+use crate::{raw::um::stringapiset::*, *};
 use std::ptr::{null, null_mut};
 
 #[allow(non_camel_case_types)]
@@ -70,7 +69,8 @@ pub fn multi_byte_to_wide_char(
             mb_bytes.len() as i32,
             wc_bytes.as_mut_ptr(),
             wc_bytes.len() as i32,
-        ).map(|x| x as usize)
+        )
+        .map(|x| x as usize)
     }
 }
 
@@ -93,9 +93,10 @@ pub fn wide_char_to_multi_byte<'a, DC, UDC>(
     default_char: DC,
     used_default_char: UDC,
 ) -> OsResult<usize>
-    where
-        DC: Into<Option<char>>,
-        UDC: Into<Option<&'a mut bool>> {
+where
+    DC: Into<Option<char>>,
+    UDC: Into<Option<&'a mut bool>>,
+{
     let dc = default_char.into().map_or(null(), |x| &x);
     unsafe {
         WideCharToMultiByte(
@@ -106,7 +107,10 @@ pub fn wide_char_to_multi_byte<'a, DC, UDC>(
             mb_bytes.as_mut_ptr() as *mut i8,
             mb_bytes.len() as i32,
             dc as *const i8,
-            used_default_char.into().map_or(null_mut(), |x| x as *mut _ as *mut _),
-        ).map(|x| x as usize)
+            used_default_char
+                .into()
+                .map_or(null_mut(), |x| x as *mut _ as *mut _),
+        )
+        .map(|x| x as usize)
     }
 }

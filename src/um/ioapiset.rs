@@ -1,9 +1,6 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use crate::*;
-use crate::handle::*;
-use crate::raw::um::ioapiset::*;
-use crate::um::minwinbase::Overlapped;
+use crate::{handle::*, raw::um::ioapiset::*, um::minwinbase::Overlapped, *};
 use std::ptr::null_mut;
 
 pub fn device_io_control<'a, OL>(
@@ -13,8 +10,9 @@ pub fn device_io_control<'a, OL>(
     output_buffer: &mut [u8],
     overlapped: OL,
 ) -> OsResult<DWORD>
-    where
-        OL: Into<Option<&'a mut Overlapped>> {
+where
+    OL: Into<Option<&'a mut Overlapped>>,
+{
     unsafe {
         let mut ret = 0;
         DeviceIoControl(
@@ -35,8 +33,7 @@ pub fn get_overlapped_result(
     handle: &impl ReadableHandle,
     overlapped: &mut Overlapped,
     is_wait: bool,
-) -> OsResult<DWORD>
-{
+) -> OsResult<DWORD> {
     unsafe {
         let mut number_of_bytes_transferred = 0;
         GetOverlappedResult(
@@ -49,9 +46,7 @@ pub fn get_overlapped_result(
     }
 }
 
-pub fn cancel_io(
-    handle: &impl CancelableIoHandle,
-) -> OsResult<()> {
+pub fn cancel_io(handle: &impl CancelableIoHandle) -> OsResult<()> {
     unsafe { CancelIo(handle.as_c_handle()) }
 }
 
@@ -59,8 +54,9 @@ pub fn cancel_io_ex<'a, OL>(
     handle: &impl CancelableIoHandle,
     overlapped: OL,
 ) -> OsResult<()>
-    where
-        OL: Into<Option<&'a mut Overlapped>> {
+where
+    OL: Into<Option<&'a mut Overlapped>>,
+{
     unsafe {
         CancelIoEx(
             handle.as_c_handle(),
@@ -69,8 +65,6 @@ pub fn cancel_io_ex<'a, OL>(
     }
 }
 
-pub fn cancel_synchronous_io(
-    handle: &ThreadHandle,
-) -> OsResult<()> {
+pub fn cancel_synchronous_io(handle: &ThreadHandle) -> OsResult<()> {
     unsafe { CancelSynchronousIo(handle.as_c_handle()) }
 }

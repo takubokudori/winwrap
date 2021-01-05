@@ -4,64 +4,72 @@
 /// Returns `Ok(ret)`.
 #[macro_export]
 macro_rules! handle {
-    ($x:expr,$y:pat) => { match $x {
-        $y => Err($crate::OsError::last_os_error()),
-        x=> Ok(x),
-    }
+    ($x:expr,$y:pat) => {
+        match $x {
+            $y => Err($crate::OsError::last_os_error()),
+            x => Ok(x),
+        }
     };
     // Type conversion
-    ($x:expr,$match_ty:ty,$y:pat,$ret_ty:ty) => { match $x as $match_ty {
-        $y => Err($crate::OsError::last_os_error()),
-        x=> Ok(x as $ret_ty),
-    }
+    ($x:expr,$match_ty:ty,$y:pat,$ret_ty:ty) => {
+        match $x as $match_ty {
+            $y => Err($crate::OsError::last_os_error()),
+            x => Ok(x as $ret_ty),
+        }
     };
 }
 
 /// Returns `Ok(())`.
 #[macro_export]
 macro_rules! handle2 {
-    ($x:expr,$err_pat:pat) => { match $x {
-        $err_pat => Err($crate::OsError::last_os_error()),
-        _=> Ok(()),
-    }
+    ($x:expr,$err_pat:pat) => {
+        match $x {
+            $err_pat => Err($crate::OsError::last_os_error()),
+            _ => Ok(()),
+        }
     };
     // Type conversion
-    ($x:expr,$match_ty:ty,$err_pat:pat) => { match $x as $match_ty {
-        $err_pat => Err($crate::OsError::last_os_error()),
-        _=> Ok(()),
-    }
+    ($x:expr,$match_ty:ty,$err_pat:pat) => {
+        match $x as $match_ty {
+            $err_pat => Err($crate::OsError::last_os_error()),
+            _ => Ok(()),
+        }
     };
 }
 
 /// Returns `Result<ret,()>`.
 #[macro_export]
 macro_rules! e_handle_internal {
-    ($x:expr,$y:pat) => { match $x {
-        $y => Err(()),
-        x=> Ok(x),
-    }
+    ($x:expr,$y:pat) => {
+        match $x {
+            $y => Err(()),
+            x => Ok(x),
+        }
     };
     // Type conversion
-    ($x:expr,$match_ty:ty,$y:pat,$ret_ty:ty) => { match $x as $match_ty {
-        $y => Err(()),
-        x=> Ok(x as $ret_ty),
-    }
+    ($x:expr,$match_ty:ty,$y:pat,$ret_ty:ty) => {
+        match $x as $match_ty {
+            $y => Err(()),
+            x => Ok(x as $ret_ty),
+        }
     };
 }
 
 /// Returns `Ok(())`.
 #[macro_export]
 macro_rules! e_handle2_internal {
-    ($x:expr,$err_pat:pat) => { match $x {
-        $err_pat => Err(()),
-        _=> Ok(()),
-    }
+    ($x:expr,$err_pat:pat) => {
+        match $x {
+            $err_pat => Err(()),
+            _ => Ok(()),
+        }
     };
     // Type conversion
-    ($x:expr,$match_ty:ty,$err_pat:pat) => { match $x as $match_ty {
-        $err_pat => Err(()),
-        _=> Ok(()),
-    }
+    ($x:expr,$match_ty:ty,$err_pat:pat) => {
+        match $x as $match_ty {
+            $err_pat => Err(()),
+            _ => Ok(()),
+        }
     };
 }
 

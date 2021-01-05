@@ -1,14 +1,22 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use winwrap::handle::SnapshotHandle;
-use winwrap::um::processthreadsapi::get_current_process_id;
-use winwrap::um::tlhelp32::*;
+use winwrap::{
+    handle::SnapshotHandle,
+    um::{processthreadsapi::get_current_process_id, tlhelp32::*},
+};
 
 pub struct ModuleIterator(bool, SnapshotHandle);
 
 impl ModuleIterator {
     pub fn iter() -> Self {
-        Self(false, create_tool_help32_snapshot(TH32CSFlags::SNAPMODULE, get_current_process_id()).unwrap())
+        Self(
+            false,
+            create_tool_help32_snapshot(
+                TH32CSFlags::SNAPMODULE,
+                get_current_process_id(),
+            )
+            .unwrap(),
+        )
     }
 }
 
@@ -26,7 +34,9 @@ impl Iterator for ModuleIterator {
             self.0 = true;
             Some(entry)
         } else {
-            if module32_next(&self.1, &mut entry).is_err() { return None; }
+            if module32_next(&self.1, &mut entry).is_err() {
+                return None;
+            }
             Some(entry)
         }
     }
@@ -36,7 +46,14 @@ pub struct ModuleWIterator(bool, SnapshotHandle);
 
 impl ModuleWIterator {
     pub fn iter() -> Self {
-        Self(false, create_tool_help32_snapshot(TH32CSFlags::SNAPMODULE, get_current_process_id()).unwrap())
+        Self(
+            false,
+            create_tool_help32_snapshot(
+                TH32CSFlags::SNAPMODULE,
+                get_current_process_id(),
+            )
+            .unwrap(),
+        )
     }
 }
 
@@ -54,7 +71,9 @@ impl Iterator for ModuleWIterator {
             self.0 = true;
             Some(entry)
         } else {
-            if module32_next_w(&self.1, &mut entry).is_err() { return None; }
+            if module32_next_w(&self.1, &mut entry).is_err() {
+                return None;
+            }
             Some(entry)
         }
     }
@@ -64,7 +83,14 @@ pub struct ProcessWIterator(bool, SnapshotHandle);
 
 impl ProcessWIterator {
     pub fn iter() -> Self {
-        Self(false, create_tool_help32_snapshot(TH32CSFlags::SNAPPROCESS, get_current_process_id()).unwrap())
+        Self(
+            false,
+            create_tool_help32_snapshot(
+                TH32CSFlags::SNAPPROCESS,
+                get_current_process_id(),
+            )
+            .unwrap(),
+        )
     }
 }
 
@@ -82,7 +108,9 @@ impl Iterator for ProcessWIterator {
             self.0 = true;
             Some(entry)
         } else {
-            if process32_next_w(&self.1, &mut entry).is_err() { return None; }
+            if process32_next_w(&self.1, &mut entry).is_err() {
+                return None;
+            }
             Some(entry)
         }
     }

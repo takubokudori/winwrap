@@ -1,18 +1,26 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use crate::*;
-use crate::handle::*;
-use crate::raw::um::winbase::*;
-use crate::string::*;
-use crate::um::minwinbase::SecurityAttributes;
-use crate::um::namedpipeapi::{OpenModes, PipeModes};
+use crate::{
+    handle::*,
+    raw::um::winbase::*,
+    string::*,
+    um::{
+        minwinbase::SecurityAttributes,
+        namedpipeapi::{OpenModes, PipeModes},
+    },
+    OsError::Win32,
+    *,
+};
 use std::ptr::null_mut;
-use winapi::shared::basetsd::{DWORD_PTR, ULONG_PTR};
-use winapi::shared::minwindef::{DWORD, LPVOID};
-use winapi::shared::winerror::{ERROR_INSUFFICIENT_BUFFER, ERROR_MORE_DATA};
-use winapi::um::winnt::HANDLE;
+use winapi::{
+    shared::{
+        basetsd::{DWORD_PTR, ULONG_PTR},
+        minwindef::{DWORD, LPVOID},
+        winerror::{ERROR_INSUFFICIENT_BUFFER, ERROR_MORE_DATA},
+    },
+    um::winnt::HANDLE,
+};
 use winwrap_derive::*;
-use crate::OsError::Win32;
 
 bitflags::bitflags! {
 pub struct FormatFlags: DWORD{
@@ -67,10 +75,10 @@ pub fn format_message_a<SO, LI, AG>(
     language_id: LI,
     arguments: AG,
 ) -> OsResult<AString>
-    where
-        SO: Into<Option<HANDLE>>,
-        LI: Into<DWORD>,
-        AG: Into<Option<LPVOID>>,
+where
+    SO: Into<Option<HANDLE>>,
+    LI: Into<DWORD>,
+    AG: Into<Option<LPVOID>>,
 {
     let mut ret: Vec<u8> = Vec::with_capacity(128);
     let source = source.into().map_or(null_mut(), |x| x);
@@ -85,13 +93,16 @@ pub fn format_message_a<SO, LI, AG>(
                 language_id,
                 ret.as_mut_ptr() as *mut _,
                 ret.capacity() as DWORD,
-                arguments as *mut _) {
+                arguments as *mut _,
+            ) {
                 Ok(nb) => {
                     assert!(ret.capacity() >= nb as usize);
                     ret.set_len(nb as usize);
                     return Ok(AString::new_unchecked(ret));
                 }
-                Err(Win32(ERROR_INSUFFICIENT_BUFFER)) => ret = Vec::with_capacity(ret.capacity() * 2),
+                Err(Win32(ERROR_INSUFFICIENT_BUFFER)) => {
+                    ret = Vec::with_capacity(ret.capacity() * 2)
+                }
                 Err(x) => return Err(x),
             }
         }
@@ -106,10 +117,10 @@ pub fn format_message_w<SO, LI, AG>(
     language_id: LI,
     arguments: AG,
 ) -> OsResult<WString>
-    where
-        SO: Into<Option<HANDLE>>,
-        LI: Into<DWORD>,
-        AG: Into<Option<LPVOID>>,
+where
+    SO: Into<Option<HANDLE>>,
+    LI: Into<DWORD>,
+    AG: Into<Option<LPVOID>>,
 {
     let mut ret: Vec<u16> = Vec::with_capacity(128);
     let source = source.into().map_or(null_mut(), |x| x);
@@ -124,13 +135,16 @@ pub fn format_message_w<SO, LI, AG>(
                 language_id,
                 ret.as_mut_ptr() as *mut _,
                 ret.capacity() as DWORD,
-                arguments as *mut _) {
+                arguments as *mut _,
+            ) {
                 Ok(nb) => {
                     assert!(ret.capacity() >= nb as usize);
                     ret.set_len(nb as usize);
                     return Ok(WString::new_unchecked(ret));
                 }
-                Err(Win32(ERROR_INSUFFICIENT_BUFFER)) => ret = Vec::with_capacity(ret.capacity() * 2),
+                Err(Win32(ERROR_INSUFFICIENT_BUFFER)) => {
+                    ret = Vec::with_capacity(ret.capacity() * 2)
+                }
                 Err(x) => return Err(x),
             }
         }
@@ -170,8 +184,8 @@ pub fn create_named_pipe_a<'a, SA>(
     default_timeout: DWORD,
     sec_attrs: SA,
 ) -> OsResult<PipeHandle>
-    where
-        SA: Into<Option<&'a mut SecurityAttributes<'a>>>
+where
+    SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
 {
     unsafe {
         CreateNamedPipeA(
@@ -183,14 +197,13 @@ pub fn create_named_pipe_a<'a, SA>(
             in_buffer_size,
             default_timeout,
             sec_attrs.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
-        ).map(PipeHandle::new)
+        )
+        .map(PipeHandle::new)
     }
 }
 
 #[ansi_fn]
-pub fn dns_hostname_to_computer_name_a(
-    host_name: &AStr,
-) -> OsResult<AString> {
+pub fn dns_hostname_to_computer_name_a(host_name: &AStr) -> OsResult<AString> {
     unsafe {
         let mut v: Vec<u8> = Vec::with_capacity(128);
         let mut nb = 128;
@@ -205,9 +218,11 @@ pub fn dns_hostname_to_computer_name_a(
             }
             Err(Win32(ERROR_MORE_DATA)) => {
                 let mut v: Vec<u8> = Vec::with_capacity(nb as usize);
-                DnsHostnameToComputerNameA(host_name.as_ptr(),
-                                           v.as_ptr() as *const _,
-                                           &mut nb)?;
+                DnsHostnameToComputerNameA(
+                    host_name.as_ptr(),
+                    v.as_ptr() as *const _,
+                    &mut nb,
+                )?;
                 assert_eq!(v.capacity(), nb as usize);
                 v.set_len(nb as usize - 1);
                 Ok(AString::new_unchecked(v))
@@ -259,10 +274,7 @@ pub fn set_process_affinity_mask(
     new_aff_mask: DWORD_PTR,
 ) -> OsResult<()> {
     unsafe {
-        SetProcessAffinityMask(
-            proc_handle.as_c_handle(),
-            new_aff_mask as DWORD,
-        )
+        SetProcessAffinityMask(proc_handle.as_c_handle(), new_aff_mask as DWORD)
     }
 }
 
@@ -270,12 +282,7 @@ pub fn set_thread_affinity_mask(
     proc_handle: &ProcessHandle,
     new_aff_mask: DWORD_PTR,
 ) -> OsResult<ULONG_PTR> {
-    unsafe {
-        SetThreadAffinityMask(
-            proc_handle.as_c_handle(),
-            new_aff_mask,
-        )
-    }
+    unsafe { SetThreadAffinityMask(proc_handle.as_c_handle(), new_aff_mask) }
 }
 
 #[ansi_fn]
@@ -284,8 +291,8 @@ pub fn create_hard_link_a<'a, SA>(
     existing_file_name: &AStr,
     sec_attrs: SA,
 ) -> OsResult<()>
-    where
-        SA: Into<Option<&'a mut SecurityAttributes<'a>>>
+where
+    SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
 {
     unsafe {
         CreateHardLinkA(
@@ -302,8 +309,8 @@ pub fn create_hard_link_w<'a, SA>(
     existing_file_name: &WStr,
     sec_attrs: SA,
 ) -> OsResult<()>
-    where
-        SA: Into<Option<&'a mut SecurityAttributes<'a>>>
+where
+    SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
 {
     unsafe {
         CreateHardLinkW(

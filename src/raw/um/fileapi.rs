@@ -1,14 +1,37 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::shared::minwindef::{DWORD, LPDWORD, LPCVOID, LPVOID, FILETIME, LPFILETIME, BOOL, UINT, PDWORD};
-use winapi::shared::ntdef::{LONG, LPWSTR, LPSTR, PLONG, LONGLONG, LPWCH, PUCHAR, ULONG, PWSTR};
-use winapi::shared::winerror::NO_ERROR;
-use winapi::um::fileapi::{LPBY_HANDLE_FILE_INFORMATION, LPCREATEFILE2_EXTENDED_PARAMETERS, INVALID_FILE_ATTRIBUTES, INVALID_FILE_SIZE, INVALID_SET_FILE_POINTER, STREAM_INFO_LEVELS};
-use winapi::um::handleapi::INVALID_HANDLE_VALUE;
-use winapi::um::minwinbase::{LPOVERLAPPED, LPSECURITY_ATTRIBUTES, LPWIN32_FIND_DATAA, LPWIN32_FIND_DATAW, FINDEX_INFO_LEVELS, FINDEX_SEARCH_OPS, GET_FILEEX_INFO_LEVELS, LPOVERLAPPED_COMPLETION_ROUTINE, FILE_INFO_BY_HANDLE_CLASS};
-use winapi::um::winbase::FILE_TYPE_UNKNOWN;
-use winapi::um::winnt::{HANDLE, LPCSTR, LPCWSTR, FILE_SEGMENT_ELEMENT, LARGE_INTEGER, PULARGE_INTEGER, PLARGE_INTEGER};
+use winapi::{
+    shared::{
+        minwindef::{
+            BOOL, DWORD, FILETIME, LPCVOID, LPDWORD, LPFILETIME, LPVOID,
+            PDWORD, UINT,
+        },
+        ntdef::{
+            LONG, LONGLONG, LPSTR, LPWCH, LPWSTR, PLONG, PUCHAR, PWSTR, ULONG,
+        },
+        winerror::NO_ERROR,
+    },
+    um::{
+        fileapi::{
+            INVALID_FILE_ATTRIBUTES, INVALID_FILE_SIZE,
+            INVALID_SET_FILE_POINTER, LPBY_HANDLE_FILE_INFORMATION,
+            LPCREATEFILE2_EXTENDED_PARAMETERS, STREAM_INFO_LEVELS,
+        },
+        handleapi::INVALID_HANDLE_VALUE,
+        minwinbase::{
+            FILE_INFO_BY_HANDLE_CLASS, FINDEX_INFO_LEVELS, FINDEX_SEARCH_OPS,
+            GET_FILEEX_INFO_LEVELS, LPOVERLAPPED,
+            LPOVERLAPPED_COMPLETION_ROUTINE, LPSECURITY_ATTRIBUTES,
+            LPWIN32_FIND_DATAA, LPWIN32_FIND_DATAW,
+        },
+        winbase::FILE_TYPE_UNKNOWN,
+        winnt::{
+            FILE_SEGMENT_ELEMENT, HANDLE, LARGE_INTEGER, LPCSTR, LPCWSTR,
+            PLARGE_INTEGER, PULARGE_INTEGER,
+        },
+    },
+};
 
 tp_func! {winapi::um::fileapi,
 pub fn CompareFileTime(
@@ -40,15 +63,15 @@ pub unsafe fn CreateFileA(
     ) -> HANDLE; INVALID_HANDLE_VALUE}
 
 make_func! {winapi::um::fileapi,
-    pub unsafe fn CreateFileW(
-        lpFileName: LPCWSTR,
-        dwDesiredAccess: DWORD,
-        dwShareMode: DWORD,
-        lpSecurityAttributes: LPSECURITY_ATTRIBUTES,
-        dwCreationDisposition: DWORD,
-        dwFlagsAndAttributes: DWORD,
-        hTemplateFile: HANDLE,
-    ) -> HANDLE;INVALID_HANDLE_VALUE}
+pub unsafe fn CreateFileW(
+    lpFileName: LPCWSTR,
+    dwDesiredAccess: DWORD,
+    dwShareMode: DWORD,
+    lpSecurityAttributes: LPSECURITY_ATTRIBUTES,
+    dwCreationDisposition: DWORD,
+    dwFlagsAndAttributes: DWORD,
+    hTemplateFile: HANDLE,
+) -> HANDLE;INVALID_HANDLE_VALUE}
 
 make_func2! {winapi::um::fileapi,
 pub fn DefineDosDeviceW(
@@ -261,9 +284,7 @@ pub fn GetFileSizeEx(
 ) -> BOOL;0}
 
 #[allow(non_snake_case)]
-pub fn GetFileType(
-    hFile: HANDLE,
-) -> OsResult<DWORD> {
+pub fn GetFileType(hFile: HANDLE) -> OsResult<DWORD> {
     unsafe {
         match winapi::um::fileapi::GetFileType(hFile) {
             FILE_TYPE_UNKNOWN => {
@@ -597,7 +618,10 @@ pub unsafe fn GetCompressedFileSizeA(
     lpFileName: LPCSTR,
     lpFileSizeHigh: LPDWORD,
 ) -> OsResult<DWORD> {
-    handle_err(winapi::um::fileapi::GetCompressedFileSizeA(lpFileName, lpFileSizeHigh), lpFileSizeHigh)
+    handle_err(
+        winapi::um::fileapi::GetCompressedFileSizeA(lpFileName, lpFileSizeHigh),
+        lpFileSizeHigh,
+    )
 }
 
 #[allow(non_snake_case)]
@@ -605,7 +629,10 @@ pub unsafe fn GetCompressedFileSizeW(
     lpFileName: LPCWSTR,
     lpFileSizeHigh: LPDWORD,
 ) -> OsResult<DWORD> {
-    handle_err(winapi::um::fileapi::GetCompressedFileSizeW(lpFileName, lpFileSizeHigh), lpFileSizeHigh)
+    handle_err(
+        winapi::um::fileapi::GetCompressedFileSizeW(lpFileName, lpFileSizeHigh),
+        lpFileSizeHigh,
+    )
 }
 
 #[inline]
@@ -614,7 +641,9 @@ fn handle_err(x: DWORD, lpFileSizeHigh: LPDWORD) -> OsResult<DWORD> {
     match x {
         INVALID_FILE_SIZE => {
             let e = unsafe { winapi::um::errhandlingapi::GetLastError() };
-            if lpFileSizeHigh.is_null() { return Err(OsError::from_win32_error(e)); }
+            if lpFileSizeHigh.is_null() {
+                return Err(OsError::from_win32_error(e));
+            }
             match e {
                 NO_ERROR => Ok(INVALID_FILE_SIZE),
                 x => Err(OsError::from_win32_error(x)),

@@ -1,12 +1,16 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::shared::minwindef::{DWORD, BOOL, UINT, LPVOID, LPDWORD};
-use winapi::shared::ntdef::NULL;
-use winapi::shared::ntdef::{HANDLE, LPCWSTR, VOID, PCWSTR, ULONG};
-use winapi::um::jobapi2::JOBOBJECT_IO_RATE_CONTROL_INFORMATION;
-use winapi::um::minwinbase::LPSECURITY_ATTRIBUTES;
-use winapi::um::winnt::JOBOBJECTINFOCLASS;
+use winapi::{
+    shared::{
+        minwindef::{BOOL, DWORD, LPDWORD, LPVOID, UINT},
+        ntdef::{HANDLE, LPCWSTR, NULL, PCWSTR, ULONG, VOID},
+    },
+    um::{
+        jobapi2::JOBOBJECT_IO_RATE_CONTROL_INFORMATION,
+        minwinbase::LPSECURITY_ATTRIBUTES, winnt::JOBOBJECTINFOCLASS,
+    },
+};
 
 make_func! {winapi::um::jobapi2,
 pub fn CreateJobObjectW(

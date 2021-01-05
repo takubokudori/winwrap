@@ -1,11 +1,20 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::shared::basetsd::{SIZE_T, ULONG_PTR};
-use winapi::shared::minwindef::{LPVOID, LPCVOID, DWORD};
-use winapi::um::handleapi::INVALID_HANDLE_VALUE;
-use winapi::um::tlhelp32::{LPPROCESSENTRY32W, LPHEAPENTRY32, LPPROCESSENTRY32, LPTHREADENTRY32, LPMODULEENTRY32W, LPMODULEENTRY32, LPHEAPLIST32};
-use winapi::um::winnt::HANDLE;
+use winapi::{
+    shared::{
+        basetsd::{SIZE_T, ULONG_PTR},
+        minwindef::{DWORD, LPCVOID, LPVOID},
+    },
+    um::{
+        handleapi::INVALID_HANDLE_VALUE,
+        tlhelp32::{
+            LPHEAPENTRY32, LPHEAPLIST32, LPMODULEENTRY32, LPMODULEENTRY32W,
+            LPPROCESSENTRY32, LPPROCESSENTRY32W, LPTHREADENTRY32,
+        },
+        winnt::HANDLE,
+    },
+};
 
 make_func! {winapi::um::tlhelp32,
 pub fn CreateToolhelp32Snapshot(

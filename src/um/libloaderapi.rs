@@ -1,37 +1,21 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use crate::*;
-use crate::handle::*;
-use crate::raw::um::libloaderapi::*;
-use crate::string::*;
+use crate::{handle::*, raw::um::libloaderapi::*, string::*, *};
 use std::ptr::null_mut;
-use winapi::shared::minwindef::FARPROC;
-use winapi::um::winuser::MAKEINTRESOURCEA;
+use winapi::{shared::minwindef::FARPROC, um::winuser::MAKEINTRESOURCEA};
 use winwrap_derive::*;
 
 #[ansi_fn]
-pub fn load_library_a(
-    file_name: &AStr,
-) -> OsResult<HModule> {
-    unsafe {
-        LoadLibraryA(file_name.as_ptr())
-            .map(HModule::new)
-    }
+pub fn load_library_a(file_name: &AStr) -> OsResult<HModule> {
+    unsafe { LoadLibraryA(file_name.as_ptr()).map(HModule::new) }
 }
 
 #[unicode_fn]
-pub fn load_library_w(
-    file_name: &WStr,
-) -> OsResult<HModule> {
-    unsafe {
-        LoadLibraryW(file_name.as_ptr())
-            .map(HModule::new)
-    }
+pub fn load_library_w(file_name: &WStr) -> OsResult<HModule> {
+    unsafe { LoadLibraryW(file_name.as_ptr()).map(HModule::new) }
 }
 
-pub unsafe fn free_library(
-    module: HModule
-) -> OsResult<()> {
+pub unsafe fn free_library(module: HModule) -> OsResult<()> {
     FreeLibrary(module.0)
 }
 
@@ -97,11 +81,8 @@ pub fn load_library_ex_a(
     load_flag: LoadFlags,
 ) -> OsResult<HModule> {
     unsafe {
-        LoadLibraryExA(
-            file_name.as_ptr(),
-            null_mut(),
-            load_flag.bits,
-        ).map(HModule::new)
+        LoadLibraryExA(file_name.as_ptr(), null_mut(), load_flag.bits)
+            .map(HModule::new)
     }
 }
 
@@ -111,20 +92,15 @@ pub fn load_library_ex_w(
     load_flag: LoadFlags,
 ) -> OsResult<HModule> {
     unsafe {
-        LoadLibraryExW(
-            file_name.as_ptr(),
-            null_mut(),
-            load_flag.bits,
-        ).map(HModule::new)
+        LoadLibraryExW(file_name.as_ptr(), null_mut(), load_flag.bits)
+            .map(HModule::new)
     }
 }
 
 #[ansi_fn]
-pub fn get_module_file_name_a<'a, MH>(
-    h_mod: MH
-) -> OsResult<AString>
-    where
-        MH: Into<Option<&'a HModule>>
+pub fn get_module_file_name_a<'a, MH>(h_mod: MH) -> OsResult<AString>
+where
+    MH: Into<Option<&'a HModule>>,
 {
     unsafe {
         let mut v = Vec::with_capacity(128);
@@ -138,11 +114,9 @@ pub fn get_module_file_name_a<'a, MH>(
 }
 
 #[unicode_fn]
-pub fn get_module_file_name_w<'a, MH>(
-    h_mod: MH
-) -> OsResult<WString>
-    where
-        MH: Into<Option<&'a HModule>>
+pub fn get_module_file_name_w<'a, MH>(h_mod: MH) -> OsResult<WString>
+where
+    MH: Into<Option<&'a HModule>>,
 {
     unsafe {
         let mut v = Vec::with_capacity(128);
@@ -156,23 +130,13 @@ pub fn get_module_file_name_w<'a, MH>(
 }
 
 #[ansi_fn]
-pub fn get_module_handle_a(
-    module_name: &AStr,
-) -> OsResult<HModule> {
-    unsafe {
-        GetModuleHandleA(module_name.as_ptr())
-            .map(HModule::new)
-    }
+pub fn get_module_handle_a(module_name: &AStr) -> OsResult<HModule> {
+    unsafe { GetModuleHandleA(module_name.as_ptr()).map(HModule::new) }
 }
 
 #[unicode_fn]
-pub fn get_module_handle_w(
-    module_name: &WStr,
-) -> OsResult<HModule> {
-    unsafe {
-        GetModuleHandleW(module_name.as_ptr())
-            .map(HModule::new)
-    }
+pub fn get_module_handle_w(module_name: &WStr) -> OsResult<HModule> {
+    unsafe { GetModuleHandleW(module_name.as_ptr()).map(HModule::new) }
 }
 
 bitflags::bitflags! {
@@ -192,11 +156,7 @@ pub fn get_module_handle_ex_a(
 ) -> OsResult<HModule> {
     unsafe {
         let mut handle = null_mut();
-        GetModuleHandleExA(
-            flags.bits,
-            module_name.as_ptr(),
-            &mut handle,
-        )?;
+        GetModuleHandleExA(flags.bits, module_name.as_ptr(), &mut handle)?;
         Ok(HModule::new(handle))
     }
 }
@@ -208,11 +168,7 @@ pub fn get_module_handle_ex_w(
 ) -> OsResult<HModule> {
     unsafe {
         let mut handle = null_mut();
-        GetModuleHandleExW(
-            flags.bits,
-            module_name.as_ptr(),
-            &mut handle,
-        )?;
+        GetModuleHandleExW(flags.bits, module_name.as_ptr(), &mut handle)?;
         Ok(HModule::new(handle))
     }
 }

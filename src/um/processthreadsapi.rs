@@ -1,18 +1,22 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use crate::*;
-use crate::handle::*;
-use crate::raw::um::processthreadsapi::*;
-use crate::shared::minwindef::FileTime;
-use crate::string::*;
-use crate::um::minwinbase::SecurityAttributes;
-use std::mem::MaybeUninit;
-use std::ptr::{null_mut, null};
-use winapi::ctypes::c_void;
-use winapi::shared::basetsd::SIZE_T;
-use winapi::shared::minwindef::{LPBYTE, WORD, DWORD, BOOL, UINT, LPVOID};
-use winapi::shared::ntdef::{LPSTR, LPWSTR};
-use winapi::um::processthreadsapi::{STARTUPINFOA, STARTUPINFOW, PROCESS_INFORMATION};
+use crate::{
+    handle::*, raw::um::processthreadsapi::*, shared::minwindef::FileTime,
+    string::*, um::minwinbase::SecurityAttributes, *,
+};
+use std::{
+    mem::MaybeUninit,
+    ptr::{null, null_mut},
+};
+use winapi::{
+    ctypes::c_void,
+    shared::{
+        basetsd::SIZE_T,
+        minwindef::{BOOL, DWORD, LPBYTE, LPVOID, UINT, WORD},
+        ntdef::{LPSTR, LPWSTR},
+    },
+    um::processthreadsapi::{PROCESS_INFORMATION, STARTUPINFOA, STARTUPINFOW},
+};
 use winwrap_derive::*;
 
 #[cfg(feature = "ansi")]
@@ -157,7 +161,9 @@ pub struct CreationFlags: DWORD{
     const CREATE_SECURE_PROCESS = 0x400000;
 }}
 
-pub fn get_current_process() -> ProcessHandle { ProcessHandle(GetCurrentProcess()) }
+pub fn get_current_process() -> ProcessHandle {
+    ProcessHandle(GetCurrentProcess())
+}
 
 pub fn get_current_process_id() -> DWORD { GetCurrentProcessId() }
 
@@ -195,13 +201,13 @@ pub fn create_process_a<'a, AN, CL, PA, TA, EV, CD>(
     current_directory: CD,
     si: &mut StartupInfoA,
 ) -> OsResult<ProcessInformation>
-    where
-        AN: Into<Option<&'a AStr>>,
-        CL: Into<Option<&'a mut AStr>>,
-        PA: Into<Option<&'a mut SecurityAttributes<'a>>>,
-        TA: Into<Option<&'a mut SecurityAttributes<'a>>>,
-        EV: Into<Option<&'a mut [u8]>>,
-        CD: Into<Option<&'a AStr>>,
+where
+    AN: Into<Option<&'a AStr>>,
+    CL: Into<Option<&'a mut AStr>>,
+    PA: Into<Option<&'a mut SecurityAttributes<'a>>>,
+    TA: Into<Option<&'a mut SecurityAttributes<'a>>>,
+    EV: Into<Option<&'a mut [u8]>>,
+    CD: Into<Option<&'a AStr>>,
 {
     unsafe {
         // null-terminated check
@@ -209,8 +215,12 @@ pub fn create_process_a<'a, AN, CL, PA, TA, EV, CD>(
         CreateProcessA(
             application_name.into().map_or(null(), |x| x.as_ptr()),
             command_line.into().map_or(null_mut(), |x| x.as_mut_ptr()),
-            process_attributes.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
-            thread_attributes.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
+            process_attributes
+                .into()
+                .map_or(null_mut(), |x| x.as_mut_c_ptr()),
+            thread_attributes
+                .into()
+                .map_or(null_mut(), |x| x.as_mut_c_ptr()),
             inherit_handle as BOOL,
             creation_flags.bits,
             env.into().map_or(null_mut(), |x| x.as_mut_ptr() as *mut _),
@@ -235,13 +245,13 @@ pub fn create_process_w<'a, AN, CL, PA, TA, EV, CD>(
     current_directory: CD,
     si: &mut StartupInfoW,
 ) -> OsResult<ProcessInformation>
-    where
-        AN: Into<Option<&'a WStr>>,
-        CL: Into<Option<&'a mut WStr>>,
-        PA: Into<Option<&'a mut SecurityAttributes<'a>>>,
-        TA: Into<Option<&'a mut SecurityAttributes<'a>>>,
-        EV: Into<Option<&'a mut [u8]>>,
-        CD: Into<Option<&'a WStr>>,
+where
+    AN: Into<Option<&'a WStr>>,
+    CL: Into<Option<&'a mut WStr>>,
+    PA: Into<Option<&'a mut SecurityAttributes<'a>>>,
+    TA: Into<Option<&'a mut SecurityAttributes<'a>>>,
+    EV: Into<Option<&'a mut [u8]>>,
+    CD: Into<Option<&'a WStr>>,
 {
     unsafe {
         // null-terminated check
@@ -249,8 +259,12 @@ pub fn create_process_w<'a, AN, CL, PA, TA, EV, CD>(
         CreateProcessW(
             application_name.into().map_or(null(), |x| x.as_ptr()),
             command_line.into().map_or(null_mut(), |x| x.as_mut_ptr()),
-            process_attributes.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
-            thread_attributes.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
+            process_attributes
+                .into()
+                .map_or(null_mut(), |x| x.as_mut_c_ptr()),
+            thread_attributes
+                .into()
+                .map_or(null_mut(), |x| x.as_mut_c_ptr()),
             inherit_handle as BOOL,
             creation_flags.bits,
             env.into().map_or(null_mut(), |x| x.as_mut_ptr() as *mut _),
@@ -262,9 +276,7 @@ pub fn create_process_w<'a, AN, CL, PA, TA, EV, CD>(
     }
 }
 
-pub fn resume_thread(
-    handle: &ThreadHandle,
-) -> OsResult<u32> {
+pub fn resume_thread(handle: &ThreadHandle) -> OsResult<u32> {
     unsafe { ResumeThread(handle.as_c_handle()) }
 }
 
@@ -282,9 +294,7 @@ pub fn terminate_thread(
     unsafe { TerminateThread(handle.as_c_handle(), exit_code) }
 }
 
-pub fn get_exit_code_process(
-    handle: &ProcessHandle,
-) -> OsResult<DWORD> {
+pub fn get_exit_code_process(handle: &ProcessHandle) -> OsResult<DWORD> {
     unsafe {
         let mut exit_code = 0;
         GetExitCodeProcess(handle.as_c_handle(), &mut exit_code)?;
@@ -292,9 +302,7 @@ pub fn get_exit_code_process(
     }
 }
 
-pub fn get_exit_code_thread(
-    handle: &ThreadHandle,
-) -> OsResult<DWORD> {
+pub fn get_exit_code_thread(handle: &ThreadHandle) -> OsResult<DWORD> {
     unsafe {
         let mut exit_code = 0;
         GetExitCodeThread(handle.as_c_handle(), &mut exit_code)?;
@@ -342,13 +350,11 @@ pub fn open_process(
     is_inherit_handle: bool,
     pid: DWORD,
 ) -> OsResult<ProcessHandle> {
-    Ok(ProcessHandle::new(
-        OpenProcess(
-            desired_access.bits,
-            is_inherit_handle.into(),
-            pid,
-        )?
-    ))
+    Ok(ProcessHandle::new(OpenProcess(
+        desired_access.bits,
+        is_inherit_handle.into(),
+        pid,
+    )?))
 }
 
 bitflags::bitflags! {
@@ -375,30 +381,20 @@ pub fn open_process_token(
 ) -> OsResult<TokenHandle> {
     unsafe {
         let mut ret = null_mut();
-        OpenProcessToken(
-            handle.as_c_handle(),
-            access.bits,
-            &mut ret,
-        )?;
+        OpenProcessToken(handle.as_c_handle(), access.bits, &mut ret)?;
         Ok(TokenHandle::new(ret))
     }
 }
 
-pub fn get_process_id(
-    handle: &ProcessHandle,
-) -> OsResult<DWORD> {
+pub fn get_process_id(handle: &ProcessHandle) -> OsResult<DWORD> {
     unsafe { GetProcessId(handle.as_c_handle()) }
 }
 
-pub fn get_thread_id(
-    handle: &ThreadHandle,
-) -> OsResult<DWORD> {
+pub fn get_thread_id(handle: &ThreadHandle) -> OsResult<DWORD> {
     unsafe { GetThreadId(handle.as_c_handle()) }
 }
 
-pub fn get_process_id_of_thread(
-    handle: &ThreadHandle,
-) -> OsResult<DWORD> {
+pub fn get_process_id_of_thread(handle: &ThreadHandle) -> OsResult<DWORD> {
     unsafe { GetProcessIdOfThread(handle.as_c_handle()) }
 }
 
@@ -412,19 +408,18 @@ pub fn get_system_times() -> OsResult<(FileTime, FileTime, FileTime)> {
             kernel_file_time.as_mut_ptr() as *mut _,
             user_file_time.as_mut_ptr() as *mut _,
         )?;
-        Ok((idle_file_time.assume_init(), kernel_file_time.assume_init(), user_file_time.assume_init()))
+        Ok((
+            idle_file_time.assume_init(),
+            kernel_file_time.assume_init(),
+            user_file_time.assume_init(),
+        ))
     }
 }
 
-pub fn is_process_critical(
-    handle: &ProcessHandle,
-) -> OsResult<bool> {
+pub fn is_process_critical(handle: &ProcessHandle) -> OsResult<bool> {
     unsafe {
         let mut is_critical = 0;
-        IsProcessCritical(
-            handle.as_c_handle(),
-            &mut is_critical,
-        )?;
+        IsProcessCritical(handle.as_c_handle(), &mut is_critical)?;
         Ok(is_critical != 0)
     }
 }
@@ -447,9 +442,9 @@ pub unsafe fn create_remote_thread<'a, SA, RT>(
     param: LPVOID,
     creation_flags: RT,
 ) -> OsResult<(ThreadHandle, DWORD)>
-    where
-        SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
-        RT: Into<Option<RemoteThreadFlags>>,
+where
+    SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
+    RT: Into<Option<RemoteThreadFlags>>,
 {
     let mut thread_id = 0;
     let handle = CreateRemoteThread(
@@ -468,13 +463,9 @@ pub unsafe fn flush_instruction_cache<BA, T>(
     proc_handle: &ProcessHandle,
     base_address: BA,
 ) -> OsResult<()>
-    where
-        BA: Into<Option<(*mut T, usize)>>,
+where
+    BA: Into<Option<(*mut T, usize)>>,
 {
     let (addr, size) = base_address.into().map_or((null_mut(), 0), |x| x);
-    FlushInstructionCache(
-        proc_handle.as_c_handle(),
-        addr as *mut _,
-        size,
-    )
+    FlushInstructionCache(proc_handle.as_c_handle(), addr as *mut _, size)
 }

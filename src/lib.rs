@@ -53,7 +53,6 @@
 //! This software is released under the MIT License, see LICENSE.
 
 #![cfg(windows)]
-
 #![allow(clippy::too_many_arguments)]
 #![allow(clippy::result_unit_err)]
 #![allow(clippy::uninit_assumed_init)]
@@ -62,21 +61,23 @@ pub use winapi;
 pub use windy as string;
 
 pub mod handle;
+pub mod prelude;
 pub mod raw;
 pub mod shared;
 pub mod um;
 pub mod vc;
-pub mod prelude;
 
 #[macro_use]
 pub mod macros;
 
 pub use macros::*;
 
-use winapi::shared::minwindef::{DWORD, WORD};
-use winapi::shared::ntdef::{NTSTATUS, ULONG};
-use winapi::shared::winerror::ERROR_MR_MID_NOT_FOUND;
 use std::fmt;
+use winapi::shared::{
+    minwindef::{DWORD, WORD},
+    ntdef::{NTSTATUS, ULONG},
+    winerror::ERROR_MR_MID_NOT_FOUND,
+};
 use windy::ConvertError;
 
 #[cfg(feature = "ansi")]
@@ -130,24 +131,22 @@ impl fmt::Display for OsError {
         match self {
             OsError::Win32(win32_err) => {
                 let e = std::io::Error::from_raw_os_error(*win32_err as i32);
-                f.debug_struct("Win32")
-                    .field("", &e)
-                    .finish()
+                f.debug_struct("Win32").field("", &e).finish()
             }
             OsError::NtStatus(nt_status) => {
                 match Self::nt_status_to_win32_error(*nt_status) {
                     Some(win32_err) => {
-                        let e = std::io::Error::from_raw_os_error(win32_err as i32);
+                        let e =
+                            std::io::Error::from_raw_os_error(win32_err as i32);
                         f.debug_struct("NtStatus")
                             .field("", &e)
                             .field("NTSTATUS", nt_status)
                             .finish()
                     }
-                    None => {
-                        f.debug_struct("NtStatus")
-                            .field("NTSTATUS", nt_status)
-                            .finish()
-                    }
+                    None => f
+                        .debug_struct("NtStatus")
+                        .field("NTSTATUS", nt_status)
+                        .finish(),
                 }
             }
         }
@@ -185,7 +184,7 @@ impl OsError {
         unsafe {
             match RtlNtStatusToDosError(x) {
                 ERROR_MR_MID_NOT_FOUND => None,
-                x => Some(x)
+                x => Some(x),
             }
         }
     }
@@ -215,7 +214,7 @@ impl OsError {
     pub fn get_error_code(&self) -> u32 {
         match self {
             OsError::Win32(x) => *x,
-            OsError::NtStatus(x) => *x as u32
+            OsError::NtStatus(x) => *x as u32,
         }
     }
 
@@ -240,9 +239,7 @@ impl From<std::io::Error> for OsError {
 }
 
 impl From<windy::ConvertError> for OsError {
-    fn from(x: ConvertError) -> Self {
-        Self::Win32(x.to_error_code())
-    }
+    fn from(x: ConvertError) -> Self { Self::Win32(x.to_error_code()) }
 }
 
 impl Into<u32> for OsError {

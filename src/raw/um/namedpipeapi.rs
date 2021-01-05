@@ -1,10 +1,16 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::shared::minwindef::{DWORD, LPDWORD, LPVOID};
-use winapi::shared::ntdef::{HANDLE, PHANDLE, LPCWSTR, LPWSTR, ULONG};
-use winapi::um::handleapi::INVALID_HANDLE_VALUE;
-use winapi::um::minwinbase::{LPOVERLAPPED, LPSECURITY_ATTRIBUTES};
+use winapi::{
+    shared::{
+        minwindef::{DWORD, LPDWORD, LPVOID},
+        ntdef::{HANDLE, LPCWSTR, LPWSTR, PHANDLE, ULONG},
+    },
+    um::{
+        handleapi::INVALID_HANDLE_VALUE,
+        minwinbase::{LPOVERLAPPED, LPSECURITY_ATTRIBUTES},
+    },
+};
 
 make_func2! {winapi::um::namedpipeapi,
 pub fn CreatePipe(

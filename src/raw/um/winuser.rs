@@ -1,15 +1,24 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::shared::basetsd::{PDWORD_PTR, ULONG_PTR};
-use winapi::shared::guiddef::LPCGUID;
-use winapi::shared::minwindef::{UINT, BOOL, LPARAM, WPARAM, LRESULT, LPVOID};
-use winapi::shared::ntdef::NULL;
-use winapi::shared::windef::HWND;
-use winapi::um::winnt::{LONG, HANDLE, LPCSTR, LPCWSTR};
-use winapi::um::winuser::{LPMSG, SENDASYNCPROC, HPOWERNOTIFY, MSG, HDEVNOTIFY, WNDENUMPROC};
+use winapi::{
+    shared::{
+        basetsd::{PDWORD_PTR, ULONG_PTR},
+        guiddef::LPCGUID,
+        minwindef::{BOOL, LPARAM, LPVOID, LRESULT, UINT, WPARAM},
+        ntdef::NULL,
+        windef::HWND,
+    },
+    um::{
+        winnt::{HANDLE, LONG, LPCSTR, LPCWSTR},
+        winuser::{
+            HDEVNOTIFY, HPOWERNOTIFY, LPMSG, MSG, SENDASYNCPROC, WNDENUMPROC,
+        },
+    },
+};
 
-const HWND_NULL: winapi::shared::windef::HWND = NULL as winapi::shared::windef::HWND;
+const HWND_NULL: winapi::shared::windef::HWND =
+    NULL as winapi::shared::windef::HWND;
 
 make_func2! {winapi::um::winuser,
 pub fn GetMessageA(

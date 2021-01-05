@@ -1,13 +1,25 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::shared::basetsd::SIZE_T;
-use winapi::shared::minwindef::{DWORD, LPLONG, BOOL, LPVOID, PBOOL};
-use winapi::shared::ntdef::{ULONG, HANDLE, LONG, LPCWSTR, LPCSTR, PVOID, VOID, NULL};
-use winapi::um::minwinbase::{PCRITICAL_SECTION, LPCRITICAL_SECTION, LPSECURITY_ATTRIBUTES, PREASON_CONTEXT};
-use winapi::um::synchapi::{PCONDITION_VARIABLE, PSRWLOCK, LPSYNCHRONIZATION_BARRIER, PTIMERAPCROUTINE, LPINIT_ONCE, PINIT_ONCE, PINIT_ONCE_FN};
-use winapi::um::winbase::WAIT_FAILED;
-use winapi::um::winnt::LARGE_INTEGER;
+use winapi::{
+    shared::{
+        basetsd::SIZE_T,
+        minwindef::{BOOL, DWORD, LPLONG, LPVOID, PBOOL},
+        ntdef::{HANDLE, LONG, LPCSTR, LPCWSTR, NULL, PVOID, ULONG, VOID},
+    },
+    um::{
+        minwinbase::{
+            LPCRITICAL_SECTION, LPSECURITY_ATTRIBUTES, PCRITICAL_SECTION,
+            PREASON_CONTEXT,
+        },
+        synchapi::{
+            LPINIT_ONCE, LPSYNCHRONIZATION_BARRIER, PCONDITION_VARIABLE,
+            PINIT_ONCE, PINIT_ONCE_FN, PSRWLOCK, PTIMERAPCROUTINE,
+        },
+        winbase::WAIT_FAILED,
+        winnt::LARGE_INTEGER,
+    },
+};
 
 tp_func! {winapi::um::synchapi,
 pub fn InitializeSRWLock(
@@ -343,7 +355,8 @@ pub unsafe fn EnterSynchronizationBarrier(
     lpBarrier: LPSYNCHRONIZATION_BARRIER,
     dwFlags: DWORD,
 ) -> Result<(), ()> {
-    match winapi::um::synchapi::EnterSynchronizationBarrier(lpBarrier, dwFlags) {
+    match winapi::um::synchapi::EnterSynchronizationBarrier(lpBarrier, dwFlags)
+    {
         0 => Err(()),
         _ => Ok(()),
     }

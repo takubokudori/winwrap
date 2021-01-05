@@ -1,13 +1,13 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use crate::*;
-use crate::raw::um::timezoneapi::*;
-use crate::shared::minwindef::{FileTime, SystemTime};
+use crate::{
+    raw::um::timezoneapi::*,
+    shared::minwindef::{FileTime, SystemTime},
+    *,
+};
 use std::mem::MaybeUninit;
 
-pub fn file_time_to_system_time(
-    file_time: &FileTime,
-) -> OsResult<SystemTime> {
+pub fn file_time_to_system_time(file_time: &FileTime) -> OsResult<SystemTime> {
     unsafe {
         let mut system_time = MaybeUninit::<SystemTime>::uninit();
         FileTimeToSystemTime(

@@ -1,19 +1,22 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use crate::*;
-use crate::handle::*;
-use crate::string::*;
-use crate::um::minwinbase::SecurityAttributes;
-use crate::raw::um::winreg::*;
-use std::fmt::Debug;
-use std::ptr::null_mut;
-use winapi::shared::basetsd::DWORD64;
-use winapi::shared::minwindef::{HKEY, BYTE};
-use winapi::um::winnt::{
-    REG_OPTION_OPEN_LINK, REG_SZ, REG_DWORD, REG_QWORD_LITTLE_ENDIAN,
-    REG_QWORD, REG_RESOURCE_REQUIREMENTS_LIST, REG_FULL_RESOURCE_DESCRIPTOR,
-    REG_RESOURCE_LIST, REG_LINK, REG_DWORD_BIG_ENDIAN, REG_DWORD_LITTLE_ENDIAN,
-    REG_BINARY, REG_EXPAND_SZ, REG_NONE};
+use crate::{
+    handle::*, raw::um::winreg::*, string::*,
+    um::minwinbase::SecurityAttributes, *,
+};
+use std::{fmt::Debug, ptr::null_mut};
+use winapi::{
+    shared::{
+        basetsd::DWORD64,
+        minwindef::{BYTE, HKEY},
+    },
+    um::winnt::{
+        REG_BINARY, REG_DWORD, REG_DWORD_BIG_ENDIAN, REG_DWORD_LITTLE_ENDIAN,
+        REG_EXPAND_SZ, REG_FULL_RESOURCE_DESCRIPTOR, REG_LINK, REG_NONE,
+        REG_OPTION_OPEN_LINK, REG_QWORD, REG_QWORD_LITTLE_ENDIAN,
+        REG_RESOURCE_LIST, REG_RESOURCE_REQUIREMENTS_LIST, REG_SZ,
+    },
+};
 use winwrap_derive::*;
 
 #[repr(usize)]
@@ -80,22 +83,62 @@ pub enum RegValueA<'a> {
 
 impl<'a> RegValueA<'a> {
     pub fn get_data(&self) -> (DWORD, *const BYTE, usize) {
-        macro_rules! to_ptr { ($x:ident) => ($x as *const _ as *const _)}
+        macro_rules! to_ptr {
+            ($x:ident) => {
+                $x as *const _ as *const _
+            };
+        }
         match self {
             Self::NONE(x) => (REG_NONE, x.as_ptr() as *const _, x.len()),
-            Self::SZ(x) => (REG_SZ, x.as_ptr() as *const _, x.to_bytes_with_nul().len()),
-            Self::EXPAND_SZ(x) => (REG_EXPAND_SZ, x.as_ptr() as *const _, x.to_bytes_with_nul().len()),
+            Self::SZ(x) => {
+                (REG_SZ, x.as_ptr() as *const _, x.to_bytes_with_nul().len())
+            }
+            Self::EXPAND_SZ(x) => (
+                REG_EXPAND_SZ,
+                x.as_ptr() as *const _,
+                x.to_bytes_with_nul().len(),
+            ),
             Self::BINARY(x) => (REG_BINARY, x.as_ptr() as *const _, x.len()),
-            Self::DWORD(x) => (REG_DWORD, to_ptr!(x), std::mem::size_of::<DWORD>()),
-            Self::DWORD_LITTLE_ENDIAN(x) => (REG_DWORD_LITTLE_ENDIAN, to_ptr!(x), std::mem::size_of::<DWORD>()),
-            Self::DWORD_BIG_ENDIAN(x) => (REG_DWORD_BIG_ENDIAN, to_ptr!(x), std::mem::size_of::<DWORD>()),
-            Self::LINK(x) => (REG_LINK, x.as_ptr() as *const _, x.to_bytes_with_nul().len()),
+            Self::DWORD(x) => {
+                (REG_DWORD, to_ptr!(x), std::mem::size_of::<DWORD>())
+            }
+            Self::DWORD_LITTLE_ENDIAN(x) => (
+                REG_DWORD_LITTLE_ENDIAN,
+                to_ptr!(x),
+                std::mem::size_of::<DWORD>(),
+            ),
+            Self::DWORD_BIG_ENDIAN(x) => (
+                REG_DWORD_BIG_ENDIAN,
+                to_ptr!(x),
+                std::mem::size_of::<DWORD>(),
+            ),
+            Self::LINK(x) => (
+                REG_LINK,
+                x.as_ptr() as *const _,
+                x.to_bytes_with_nul().len(),
+            ),
             // Self::MULTI_SZ(x) => (REG_MULTI_SZ, x.as_ptr() as *const _, x.to_bytes_with_nul().len()),
-            Self::RESOURCE_LIST(x) => (REG_RESOURCE_LIST, x.as_ptr() as *const _, x.len()),
-            Self::FULL_RESOURCE_DESCRIPTOR(x) => (REG_FULL_RESOURCE_DESCRIPTOR, x.as_ptr() as *const _, x.len()),
-            Self::RESOURCE_REQUIREMENTS_LIST(x) => (REG_RESOURCE_REQUIREMENTS_LIST, x.as_ptr() as *const _, x.len()),
-            Self::QWORD(x) => (REG_QWORD, to_ptr!(x), std::mem::size_of::<DWORD>()),
-            Self::QWORD_LITTLE_ENDIAN(x) => (REG_QWORD_LITTLE_ENDIAN, to_ptr!(x), std::mem::size_of::<DWORD>()),
+            Self::RESOURCE_LIST(x) => {
+                (REG_RESOURCE_LIST, x.as_ptr() as *const _, x.len())
+            }
+            Self::FULL_RESOURCE_DESCRIPTOR(x) => (
+                REG_FULL_RESOURCE_DESCRIPTOR,
+                x.as_ptr() as *const _,
+                x.len(),
+            ),
+            Self::RESOURCE_REQUIREMENTS_LIST(x) => (
+                REG_RESOURCE_REQUIREMENTS_LIST,
+                x.as_ptr() as *const _,
+                x.len(),
+            ),
+            Self::QWORD(x) => {
+                (REG_QWORD, to_ptr!(x), std::mem::size_of::<DWORD>())
+            }
+            Self::QWORD_LITTLE_ENDIAN(x) => (
+                REG_QWORD_LITTLE_ENDIAN,
+                to_ptr!(x),
+                std::mem::size_of::<DWORD>(),
+            ),
         }
     }
 }
@@ -138,22 +181,64 @@ pub enum RegValueW<'a> {
 
 impl<'a> RegValueW<'a> {
     pub fn get_data(&self) -> (DWORD, *const BYTE, usize) {
-        macro_rules! to_ptr { ($x:ident) => ($x as *const _ as *const _)}
+        macro_rules! to_ptr {
+            ($x:ident) => {
+                $x as *const _ as *const _
+            };
+        }
         match self {
             Self::NONE(x) => (REG_NONE, x.as_ptr() as *const _, x.len()),
-            Self::SZ(x) => (REG_SZ, x.as_ptr() as *const _, x.to_u8_bytes_with_nul().len()),
-            Self::EXPAND_SZ(x) => (REG_EXPAND_SZ, x.as_ptr() as *const _, x.to_u8_bytes_with_nul().len()),
+            Self::SZ(x) => (
+                REG_SZ,
+                x.as_ptr() as *const _,
+                x.to_u8_bytes_with_nul().len(),
+            ),
+            Self::EXPAND_SZ(x) => (
+                REG_EXPAND_SZ,
+                x.as_ptr() as *const _,
+                x.to_u8_bytes_with_nul().len(),
+            ),
             Self::BINARY(x) => (REG_BINARY, x.as_ptr() as *const _, x.len()),
-            Self::DWORD(x) => (REG_DWORD, to_ptr!(x), std::mem::size_of::<DWORD>()),
-            Self::DWORD_LITTLE_ENDIAN(x) => (REG_DWORD_LITTLE_ENDIAN, to_ptr!(x), std::mem::size_of::<DWORD>()),
-            Self::DWORD_BIG_ENDIAN(x) => (REG_DWORD_BIG_ENDIAN, to_ptr!(x), std::mem::size_of::<DWORD>()),
-            Self::LINK(x) => (REG_LINK, x.as_ptr() as *const _, x.to_u8_bytes_with_nul().len()),
+            Self::DWORD(x) => {
+                (REG_DWORD, to_ptr!(x), std::mem::size_of::<DWORD>())
+            }
+            Self::DWORD_LITTLE_ENDIAN(x) => (
+                REG_DWORD_LITTLE_ENDIAN,
+                to_ptr!(x),
+                std::mem::size_of::<DWORD>(),
+            ),
+            Self::DWORD_BIG_ENDIAN(x) => (
+                REG_DWORD_BIG_ENDIAN,
+                to_ptr!(x),
+                std::mem::size_of::<DWORD>(),
+            ),
+            Self::LINK(x) => (
+                REG_LINK,
+                x.as_ptr() as *const _,
+                x.to_u8_bytes_with_nul().len(),
+            ),
             // Self::MULTI_SZ(x) => (REG_MULTI_SZ, x.as_ptr() as *const _, x.to_u8_bytes_with_nul().len()),
-            Self::RESOURCE_LIST(x) => (REG_RESOURCE_LIST, x.as_ptr() as *const _, x.len()),
-            Self::FULL_RESOURCE_DESCRIPTOR(x) => (REG_FULL_RESOURCE_DESCRIPTOR, x.as_ptr() as *const _, x.len()),
-            Self::RESOURCE_REQUIREMENTS_LIST(x) => (REG_RESOURCE_REQUIREMENTS_LIST, x.as_ptr() as *const _, x.len()),
-            Self::QWORD(x) => (REG_QWORD, to_ptr!(x), std::mem::size_of::<DWORD>()),
-            Self::QWORD_LITTLE_ENDIAN(x) => (REG_QWORD_LITTLE_ENDIAN, to_ptr!(x), std::mem::size_of::<DWORD>()),
+            Self::RESOURCE_LIST(x) => {
+                (REG_RESOURCE_LIST, x.as_ptr() as *const _, x.len())
+            }
+            Self::FULL_RESOURCE_DESCRIPTOR(x) => (
+                REG_FULL_RESOURCE_DESCRIPTOR,
+                x.as_ptr() as *const _,
+                x.len(),
+            ),
+            Self::RESOURCE_REQUIREMENTS_LIST(x) => (
+                REG_RESOURCE_REQUIREMENTS_LIST,
+                x.as_ptr() as *const _,
+                x.len(),
+            ),
+            Self::QWORD(x) => {
+                (REG_QWORD, to_ptr!(x), std::mem::size_of::<DWORD>())
+            }
+            Self::QWORD_LITTLE_ENDIAN(x) => (
+                REG_QWORD_LITTLE_ENDIAN,
+                to_ptr!(x),
+                std::mem::size_of::<DWORD>(),
+            ),
         }
     }
 }
@@ -190,9 +275,7 @@ bitflags::bitflags! {
 bfi! {RegKeyRights,u32}
 
 impl HKeyType for HKeyFlags {
-    fn as_c_hkey(&self) -> HKEY {
-        *self as usize as HKEY
-    }
+    fn as_c_hkey(&self) -> HKEY { *self as usize as HKEY }
 }
 
 /// Safe RegCreateKeyA.
@@ -245,7 +328,7 @@ impl From<u32> for RegDisposition {
         match x {
             1 => Self::CREATED_NEW_KEY,
             2 => Self::OPENED_EXISTING_KEY,
-            _ => panic!("Unknown RegDisposition value")
+            _ => panic!("Unknown RegDisposition value"),
         }
     }
 }
@@ -258,9 +341,9 @@ pub fn reg_create_key_ex_w<'a, CL, SA>(
     sam: RegKeyRights,
     secrity_attributes: SA,
 ) -> OsResult<(HKey, RegDisposition)>
-    where
-        CL: Into<Option<&'a mut WStr>>,
-        SA: Into<Option<&'a mut SecurityAttributes<'a>>>
+where
+    CL: Into<Option<&'a mut WStr>>,
+    SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
 {
     unsafe {
         let mut ret = std::mem::zeroed();
@@ -272,7 +355,9 @@ pub fn reg_create_key_ex_w<'a, CL, SA>(
             class.into().map_or(null_mut(), |x| x.as_mut_ptr()),
             options,
             sam.bits,
-            secrity_attributes.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
+            secrity_attributes
+                .into()
+                .map_or(null_mut(), |x| x.as_mut_c_ptr()),
             &mut ret,
             &mut disposition,
         )?;
@@ -287,15 +372,19 @@ pub fn reg_open_key_ex_a<SA>(
     is_option_open_link: bool,
     sam: SA,
 ) -> OsResult<HKey>
-    where
-        SA: Into<DWORD>,
+where
+    SA: Into<DWORD>,
 {
     unsafe {
         let mut ret = std::mem::zeroed();
         RegOpenKeyExA(
             hkey.as_c_hkey(),
             sub_key.as_ptr(),
-            if is_option_open_link { REG_OPTION_OPEN_LINK } else { 0 },
+            if is_option_open_link {
+                REG_OPTION_OPEN_LINK
+            } else {
+                0
+            },
             sam.into(),
             &mut ret,
         )?;
@@ -315,7 +404,11 @@ pub fn reg_open_key_ex_w(
         RegOpenKeyExW(
             hkey.as_c_hkey(),
             sub_key.as_ptr(),
-            if is_option_open_link { REG_OPTION_OPEN_LINK } else { 0 },
+            if is_option_open_link {
+                REG_OPTION_OPEN_LINK
+            } else {
+                0
+            },
             sam.bits,
             &mut ret,
         )?;
@@ -364,23 +457,13 @@ pub fn reg_set_value_ex_w(
 }
 
 #[ansi_fn]
-pub fn reg_delete_key_a(
-    hkey: &impl HKeyType,
-    sub_key: &AStr,
-) -> OsResult<()> {
-    unsafe {
-        RegDeleteKeyA(hkey.as_c_hkey(), sub_key.as_ptr())
-    }
+pub fn reg_delete_key_a(hkey: &impl HKeyType, sub_key: &AStr) -> OsResult<()> {
+    unsafe { RegDeleteKeyA(hkey.as_c_hkey(), sub_key.as_ptr()) }
 }
 
 #[unicode_fn]
-pub fn reg_delete_key_w(
-    hkey: &impl HKeyType,
-    sub_key: &WStr,
-) -> OsResult<()> {
-    unsafe {
-        RegDeleteKeyW(hkey.as_c_hkey(), sub_key.as_ptr())
-    }
+pub fn reg_delete_key_w(hkey: &impl HKeyType, sub_key: &WStr) -> OsResult<()> {
+    unsafe { RegDeleteKeyW(hkey.as_c_hkey(), sub_key.as_ptr()) }
 }
 
 #[ansi_fn]
@@ -388,9 +471,7 @@ pub fn reg_delete_value_a(
     hkey: &impl HKeyType,
     value_name: &AStr,
 ) -> OsResult<()> {
-    unsafe {
-        RegDeleteValueA(hkey.as_c_hkey(), value_name.as_ptr())
-    }
+    unsafe { RegDeleteValueA(hkey.as_c_hkey(), value_name.as_ptr()) }
 }
 
 #[unicode_fn]
@@ -398,9 +479,7 @@ pub fn reg_delete_value_w(
     hkey: &impl HKeyType,
     value_name: &WStr,
 ) -> OsResult<()> {
-    unsafe {
-        RegDeleteValueW(hkey.as_c_hkey(), value_name.as_ptr())
-    }
+    unsafe { RegDeleteValueW(hkey.as_c_hkey(), value_name.as_ptr()) }
 }
 
 #[allow(non_camel_case_types)]
@@ -419,7 +498,6 @@ pub enum RegQuery {
     QWORD(u64),
     QWORD_LITTLE_ENDIAN(u64),
     SZ(AString),
-
 }
 
 pub fn reg_query_value_ex_a(
@@ -437,12 +515,10 @@ pub fn reg_query_value_ex_a(
             data.as_mut_ptr(),
             data.len() as _,
         )?;
-        Ok(
-            match ty {
-                REG_SZ => RegQuery::SZ(AString::new_unchecked(data)),
-                REG_DWORD => RegQuery::DWORD(*(data.as_ptr() as *const DWORD)),
-                _ => RegQuery::NONE,
-            }
-        )
+        Ok(match ty {
+            REG_SZ => RegQuery::SZ(AString::new_unchecked(data)),
+            REG_DWORD => RegQuery::DWORD(*(data.as_ptr() as *const DWORD)),
+            _ => RegQuery::NONE,
+        })
     }
 }

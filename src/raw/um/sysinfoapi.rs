@@ -1,11 +1,23 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::shared::minwindef::{LPFILETIME, PDWORD, PBOOL, UINT, LPDWORD, BYTE, BOOL};
-use winapi::shared::ntdef::USHORT;
-use winapi::um::minwinbase::{LPSYSTEMTIME, SYSTEMTIME};
-use winapi::um::sysinfoapi::{LPMEMORYSTATUSEX, LPSYSTEM_INFO, COMPUTER_NAME_FORMAT};
-use winapi::um::winnt::{ULONGLONG, LPSTR, LPWSTR, LPCWSTR, LPOSVERSIONINFOA, LPOSVERSIONINFOW, PSYSTEM_LOGICAL_PROCESSOR_INFORMATION, LOGICAL_PROCESSOR_RELATIONSHIP, PVOID, PULONGLONG, HANDLE, PSYSTEM_PROCESSOR_CYCLE_TIME_INFORMATION, LPCSTR};
+use winapi::{
+    shared::{
+        minwindef::{BOOL, BYTE, LPDWORD, LPFILETIME, PBOOL, PDWORD, UINT},
+        ntdef::USHORT,
+    },
+    um::{
+        minwinbase::{LPSYSTEMTIME, SYSTEMTIME},
+        sysinfoapi::{COMPUTER_NAME_FORMAT, LPMEMORYSTATUSEX, LPSYSTEM_INFO},
+        winnt::{
+            HANDLE, LOGICAL_PROCESSOR_RELATIONSHIP, LPCSTR, LPCWSTR,
+            LPOSVERSIONINFOA, LPOSVERSIONINFOW, LPSTR, LPWSTR,
+            PSYSTEM_LOGICAL_PROCESSOR_INFORMATION,
+            PSYSTEM_PROCESSOR_CYCLE_TIME_INFORMATION, PULONGLONG, PVOID,
+            ULONGLONG,
+        },
+    },
+};
 
 make_func2! {winapi::um::sysinfoapi,
 pub fn GlobalMemoryStatusEx(

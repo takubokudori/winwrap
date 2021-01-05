@@ -1,11 +1,20 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::shared::basetsd::ULONG_PTR;
-use winapi::shared::minwindef::{DWORD, UINT, LPDWORD};
-use winapi::shared::ntdef::{LONG, ULONG, PVOID, NULL, LPCSTR, LPCWSTR};
-use winapi::um::errhandlingapi::LPTOP_LEVEL_EXCEPTION_FILTER;
-use winapi::um::winnt::{EXCEPTION_POINTERS, PVECTORED_EXCEPTION_HANDLER, PEXCEPTION_RECORD, PCONTEXT};
+use winapi::{
+    shared::{
+        basetsd::ULONG_PTR,
+        minwindef::{DWORD, LPDWORD, UINT},
+        ntdef::{LONG, LPCSTR, LPCWSTR, NULL, PVOID, ULONG},
+    },
+    um::{
+        errhandlingapi::LPTOP_LEVEL_EXCEPTION_FILTER,
+        winnt::{
+            EXCEPTION_POINTERS, PCONTEXT, PEXCEPTION_RECORD,
+            PVECTORED_EXCEPTION_HANDLER,
+        },
+    },
+};
 
 tp_func! {winapi::um::errhandlingapi,
 pub unsafe fn RaiseException(

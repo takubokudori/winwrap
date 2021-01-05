@@ -2,14 +2,34 @@
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
 use std::os::raw::c_int;
-use winapi::shared::basetsd::{ULONG_PTR, SIZE_T, PSIZE_T, DWORD_PTR, PULONG_PTR};
-use winapi::shared::guiddef::LPCGUID;
-use winapi::shared::minwindef::{LPVOID, DWORD, BOOL, LPFILETIME, UINT, LPDWORD, PBOOL, LPCVOID, PDWORD};
-use winapi::shared::ntdef::{LPCSTR, LPSTR, HANDLE, NULL, LPCWSTR, LPWSTR, PHANDLE, PULONG, PVOID};
-use winapi::um::minwinbase::{LPSECURITY_ATTRIBUTES, LPTHREAD_START_ROUTINE, LPCONTEXT};
-use winapi::um::processthreadsapi::{LPPROCESS_INFORMATION, LPSTARTUPINFOA, TLS_OUT_OF_INDEXES, LPSTARTUPINFOW, LPPROC_THREAD_ATTRIBUTE_LIST, THREAD_INFORMATION_CLASS, PROCESS_INFORMATION_CLASS};
-use winapi::um::winbase::THREAD_PRIORITY_ERROR_RETURN;
-use winapi::um::winnt::{PAPCFUNC, CONTEXT, PROCESS_MITIGATION_POLICY, PPROCESSOR_NUMBER};
+use winapi::{
+    shared::{
+        basetsd::{DWORD_PTR, PSIZE_T, PULONG_PTR, SIZE_T, ULONG_PTR},
+        guiddef::LPCGUID,
+        minwindef::{
+            BOOL, DWORD, LPCVOID, LPDWORD, LPFILETIME, LPVOID, PBOOL, PDWORD,
+            UINT,
+        },
+        ntdef::{
+            HANDLE, LPCSTR, LPCWSTR, LPSTR, LPWSTR, NULL, PHANDLE, PULONG,
+            PVOID,
+        },
+    },
+    um::{
+        minwinbase::{
+            LPCONTEXT, LPSECURITY_ATTRIBUTES, LPTHREAD_START_ROUTINE,
+        },
+        processthreadsapi::{
+            LPPROCESS_INFORMATION, LPPROC_THREAD_ATTRIBUTE_LIST,
+            LPSTARTUPINFOA, LPSTARTUPINFOW, PROCESS_INFORMATION_CLASS,
+            THREAD_INFORMATION_CLASS, TLS_OUT_OF_INDEXES,
+        },
+        winbase::THREAD_PRIORITY_ERROR_RETURN,
+        winnt::{
+            CONTEXT, PAPCFUNC, PPROCESSOR_NUMBER, PROCESS_MITIGATION_POLICY,
+        },
+    },
+};
 
 make_func2! {winapi::um::processthreadsapi,
 pub fn QueueUserAPC(
@@ -105,7 +125,8 @@ pub fn GetThreadPriorityBoost(
     pDisablePriorityBoost: PBOOL,
 ) -> BOOL;0}
 
-const I32_THREAD_PRIORITY_ERROR_RETURN: i32 = THREAD_PRIORITY_ERROR_RETURN as i32;
+const I32_THREAD_PRIORITY_ERROR_RETURN: i32 =
+    THREAD_PRIORITY_ERROR_RETURN as i32;
 
 make_func! {winapi::um::processthreadsapi,
 pub fn GetThreadPriority(

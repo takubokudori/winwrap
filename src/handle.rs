@@ -1,13 +1,19 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use crate::raw::um::fileapi::FindClose;
-use crate::raw::um::handleapi::CloseHandle;
-use std::fmt;
-use std::ptr::null_mut;
-use winapi::shared::minwindef::{HKEY, HMODULE};
-use winapi::shared::windef::HWND;
-use winapi::um::errhandlingapi::{RemoveVectoredExceptionHandler, RemoveVectoredContinueHandler};
-use winapi::um::winnt::HANDLE;
+use crate::raw::um::{fileapi::FindClose, handleapi::CloseHandle};
+use std::{fmt, ptr::null_mut};
+use winapi::{
+    shared::{
+        minwindef::{HKEY, HMODULE},
+        windef::HWND,
+    },
+    um::{
+        errhandlingapi::{
+            RemoveVectoredContinueHandler, RemoveVectoredExceptionHandler,
+        },
+        winnt::HANDLE,
+    },
+};
 use winwrap_derive::*;
 
 #[macro_export]
@@ -55,11 +61,11 @@ macro_rules! make_handle {
 
 #[macro_export]
 macro_rules! bfi {
-    ($x:ident,$t:ty) => ( impl Into<$t> for $x {
-        fn into(self) -> $t {
-            self.bits
+    ($x:ident,$t:ty) => {
+        impl Into<$t> for $x {
+            fn into(self) -> $t { self.bits }
         }
-    })
+    };
 }
 
 pub trait Handle {
@@ -113,9 +119,7 @@ impl HKeyType for HKey {
 }
 
 impl Drop for HKey {
-    fn drop(&mut self) {
-        let _ = crate::raw::um::winreg::RegCloseKey(self.0);
-    }
+    fn drop(&mut self) { let _ = crate::raw::um::winreg::RegCloseKey(self.0); }
 }
 
 make_handle! {

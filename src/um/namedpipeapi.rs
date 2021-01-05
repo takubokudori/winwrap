@@ -1,11 +1,12 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use crate::*;
-use crate::handle::*;
-use crate::raw::um::namedpipeapi::*;
-use crate::um::minwinbase::Overlapped;
-use crate::string::*;
-use crate::um::minwinbase::SecurityAttributes;
+use crate::{
+    handle::*,
+    raw::um::namedpipeapi::*,
+    string::*,
+    um::minwinbase::{Overlapped, SecurityAttributes},
+    *,
+};
 use std::ptr::null_mut;
 use winapi::shared::minwindef::DWORD;
 use winwrap_derive::*;
@@ -15,8 +16,8 @@ pub fn create_pipe<'a, SA>(
     sa: SA,
     size: DWORD,
 ) -> OsResult<(PipeHandle, PipeHandle)>
-    where
-        SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
+where
+    SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
 {
     unsafe {
         let mut read_pipe = null_mut();
@@ -25,7 +26,8 @@ pub fn create_pipe<'a, SA>(
             &mut read_pipe,
             &mut write_pipe,
             sa.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
-            size)?;
+            size,
+        )?;
         Ok((PipeHandle::new(read_pipe), PipeHandle::new(write_pipe)))
     }
 }
@@ -78,8 +80,8 @@ pub fn create_named_pipe_w<'a, SA>(
     default_timeout: DWORD,
     sec_attrs: SA,
 ) -> OsResult<PipeHandle>
-    where
-        SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
+where
+    SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
 {
     unsafe {
         CreateNamedPipeW(
@@ -91,7 +93,8 @@ pub fn create_named_pipe_w<'a, SA>(
             in_buffer_size,
             default_timeout,
             sec_attrs.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
-        ).map(PipeHandle::new)
+        )
+        .map(PipeHandle::new)
     }
 }
 
@@ -99,8 +102,8 @@ pub fn connect_named_pipe<'a, OL>(
     handle: &PipeHandle,
     overlapped: OL,
 ) -> OsResult<()>
-    where
-        OL: Into<Option<&'a mut Overlapped>>,
+where
+    OL: Into<Option<&'a mut Overlapped>>,
 {
     unsafe {
         ConnectNamedPipe(
@@ -110,10 +113,7 @@ pub fn connect_named_pipe<'a, OL>(
     }
 }
 
-pub fn disconnect_named_pipe(
-    handle: &PipeHandle,
-) -> OsResult<()>
-{
+pub fn disconnect_named_pipe(handle: &PipeHandle) -> OsResult<()> {
     unsafe { DisconnectNamedPipe(handle.as_c_handle()) }
 }
 
@@ -124,11 +124,11 @@ pub fn get_named_pipe_info<'a, FL, OB, IB, MI>(
     in_buffer_size: IB,
     max_instances: MI,
 ) -> OsResult<()>
-    where
-        FL: Into<Option<&'a mut DWORD>>,
-        OB: Into<Option<&'a mut DWORD>>,
-        IB: Into<Option<&'a mut DWORD>>,
-        MI: Into<Option<&'a mut DWORD>>,
+where
+    FL: Into<Option<&'a mut DWORD>>,
+    OB: Into<Option<&'a mut DWORD>>,
+    IB: Into<Option<&'a mut DWORD>>,
+    MI: Into<Option<&'a mut DWORD>>,
 {
     unsafe {
         GetNamedPipeInfo(

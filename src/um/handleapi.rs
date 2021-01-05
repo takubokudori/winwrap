@@ -1,8 +1,6 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use crate::*;
-use crate::handle::*;
-use crate::raw::um::handleapi::*;
+use crate::{handle::*, raw::um::handleapi::*, *};
 
 bitflags::bitflags! {
     pub struct HandleFlags: u32 {
@@ -39,10 +37,7 @@ pub fn compare_object_handles(
     handle2: &impl Handle,
 ) -> bool {
     unsafe {
-        CompareObjectHandles(
-            handle1.as_c_handle(),
-            handle2.as_c_handle(),
-        ) != 0
+        CompareObjectHandles(handle1.as_c_handle(), handle2.as_c_handle()) != 0
     }
 }
 
@@ -55,14 +50,10 @@ pub fn compare_object_handles(
 /// let info = get_handle_information(&proc);
 /// println!("{:?}", info);
 /// ```
-pub fn get_handle_information(
-    handle: &impl Handle,
-) -> OsResult<HandleFlags> {
+pub fn get_handle_information(handle: &impl Handle) -> OsResult<HandleFlags> {
     unsafe {
         let mut flags = 0;
-        GetHandleInformation(
-            handle.as_c_handle(),
-            &mut flags)?;
+        GetHandleInformation(handle.as_c_handle(), &mut flags)?;
         Ok(HandleFlags::from_bits_truncate(flags))
     }
 }
@@ -73,10 +64,6 @@ pub fn set_handle_information(
     flags: &HandleFlags,
 ) -> OsResult<()> {
     unsafe {
-        SetHandleInformation(
-            handle.as_c_handle(),
-            mask.bits(),
-            flags.bits(),
-        )
+        SetHandleInformation(handle.as_c_handle(), mask.bits(), flags.bits())
     }
 }

@@ -1,8 +1,10 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::shared::minwindef::{LPHANDLE, DWORD, BOOL, LPDWORD};
-use winapi::um::winnt::HANDLE;
+use winapi::{
+    shared::minwindef::{BOOL, DWORD, LPDWORD, LPHANDLE},
+    um::winnt::HANDLE,
+};
 
 make_func2! {winapi::um::handleapi,
 pub fn CloseHandle(

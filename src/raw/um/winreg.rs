@@ -1,11 +1,19 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::shared::minwindef::{HKEY, PHKEY, LPDWORD, BOOL, PFILETIME, LPBYTE, BYTE, LPCVOID, DWORD};
-use winapi::shared::ntdef::{HANDLE, LPCSTR, LPCWSTR, ULONG, LPSTR, PVOID, LPWSTR, PLONG};
-use winapi::um::minwinbase::LPSECURITY_ATTRIBUTES;
-use winapi::um::winnt::{SECURITY_INFORMATION, PSECURITY_DESCRIPTOR};
-use winapi::um::winreg::{REGSAM, PVALENTA, PVALENTW};
+use winapi::{
+    shared::{
+        minwindef::{
+            BOOL, BYTE, DWORD, HKEY, LPBYTE, LPCVOID, LPDWORD, PFILETIME, PHKEY,
+        },
+        ntdef::{HANDLE, LPCSTR, LPCWSTR, LPSTR, LPWSTR, PLONG, PVOID, ULONG},
+    },
+    um::{
+        minwinbase::LPSECURITY_ATTRIBUTES,
+        winnt::{PSECURITY_DESCRIPTOR, SECURITY_INFORMATION},
+        winreg::{PVALENTA, PVALENTW, REGSAM},
+    },
+};
 
 macro_rules! make_func_reg {
     // unsafe
@@ -65,7 +73,6 @@ pub fn RegDisablePredefinedCache() -> LSTATUS;}
 
 make_func_reg! {winapi::um::winreg,
 pub fn RegDisablePredefinedCacheEx() -> LSTATUS;}
-
 
 make_func_reg! {winapi::um::winreg,
 pub fn RegConnectRegistryA(

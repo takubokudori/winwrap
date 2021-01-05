@@ -1,15 +1,14 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use crate::*;
-use crate::handle::*;
-use crate::raw::um::jobapi2::*;
-use crate::string::*;
-use crate::um::minwinbase::SecurityAttributes;
+use crate::{
+    handle::*, raw::um::jobapi2::*, string::*,
+    um::minwinbase::SecurityAttributes, *,
+};
 use std::ptr::null_mut;
-use winapi::shared::basetsd::LONG64;
-use winapi::shared::minwindef::UINT;
-use winapi::shared::ntdef::ULONG;
-use winapi::um::jobapi2::JOBOBJECT_IO_RATE_CONTROL_INFORMATION;
+use winapi::{
+    shared::{basetsd::LONG64, minwindef::UINT, ntdef::ULONG},
+    um::jobapi2::JOBOBJECT_IO_RATE_CONTROL_INFORMATION,
+};
 use winwrap_derive::*;
 
 #[unicode_fn]
@@ -17,13 +16,15 @@ pub fn create_job_object_w<'a, SA>(
     sec_attr: SA,
     name: &WStr,
 ) -> OsResult<JobHandle>
-    where
-        SA: Into<Option<&'a mut SecurityAttributes<'a>>> {
+where
+    SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
+{
     unsafe {
         CreateJobObjectW(
             sec_attr.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
             name.as_ptr(),
-        ).map(JobHandle::new)
+        )
+        .map(JobHandle::new)
     }
 }
 
@@ -43,7 +44,6 @@ pub struct JobAccessRights: u32{
     const ACCESS_SYSTEM_SECURITY = winapi::um::winnt::ACCESS_SYSTEM_SECURITY;
 }}
 
-
 #[unicode_fn]
 pub fn open_job_object_w(
     desired_access: DWORD,
@@ -55,7 +55,8 @@ pub fn open_job_object_w(
             desired_access,
             i32::from(inherit_handle),
             job_name.as_ptr(),
-        ).map(JobHandle::new)
+        )
+        .map(JobHandle::new)
     }
 }
 
@@ -75,12 +76,7 @@ pub fn terminate_job_object(
     job_handle: &JobHandle,
     exit_code: UINT,
 ) -> OsResult<()> {
-    unsafe {
-        TerminateJobObject(
-            job_handle.as_c_handle(),
-            exit_code,
-        )
-    }
+    unsafe { TerminateJobObject(job_handle.as_c_handle(), exit_code) }
 }
 
 bitflags::bitflags! {
@@ -104,26 +100,33 @@ pub struct JobObjectIoRateControlInformations<'a>{
     inner: &'a mut [JobObjectIoRateControlInformation<'a>],
 }}
 impl<'a> JobObjectIoRateControlInformations<'a> {
-    pub unsafe fn new(job_infos: *mut JOBOBJECT_IO_RATE_CONTROL_INFORMATION, len: usize) -> Self {
+    pub unsafe fn new(
+        job_infos: *mut JOBOBJECT_IO_RATE_CONTROL_INFORMATION,
+        len: usize,
+    ) -> Self {
         Self {
-            inner: std::slice::from_raw_parts_mut(job_infos as *mut JobObjectIoRateControlInformation, len)
+            inner: std::slice::from_raw_parts_mut(
+                job_infos as *mut JobObjectIoRateControlInformation,
+                len,
+            ),
         }
     }
 }
 
 impl<'a> Drop for JobObjectIoRateControlInformations<'a> {
     fn drop(&mut self) {
-        unsafe { free_memory_job_object(self.inner); }
+        unsafe {
+            free_memory_job_object(self.inner);
+        }
     }
 }
-
 
 pub fn query_io_rate_control_information_job_object<'a, VN>(
     handle: &JobHandle,
     volume_name: VN,
 ) -> OsResult<JobObjectIoRateControlInformations>
-    where
-        VN: Into<Option<&'a WStr>>
+where
+    VN: Into<Option<&'a WStr>>,
 {
     unsafe {
         let mut info_block_count = 0;
@@ -135,12 +138,15 @@ pub fn query_io_rate_control_information_job_object<'a, VN>(
             &mut info_block_count,
         )?;
         debug_assert_ne!(p, null_mut());
-        Ok(JobObjectIoRateControlInformations::new(p, info_block_count as usize))
+        Ok(JobObjectIoRateControlInformations::new(
+            p,
+            info_block_count as usize,
+        ))
     }
 }
 
 pub unsafe fn free_memory_job_object(
-    job_io_infos: &mut [JobObjectIoRateControlInformation]
+    job_io_infos: &mut [JobObjectIoRateControlInformation],
 ) {
     FreeMemoryJobObject(job_io_infos.as_mut_ptr() as *mut _)
 }

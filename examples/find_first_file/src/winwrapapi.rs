@@ -1,8 +1,8 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use winwrap::prelude::*;
-use winwrap::OsError::Win32;
-use winwrap::winapi::shared::winerror::ERROR_NO_MORE_FILES;
+use winwrap::{
+    prelude::*, winapi::shared::winerror::ERROR_NO_MORE_FILES, OsError::Win32,
+};
 
 fn enumerate_files_a() {
     let path = AString::from_str_lossy(r".\*.*");
@@ -10,7 +10,10 @@ fn enumerate_files_a() {
     loop {
         println!("name: {:?}", data.get_file_name().to_string_lossy());
         println!("\tflags: {:?}", data.file_attributes);
-        println!("\talternate file name: {:?}", data.get_alternate_file_name().to_string_lossy());
+        println!(
+            "\talternate file name: {:?}",
+            data.get_alternate_file_name().to_string_lossy()
+        );
         println!("----------------------------");
         data = match find_next_file_a(&handle) {
             Ok(x) => x,
@@ -29,7 +32,10 @@ fn enumerate_files_w() {
     loop {
         println!("name: {:?}", data.get_file_name().to_string_lossy());
         println!("\tflags: {:?}", data.file_attributes);
-        println!("\talternate file name: {}", data.get_alternate_file_name().to_string_lossy());
+        println!(
+            "\talternate file name: {}",
+            data.get_alternate_file_name().to_string_lossy()
+        );
         println!("----------------------------");
         data = match find_next_file_w(&handle) {
             Ok(x) => x,
@@ -48,7 +54,10 @@ fn enumerate_files_t() {
     loop {
         println!("name: {:?}", data.get_file_name().to_string());
         println!("\tflags: {:?}", data.file_attributes);
-        println!("\talternate file name: {}", data.get_alternate_file_name().to_string_lossy());
+        println!(
+            "\talternate file name: {}",
+            data.get_alternate_file_name().to_string_lossy()
+        );
         println!("----------------------------");
         data = match find_next_file(&handle) {
             Ok(x) => x,

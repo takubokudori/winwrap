@@ -1,15 +1,28 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use crate::*;
-use crate::handle::*;
-use crate::shared::minwindef::FileTime;
-use crate::string::{WString, AString};
-use crate::um::fileapi::{FileAttributeConstants};
+use crate::{
+    handle::*,
+    shared::minwindef::FileTime,
+    string::{AString, WString},
+    um::fileapi::FileAttributeConstants,
+    *,
+};
 use std::mem::{ManuallyDrop, MaybeUninit};
-use winapi::shared::basetsd::ULONG_PTR;
-use winapi::shared::minwindef::{WORD, DWORD, BYTE, MAX_PATH};
-use winapi::um::minwinbase::{SECURITY_ATTRIBUTES, WIN32_FIND_DATAA, WIN32_FIND_DATAW, OVERLAPPED};
-use winapi::um::winnt::{SECURITY_DESCRIPTOR_CONTROL, CHAR, SID_IDENTIFIER_AUTHORITY, SID, ACL, SECURITY_DESCRIPTOR, WCHAR};
+use winapi::{
+    shared::{
+        basetsd::ULONG_PTR,
+        minwindef::{BYTE, DWORD, MAX_PATH, WORD},
+    },
+    um::{
+        minwinbase::{
+            OVERLAPPED, SECURITY_ATTRIBUTES, WIN32_FIND_DATAA, WIN32_FIND_DATAW,
+        },
+        winnt::{
+            ACL, CHAR, SECURITY_DESCRIPTOR, SECURITY_DESCRIPTOR_CONTROL, SID,
+            SID_IDENTIFIER_AUTHORITY, WCHAR,
+        },
+    },
+};
 
 make_struct! {SID_IDENTIFIER_AUTHORITY,
 #[derive(Debug, Default)]
@@ -109,9 +122,7 @@ pub struct Win32FindDataA {
 
 impl Win32FindDataA {
     pub fn get_file_name(&mut self) -> ManuallyDrop<AString> {
-        unsafe {
-            AString::from_raw(self.file_name.as_mut_ptr() as *mut _)
-        }
+        unsafe { AString::from_raw(self.file_name.as_mut_ptr() as *mut _) }
     }
 
     pub fn get_alternate_file_name(&mut self) -> ManuallyDrop<AString> {
@@ -164,9 +175,7 @@ pub struct Win32FindDataW {
 
 impl Win32FindDataW {
     pub fn get_file_name(&mut self) -> ManuallyDrop<WString> {
-        unsafe {
-            WString::from_raw(self.file_name.as_mut_ptr() as *mut _)
-        }
+        unsafe { WString::from_raw(self.file_name.as_mut_ptr() as *mut _) }
     }
 
     pub fn get_alternate_file_name(&mut self) -> ManuallyDrop<WString> {

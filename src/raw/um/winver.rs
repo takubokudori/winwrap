@@ -1,12 +1,14 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use winapi::um::winnt::{LPCSTR, LPCWSTR, LPSTR, LPWSTR};
 use crate::*;
-use winapi::shared::minwindef::{DWORD, LPCVOID, LPVOID, PUINT};
-use winapi::ctypes::c_void;
-use winapi::STRUCT;
+use winapi::{
+    ctypes::c_void,
+    shared::minwindef::{DWORD, LPCVOID, LPVOID, PUINT},
+    um::winnt::{LPCSTR, LPCWSTR, LPSTR, LPWSTR},
+    STRUCT,
+};
 
-STRUCT!{#[derive(Debug, Ord, PartialOrd, Eq, PartialEq)]
+STRUCT! {#[derive(Debug, Ord, PartialOrd, Eq, PartialEq)]
 #[allow(non_snake_case)]
 struct LANGANDCODEPAGE{
 wLanguage:WORD,

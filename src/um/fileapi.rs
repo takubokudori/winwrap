@@ -1,18 +1,24 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use crate::*;
-use crate::handle::*;
-use crate::raw::um::fileapi::*;
-use crate::um::minwinbase::Overlapped;
-use crate::string::*;
-use crate::um::minwinbase::{Win32FindDataA, SecurityAttributes, Win32FindDataW};
-use std::mem::{MaybeUninit, size_of};
-use std::ptr::null_mut;
-use winapi::shared::minwindef::DWORD;
-use winapi::shared::winerror::NO_ERROR;
-use winapi::um::fileapi::INVALID_FILE_SIZE;
+use crate::{
+    handle::*,
+    raw::um::fileapi::*,
+    string::*,
+    um::minwinbase::{
+        Overlapped, SecurityAttributes, Win32FindDataA, Win32FindDataW,
+    },
+    OsError::Win32,
+    *,
+};
+use std::{
+    mem::{size_of, MaybeUninit},
+    ptr::null_mut,
+};
+use winapi::{
+    shared::{minwindef::DWORD, winerror::NO_ERROR},
+    um::fileapi::INVALID_FILE_SIZE,
+};
 use winwrap_derive::*;
-use crate::OsError::Win32;
 
 bitflags::bitflags! {
 pub struct FileAccessRights: DWORD{
@@ -107,8 +113,8 @@ pub fn create_directory_a<'a, SA>(
     path_name: &AStr,
     sec_attrs: SA,
 ) -> OsResult<()>
-    where
-        SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
+where
+    SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
 {
     unsafe {
         CreateDirectoryA(
@@ -123,8 +129,8 @@ pub fn create_directory_w<'a, SA>(
     path_name: &WStr,
     sec_attrs: SA,
 ) -> OsResult<()>
-    where
-        SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
+where
+    SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
 {
     unsafe {
         CreateDirectoryW(
@@ -135,7 +141,9 @@ pub fn create_directory_w<'a, SA>(
 }
 
 #[ansi_fn]
-pub fn find_first_file_a(path: &AStr) -> OsResult<(FindFileHandle, Win32FindDataA)> {
+pub fn find_first_file_a(
+    path: &AStr,
+) -> OsResult<(FindFileHandle, Win32FindDataA)> {
     unsafe {
         let mut fd = MaybeUninit::<Win32FindDataA>::uninit();
         let handle = FindFirstFileA(path.as_ptr(), fd.as_mut_ptr() as *mut _)?;
@@ -155,7 +163,9 @@ pub fn find_next_file_a(handle: &FindFileHandle) -> OsResult<Win32FindDataA> {
 }
 
 #[unicode_fn]
-pub fn find_first_file_w(path: &WStr) -> OsResult<(FindFileHandle, Win32FindDataW)> {
+pub fn find_first_file_w(
+    path: &WStr,
+) -> OsResult<(FindFileHandle, Win32FindDataW)> {
     unsafe {
         let mut fd = MaybeUninit::<Win32FindDataW>::uninit();
         let handle = FindFirstFileW(path.as_ptr(), fd.as_mut_ptr() as *mut _)?;
@@ -183,9 +193,9 @@ pub fn create_file_a<'a, SA, TM>(
     creation_disposition: CreationDisposition,
     template: TM,
 ) -> OsResult<FileHandle>
-    where
-        SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
-        TM: Into<Option<&'a mut FileHandle>>,
+where
+    SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
+    TM: Into<Option<&'a mut FileHandle>>,
 {
     unsafe {
         CreateFileA(
@@ -196,7 +206,8 @@ pub fn create_file_a<'a, SA, TM>(
             creation_disposition.bits,
             0,
             template.into().map_or(null_mut(), |x| x.0),
-        ).map(FileHandle::new)
+        )
+        .map(FileHandle::new)
     }
 }
 
@@ -209,9 +220,9 @@ pub fn create_file_w<'a, SA, TM>(
     creation_disposition: CreationDisposition,
     template: TM,
 ) -> OsResult<FileHandle>
-    where
-        SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
-        TM: Into<Option<&'a mut FileHandle>>,
+where
+    SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
+    TM: Into<Option<&'a mut FileHandle>>,
 {
     unsafe {
         CreateFileW(
@@ -222,7 +233,8 @@ pub fn create_file_w<'a, SA, TM>(
             creation_disposition.bits,
             0,
             template.into().map_or(null_mut(), |x| x.0),
-        ).map(FileHandle::new)
+        )
+        .map(FileHandle::new)
     }
 }
 
@@ -231,8 +243,9 @@ pub fn read_file<'a, OL, T>(
     buf: &mut [T],
     overlapped: OL,
 ) -> OsResult<usize>
-    where
-        OL: Into<Option<&'a mut Overlapped>> {
+where
+    OL: Into<Option<&'a mut Overlapped>>,
+{
     unsafe {
         let mut number_of_bytes_read = 0;
         ReadFile(
@@ -251,8 +264,9 @@ pub fn write_file<'a, OL, T>(
     buf: &[T],
     overlapped: OL,
 ) -> OsResult<usize>
-    where
-        OL: Into<Option<&'a mut Overlapped>> {
+where
+    OL: Into<Option<&'a mut Overlapped>>,
+{
     unsafe {
         let mut number_of_bytes_write = 0;
         WriteFile(
@@ -267,27 +281,22 @@ pub fn write_file<'a, OL, T>(
 }
 
 #[ansi_fn]
-pub fn delete_file_a(
-    file_name: &AStr,
-) -> OsResult<()> {
+pub fn delete_file_a(file_name: &AStr) -> OsResult<()> {
     unsafe { DeleteFileA(file_name.as_ptr()) }
 }
 
 #[unicode_fn]
-pub fn delete_file_w(
-    file_name: &WStr,
-) -> OsResult<()> {
+pub fn delete_file_w(file_name: &WStr) -> OsResult<()> {
     unsafe { DeleteFileW(file_name.as_ptr()) }
 }
 
 /// Returns `(file_size_high,file_size_low)` .
-pub fn get_file_size(
-    file_handle: &FileHandle,
-) -> OsResult<u64> {
+pub fn get_file_size(file_handle: &FileHandle) -> OsResult<u64> {
     unsafe {
         let mut sz_high = 0;
         // if GetFileSize returns Err(NO_ERROR), the file size is 0xFFFFFFFF (INVALID_FILE_SIZE).
-        let sz_low = match GetFileSize(file_handle.as_c_handle(), &mut sz_high) {
+        let sz_low = match GetFileSize(file_handle.as_c_handle(), &mut sz_high)
+        {
             Ok(x) => x,
             Err(Win32(NO_ERROR)) => INVALID_FILE_SIZE,
             Err(x) => return Err(x),
@@ -296,8 +305,6 @@ pub fn get_file_size(
     }
 }
 
-pub fn flush_file_buffers(
-    handle: &impl WritableHandle,
-) -> OsResult<()> {
+pub fn flush_file_buffers(handle: &impl WritableHandle) -> OsResult<()> {
     unsafe { FlushFileBuffers(handle.as_c_handle()) }
 }

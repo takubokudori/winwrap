@@ -1,10 +1,14 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::ctypes::c_int;
-use winapi::shared::minwindef::{DWORD, LPVOID, LPARAM, BOOL, LPWORD, UINT, LPBOOL};
-use winapi::um::winnls::LPNLSVERSIONINFO;
-use winapi::um::winnt::{LPCWSTR, LPCWCH, LCID, PCNZWCH, LPWSTR, LPCSTR, LPSTR};
+use winapi::{
+    ctypes::c_int,
+    shared::minwindef::{BOOL, DWORD, LPARAM, LPBOOL, LPVOID, LPWORD, UINT},
+    um::{
+        winnls::LPNLSVERSIONINFO,
+        winnt::{LCID, LPCSTR, LPCWCH, LPCWSTR, LPSTR, LPWSTR, PCNZWCH},
+    },
+};
 
 make_func! {winapi::um::stringapiset,
 pub fn CompareStringEx(

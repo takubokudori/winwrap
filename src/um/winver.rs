@@ -1,11 +1,14 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use crate::*;
-use crate::raw::um::verrsrc::VSFixedFileInfo;
-use crate::raw::um::winver::*;
-use crate::string::*;
-use std::mem::{ManuallyDrop, size_of};
-use std::ptr::null_mut;
+use crate::{
+    raw::um::{verrsrc::VSFixedFileInfo, winver::*},
+    string::*,
+    *,
+};
+use std::{
+    mem::{size_of, ManuallyDrop},
+    ptr::null_mut,
+};
 use winapi::shared::minwindef::{LPCVOID, LPVOID};
 use winwrap_derive::*;
 
@@ -36,36 +39,20 @@ impl FileVersionInfo {
     pub fn get_data(&self) -> &Vec<u8> { &self.inner }
 
     #[inline]
-    unsafe fn _new(v: Vec<u8>) -> Self {
-        Self { inner: v }
-    }
+    unsafe fn _new(v: Vec<u8>) -> Self { Self { inner: v } }
 
     #[inline]
     pub fn as_c_ptr(&self) -> LPCVOID { self.inner.as_ptr() as *const _ }
 }
 
 #[ansi_fn]
-pub fn get_file_version_info_size_a(
-    file_name: &AStr,
-) -> OsResult<DWORD> {
-    unsafe {
-        GetFileVersionInfoSizeA(
-            file_name.as_ptr(),
-            null_mut(),
-        )
-    }
+pub fn get_file_version_info_size_a(file_name: &AStr) -> OsResult<DWORD> {
+    unsafe { GetFileVersionInfoSizeA(file_name.as_ptr(), null_mut()) }
 }
 
 #[unicode_fn]
-pub fn get_file_version_info_size_w(
-    file_name: &WStr,
-) -> OsResult<DWORD> {
-    unsafe {
-        GetFileVersionInfoSizeW(
-            file_name.as_ptr(),
-            null_mut(),
-        )
-    }
+pub fn get_file_version_info_size_w(file_name: &WStr) -> OsResult<DWORD> {
+    unsafe { GetFileVersionInfoSizeW(file_name.as_ptr(), null_mut()) }
 }
 
 #[ansi_fn]
@@ -117,10 +104,16 @@ impl VerQuerySubBlock {
     pub fn as_c_sub_block_a(&self) -> AString {
         match self {
             Self::Root => AString::from_str_lossy(r"\"),
-            Self::VarFileInfo => AString::from_str_lossy(r"\VarFileInfo\Translation"),
+            Self::VarFileInfo => {
+                AString::from_str_lossy(r"\VarFileInfo\Translation")
+            }
             Self::StringFileInfo(lang, codepage, string_name) => {
                 AString::from_str_lossy(
-                    &format!(r"\StringFileInfo\{:04x}{:04x}\{}", lang, codepage, string_name).as_str()
+                    &format!(
+                        r"\StringFileInfo\{:04x}{:04x}\{}",
+                        lang, codepage, string_name
+                    )
+                    .as_str(),
                 )
             }
         }
@@ -129,10 +122,16 @@ impl VerQuerySubBlock {
     pub fn as_c_sub_block_w(&self) -> WString {
         match self {
             Self::Root => WString::from_str_lossy(r"\"),
-            Self::VarFileInfo => WString::from_str_lossy(r"\VarFileInfo\Translation"),
+            Self::VarFileInfo => {
+                WString::from_str_lossy(r"\VarFileInfo\Translation")
+            }
             Self::StringFileInfo(lang, codepage, string_name) => {
                 WString::from_str_lossy(
-                    &format!(r"\StringFileInfo\{:04x}{:04x}\{}", lang, codepage, string_name).as_str()
+                    &format!(
+                        r"\StringFileInfo\{:04x}{:04x}\{}",
+                        lang, codepage, string_name
+                    )
+                    .as_str(),
                 )
             }
         }
@@ -148,7 +147,11 @@ pub enum VerQueryValueA<'a> {
 }
 
 impl<'a> VerQueryValueA<'a> {
-    unsafe fn from_raw(buf: LPVOID, len: u32, block: &VerQuerySubBlock) -> Self {
+    unsafe fn from_raw(
+        buf: LPVOID,
+        len: u32,
+        block: &VerQuerySubBlock,
+    ) -> Self {
         match block {
             VerQuerySubBlock::Root => {
                 assert_eq!(len, size_of::<VSFixedFileInfo>() as u32);
@@ -160,9 +163,10 @@ impl<'a> VerQueryValueA<'a> {
             }
             VerQuerySubBlock::StringFileInfo(_, _, _) => {
                 let buf = buf as *mut u8;
-                Self::StringFileInfo(
-                    AString::from_raw_s(buf as *mut _, len as usize)
-                )
+                Self::StringFileInfo(AString::from_raw_s(
+                    buf as *mut _,
+                    len as usize,
+                ))
             }
         }
     }
@@ -240,7 +244,11 @@ pub enum VerQueryValueW<'a> {
 }
 
 impl<'a> VerQueryValueW<'a> {
-    unsafe fn from_raw(buf: LPVOID, len: u32, block: &VerQuerySubBlock) -> Self {
+    unsafe fn from_raw(
+        buf: LPVOID,
+        len: u32,
+        block: &VerQuerySubBlock,
+    ) -> Self {
         match block {
             VerQuerySubBlock::Root => {
                 assert_eq!(len, size_of::<VSFixedFileInfo>() as u32);
@@ -252,9 +260,10 @@ impl<'a> VerQueryValueW<'a> {
             }
             VerQuerySubBlock::StringFileInfo(_, _, _) => {
                 let buf = buf as *mut u8;
-                Self::StringFileInfo(
-                    WString::from_raw_s(buf as *mut _, len as usize)
-                )
+                Self::StringFileInfo(WString::from_raw_s(
+                    buf as *mut _,
+                    len as usize,
+                ))
             }
         }
     }
@@ -362,32 +371,20 @@ pub fn ver_query_value_w(
 }
 
 #[ansi_fn]
-pub fn ver_language_name_a(
-    lang: DWORD,
-) -> OsResult<AString>
-{
+pub fn ver_language_name_a(lang: DWORD) -> OsResult<AString> {
     unsafe {
         let mut v: Vec<u8> = Vec::with_capacity(128);
-        let len = VerLanguageNameA(
-            lang,
-            v.as_mut_ptr() as *mut _,
-            128)?;
+        let len = VerLanguageNameA(lang, v.as_mut_ptr() as *mut _, 128)?;
         v.set_len(len as usize);
         Ok(AString::new_unchecked(v))
     }
 }
 
 #[unicode_fn]
-pub fn ver_language_name_w(
-    lang: DWORD,
-) -> OsResult<WString>
-{
+pub fn ver_language_name_w(lang: DWORD) -> OsResult<WString> {
     unsafe {
         let mut v: Vec<u16> = Vec::with_capacity(128);
-        let len = VerLanguageNameW(
-            lang,
-            v.as_mut_ptr() as *mut _,
-            128)?;
+        let len = VerLanguageNameW(lang, v.as_mut_ptr() as *mut _, 128)?;
         v.set_len(len as usize);
         Ok(WString::new_unchecked(v))
     }

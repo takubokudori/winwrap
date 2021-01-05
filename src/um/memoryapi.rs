@@ -1,16 +1,17 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use crate::*;
-use crate::handle::*;
-use crate::raw::um::memoryapi::*;
-use crate::string::*;
-use crate::um::minwinbase::SecurityAttributes;
-use std::mem::size_of;
-use std::ops;
-use std::ptr::null_mut;
-use winapi::shared::basetsd::SIZE_T;
-use winapi::shared::minwindef::{DWORD, LPCVOID, LPVOID};
-use winapi::um::handleapi::INVALID_HANDLE_VALUE;
+use crate::{
+    handle::*, raw::um::memoryapi::*, string::*,
+    um::minwinbase::SecurityAttributes, *,
+};
+use std::{mem::size_of, ops, ptr::null_mut};
+use winapi::{
+    shared::{
+        basetsd::SIZE_T,
+        minwindef::{DWORD, LPCVOID, LPVOID},
+    },
+    um::handleapi::INVALID_HANDLE_VALUE,
+};
 use winwrap_derive::*;
 
 bitflags::bitflags! {
@@ -44,8 +45,12 @@ impl From<u32> for FileMapProtectRight {
     fn from(x: u32) -> Self {
         match x {
             winapi::um::winnt::PAGE_EXECUTE_READ => Self::EXECUTE_READ,
-            winapi::um::winnt::PAGE_EXECUTE_READWRITE => Self::EXECUTE_READWRITE,
-            winapi::um::winnt::PAGE_EXECUTE_WRITECOPY => Self::EXECUTE_WRITECOPY,
+            winapi::um::winnt::PAGE_EXECUTE_READWRITE => {
+                Self::EXECUTE_READWRITE
+            }
+            winapi::um::winnt::PAGE_EXECUTE_WRITECOPY => {
+                Self::EXECUTE_WRITECOPY
+            }
             winapi::um::winnt::PAGE_READONLY => Self::READONLY,
             winapi::um::winnt::PAGE_READWRITE => Self::READWRITE,
             winapi::um::winnt::PAGE_WRITECOPY => Self::WRITECOPY,
@@ -86,23 +91,25 @@ pub fn create_file_mapping_w<'a, FH, SA>(
     maximum_size: u64,
     name: &WStr,
 ) -> OsResult<FileMappingHandle>
-    where
-        FH: Into<Option<&'a mut FileHandle>>,
-        SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
+where
+    FH: Into<Option<&'a mut FileHandle>>,
+    SA: Into<Option<&'a mut SecurityAttributes<'a>>>,
 {
     unsafe {
         let (maximum_size_high, maximum_size_low) = SEP_QWORD(maximum_size);
         CreateFileMappingW(
-            file_handle.into().map_or(INVALID_HANDLE_VALUE, |x| x.as_c_handle()),
+            file_handle
+                .into()
+                .map_or(INVALID_HANDLE_VALUE, |x| x.as_c_handle()),
             sec_attrs.into().map_or(null_mut(), |x| x.as_mut_c_ptr()),
             protect_right as u32 | protect_options.bits,
             maximum_size_high,
             maximum_size_low,
             name.as_ptr(),
-        ).map(FileMappingHandle::new)
+        )
+        .map(FileMappingHandle::new)
     }
 }
-
 
 #[unicode_fn]
 pub fn open_file_mapping_w(
@@ -115,7 +122,8 @@ pub fn open_file_mapping_w(
             desired_access.bits,
             is_inherit_handle.into(),
             name.as_ptr(),
-        ).map(FileMappingHandle::new)
+        )
+        .map(FileMappingHandle::new)
     }
 }
 
@@ -156,9 +164,7 @@ pub fn map_view_of_file(
     }
 }
 
-pub unsafe fn unmap_view_of_file(
-    base_address: LPCVOID,
-) -> OsResult<()> {
+pub unsafe fn unmap_view_of_file(base_address: LPCVOID) -> OsResult<()> {
     UnmapViewOfFile(base_address)
 }
 
@@ -166,10 +172,7 @@ pub unsafe fn flush_view_of_file(
     base_address: LPCVOID,
     number_of_bytes_to_flush: SIZE_T,
 ) -> OsResult<()> {
-    FlushViewOfFile(
-        base_address,
-        number_of_bytes_to_flush,
-    )
+    FlushViewOfFile(base_address, number_of_bytes_to_flush)
 }
 
 pub fn read_process_memory<T>(
@@ -228,7 +231,11 @@ pub struct VirtualMemory<'a> {
 }
 
 impl<'a> VirtualMemory<'a> {
-    pub unsafe fn from_raw<T>(proc_handle: Option<&'a ProcessHandle>, x: *mut T, size: usize) -> Self {
+    pub unsafe fn from_raw<T>(
+        proc_handle: Option<&'a ProcessHandle>,
+        x: *mut T,
+        size: usize,
+    ) -> Self {
         Self {
             proc_handle,
             inner: std::slice::from_raw_parts_mut(x as *mut u8, size),
@@ -246,10 +253,12 @@ impl<'a> Drop for VirtualMemory<'a> {
         unsafe {
             debug_assert_eq!(
                 match self.proc_handle {
-                    Some(handle) => virtual_free_ex(handle, self.inner, self.free_type),
-                    None => virtual_free(self.inner, self.free_type)
-                }
-                , Ok(()));
+                    Some(handle) =>
+                        virtual_free_ex(handle, self.inner, self.free_type),
+                    None => virtual_free(self.inner, self.free_type),
+                },
+                Ok(())
+            );
         }
     }
 }
@@ -328,9 +337,9 @@ pub unsafe fn virtual_alloc<'a, AD, MO>(
     option_type: MO,
     protect: MemProtectionFlags,
 ) -> OsResult<VirtualMemory<'a>>
-    where
-        AD: Into<Option<usize>>,
-        MO: Into<Option<MemProtectionFlags>>
+where
+    AD: Into<Option<usize>>,
+    MO: Into<Option<MemProtectionFlags>>,
 {
     let p = VirtualAlloc(
         address.into().map_or(null_mut(), |x| x as LPVOID),
@@ -349,9 +358,9 @@ pub unsafe fn virtual_alloc_ex<AD, MO>(
     option_type: MO,
     protect: MemProtectionFlags,
 ) -> OsResult<VirtualMemory>
-    where
-        AD: Into<Option<usize>>,
-        MO: Into<Option<MemOptionFlags>>
+where
+    AD: Into<Option<usize>>,
+    MO: Into<Option<MemOptionFlags>>,
 {
     let p = VirtualAllocEx(
         proc_handle.as_c_handle(),
@@ -369,7 +378,11 @@ pub unsafe fn virtual_free(
 ) -> OsResult<()> {
     VirtualFree(
         vp.as_ptr() as *mut _,
-        if free_type.contains(VirtualFreeType::RELEASE) { vp.len() } else { 0 },
+        if free_type.contains(VirtualFreeType::RELEASE) {
+            vp.len()
+        } else {
+            0
+        },
         free_type.bits,
     )
 }
@@ -382,7 +395,11 @@ pub unsafe fn virtual_free_ex<'a>(
     VirtualFreeEx(
         proc_handle.as_c_handle(),
         vp.as_ptr() as *mut _,
-        if free_type.contains(VirtualFreeType::RELEASE) { vp.len() } else { 0 },
+        if free_type.contains(VirtualFreeType::RELEASE) {
+            vp.len()
+        } else {
+            0
+        },
         free_type.bits,
     )
 }

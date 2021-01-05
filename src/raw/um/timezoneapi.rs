@@ -1,10 +1,20 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::um::minwinbase::{LPSYSTEMTIME, SYSTEMTIME};
-use winapi::um::timezoneapi::{TIME_ZONE_ID_INVALID, TIME_ZONE_INFORMATION, LPTIME_ZONE_INFORMATION, DYNAMIC_TIME_ZONE_INFORMATION, PDYNAMIC_TIME_ZONE_INFORMATION};
-use winapi::shared::ntdef::USHORT;
-use winapi::shared::minwindef::{LPDWORD, LPFILETIME, FILETIME};
+use winapi::{
+    shared::{
+        minwindef::{FILETIME, LPDWORD, LPFILETIME},
+        ntdef::USHORT,
+    },
+    um::{
+        minwinbase::{LPSYSTEMTIME, SYSTEMTIME},
+        timezoneapi::{
+            DYNAMIC_TIME_ZONE_INFORMATION, LPTIME_ZONE_INFORMATION,
+            PDYNAMIC_TIME_ZONE_INFORMATION, TIME_ZONE_ID_INVALID,
+            TIME_ZONE_INFORMATION,
+        },
+    },
+};
 
 make_func2! {winapi::um::timezoneapi,
 pub fn SystemTimeToTzSpecificLocalTime(

@@ -1,20 +1,41 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::ctypes::c_int;
-use winapi::shared::basetsd::{UINT_PTR, SIZE_T, PSIZE_T, PDWORD_PTR, DWORD_PTR, DWORD64};
-use winapi::shared::minwindef::{DWORD, LPCVOID, BOOL, LPVOID, LPDWORD, WORD, FARPROC, PDWORD, FILETIME, LPFILETIME, LPWORD, LPBOOL};
-use winapi::shared::ntdef::NULL;
-use winapi::shared::ntdef::{LPSTR, LPWSTR, LPCWSTR, HANDLE, LPCSTR, VOID, PLUID, PWSTR, ULONG, PULONG};
-use winapi::shared::windef::HWND;
-use winapi::um::fileapi::STREAM_INFO_LEVELS;
-use winapi::um::handleapi::INVALID_HANDLE_VALUE;
-use winapi::um::minwinbase::{LPSECURITY_ATTRIBUTES, LPOVERLAPPED, LPOVERLAPPED_COMPLETION_ROUTINE};
-use winapi::um::winbase::{LPCOMMCONFIG, LPDCB, LPCOMMTIMEOUTS, DEP_SYSTEM_POLICY_TYPE, LPFIBER_START_ROUTINE, LPFILE_ID_DESCRIPTOR};
-use winapi::um::winnt::{PSID, PSID_NAME_USE, LPCH, PIO_COUNTERS, PCWSTR, PSECURE_MEMORY_CACHE_CALLBACK, PCONTEXT, PVOID, PBOOLEAN, PPERFORMANCE_DATA};
-use winapi::vc::vadefs::va_list;
+use winapi::{
+    ctypes::c_int,
+    shared::{
+        basetsd::{DWORD64, DWORD_PTR, PDWORD_PTR, PSIZE_T, SIZE_T, UINT_PTR},
+        minwindef::{
+            BOOL, DWORD, FARPROC, FILETIME, LPBOOL, LPCVOID, LPDWORD,
+            LPFILETIME, LPVOID, LPWORD, PDWORD, WORD,
+        },
+        ntdef::{
+            HANDLE, LPCSTR, LPCWSTR, LPSTR, LPWSTR, NULL, PLUID, PULONG, PWSTR,
+            ULONG, VOID,
+        },
+        windef::HWND,
+    },
+    um::{
+        fileapi::STREAM_INFO_LEVELS,
+        handleapi::INVALID_HANDLE_VALUE,
+        minwinbase::{
+            LPOVERLAPPED, LPOVERLAPPED_COMPLETION_ROUTINE,
+            LPSECURITY_ATTRIBUTES,
+        },
+        winbase::{
+            DEP_SYSTEM_POLICY_TYPE, LPCOMMCONFIG, LPCOMMTIMEOUTS, LPDCB,
+            LPFIBER_START_ROUTINE, LPFILE_ID_DESCRIPTOR,
+        },
+        winnt::{
+            LPCH, PBOOLEAN, PCONTEXT, PCWSTR, PIO_COUNTERS, PPERFORMANCE_DATA,
+            PSECURE_MEMORY_CACHE_CALLBACK, PSID, PSID_NAME_USE, PVOID,
+        },
+    },
+    vc::vadefs::va_list,
+};
 
-const HANDLE_NULL: winapi::shared::ntdef::HANDLE = NULL as winapi::shared::ntdef::HANDLE;
+const HANDLE_NULL: winapi::shared::ntdef::HANDLE =
+    NULL as winapi::shared::ntdef::HANDLE;
 
 make_func2! {winapi::um::winbase,
 pub fn GetBinaryTypeA(

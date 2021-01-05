@@ -1,11 +1,17 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::shared::basetsd::{ULONG_PTR, PULONG_PTR};
-use winapi::shared::minwindef::{DWORD, LPDWORD, LPVOID, BOOL};
-use winapi::shared::ntdef::{ULONG, PULONG, NULL};
-use winapi::um::minwinbase::{LPOVERLAPPED, LPOVERLAPPED_ENTRY};
-use winapi::um::winnt::HANDLE;
+use winapi::{
+    shared::{
+        basetsd::{PULONG_PTR, ULONG_PTR},
+        minwindef::{BOOL, DWORD, LPDWORD, LPVOID},
+        ntdef::{NULL, PULONG, ULONG},
+    },
+    um::{
+        minwinbase::{LPOVERLAPPED, LPOVERLAPPED_ENTRY},
+        winnt::HANDLE,
+    },
+};
 
 make_func! {winapi::um::ioapiset,
 pub fn CreateIoCompletionPort(

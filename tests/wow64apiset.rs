@@ -2,8 +2,13 @@
 // This source code is licensed under the MIT or Apache-2.0 license.
 #[cfg(test)]
 pub mod wow64apiset_tests {
-    use winwrap::um::processthreadsapi::get_current_process;
-    use winwrap::um::wow64apiset::{is_wow64_process, is_wow64_process2, get_system_wow64_directory_a, get_system_wow64_directory_w};
+    use winwrap::um::{
+        processthreadsapi::get_current_process,
+        wow64apiset::{
+            get_system_wow64_directory_a, get_system_wow64_directory_w,
+            is_wow64_process, is_wow64_process2,
+        },
+    };
 
     #[test]
     fn test_is_wow64_process() {

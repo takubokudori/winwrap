@@ -1,13 +1,13 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use crate::*;
-use crate::handle::*;
-use crate::raw::um::errhandlingapi::*;
-use crate::string::*;
-use crate::um::winnt::ExceptionPointers;
-use crate::vc::excpt::ExceptionHandler;
-use winapi::shared::minwindef::{UINT, DWORD};
-use winapi::um::winnt::PVECTORED_EXCEPTION_HANDLER;
+use crate::{
+    handle::*, raw::um::errhandlingapi::*, string::*,
+    um::winnt::ExceptionPointers, vc::excpt::ExceptionHandler, *,
+};
+use winapi::{
+    shared::minwindef::{DWORD, UINT},
+    um::winnt::PVECTORED_EXCEPTION_HANDLER,
+};
 use winwrap_derive::*;
 
 #[repr(u32)]
@@ -37,33 +37,25 @@ pub fn set_last_error(err_code: DWORD) { SetLastError(err_code) }
 
 pub fn get_error_mode() -> ErrorMode { ErrorMode::from(GetErrorMode()) }
 
-pub fn set_error_mode(err_mode: ErrorMode) -> ErrorMode { ErrorMode::from(SetErrorMode(err_mode as u32)) }
+pub fn set_error_mode(err_mode: ErrorMode) -> ErrorMode {
+    ErrorMode::from(SetErrorMode(err_mode as u32))
+}
 
 #[ansi_fn]
-pub fn fatal_app_exit_a(
-    action: UINT,
-    message_text: &AStr,
-) {
-    unsafe {
-        FatalAppExitA(action, message_text.as_ptr())
-    }
+pub fn fatal_app_exit_a(action: UINT, message_text: &AStr) {
+    unsafe { FatalAppExitA(action, message_text.as_ptr()) }
 }
 
 #[unicode_fn]
-pub fn fatal_app_exit_w(
-    action: UINT,
-    message_text: &WStr,
-) {
-    unsafe {
-        FatalAppExitW(action, message_text.as_ptr())
-    }
+pub fn fatal_app_exit_w(action: UINT, message_text: &WStr) {
+    unsafe { FatalAppExitW(action, message_text.as_ptr()) }
 }
 
-pub fn get_thread_error_mode() -> ErrorMode { ErrorMode::from(GetThreadErrorMode()) }
+pub fn get_thread_error_mode() -> ErrorMode {
+    ErrorMode::from(GetThreadErrorMode())
+}
 
-pub fn set_thread_error_mode(
-    err_mode: ErrorMode
-) -> OsResult<ErrorMode> {
+pub fn set_thread_error_mode(err_mode: ErrorMode) -> OsResult<ErrorMode> {
     unsafe {
         let mut old_mode = 0;
         SetThreadErrorMode(err_mode as u32, &mut old_mode)?;
@@ -72,7 +64,8 @@ pub fn set_thread_error_mode(
 }
 
 /// Represents VECTORED_EXCEPTION_HANDLER function.
-pub type VectoredExceptionHandler = extern "system" fn(&mut ExceptionPointers) -> ExceptionHandler;
+pub type VectoredExceptionHandler =
+    extern "system" fn(&mut ExceptionPointers) -> ExceptionHandler;
 
 pub fn add_vectored_exception_handler(
     is_first: bool,
@@ -80,7 +73,10 @@ pub fn add_vectored_exception_handler(
 ) -> Result<VEHHandle, ()> {
     unsafe {
         let func = std::mem::transmute::<_, PVECTORED_EXCEPTION_HANDLER>(func);
-        Ok(VEHHandle::new(AddVectoredExceptionHandler(is_first.into(), func)?))
+        Ok(VEHHandle::new(AddVectoredExceptionHandler(
+            is_first.into(),
+            func,
+        )?))
     }
 }
 
@@ -98,7 +94,10 @@ pub fn add_vectored_continue_handler(
 ) -> Result<VCHHandle, ()> {
     unsafe {
         let func = std::mem::transmute::<_, PVECTORED_EXCEPTION_HANDLER>(func);
-        Ok(VCHHandle::new(AddVectoredContinueHandler(is_first.into(), func)?))
+        Ok(VCHHandle::new(AddVectoredContinueHandler(
+            is_first.into(),
+            func,
+        )?))
     }
 }
 

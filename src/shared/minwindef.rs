@@ -1,8 +1,7 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::shared::minwindef::FILETIME;
-use winapi::um::minwinbase::SYSTEMTIME;
+use winapi::{shared::minwindef::FILETIME, um::minwinbase::SYSTEMTIME};
 
 make_struct! {FILETIME,
 #[derive(Default, Clone, Eq, PartialEq)]

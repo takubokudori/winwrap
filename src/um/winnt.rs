@@ -1,10 +1,17 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::shared::basetsd::{KAFFINITY, ULONG_PTR};
-use winapi::shared::minwindef::{BYTE, WORD};
-use winapi::shared::ntdef::GROUP_AFFINITY;
-use winapi::um::winnt::{PROCESSOR_NUMBER, EXCEPTION_RECORD, PVOID, EXCEPTION_MAXIMUM_PARAMETERS, EXCEPTION_POINTERS, CONTEXT};
+use winapi::{
+    shared::{
+        basetsd::{KAFFINITY, ULONG_PTR},
+        minwindef::{BYTE, WORD},
+        ntdef::GROUP_AFFINITY,
+    },
+    um::winnt::{
+        CONTEXT, EXCEPTION_MAXIMUM_PARAMETERS, EXCEPTION_POINTERS,
+        EXCEPTION_RECORD, PROCESSOR_NUMBER, PVOID,
+    },
+};
 
 make_struct! {PROCESSOR_NUMBER,
 #[derive(Debug)]
@@ -69,7 +76,7 @@ impl From<DWORD> for DllReason {
             0 => Self::PROCESS_DETACH,
             2 => Self::THREAD_ATTACH,
             3 => Self::THREAD_DETACH,
-            e => panic!("Unknown DLL reason: {}", e)
+            e => panic!("Unknown DLL reason: {}", e),
         }
     }
 }

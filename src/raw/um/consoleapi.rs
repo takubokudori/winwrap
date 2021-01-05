@@ -1,10 +1,16 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::shared::minwindef::{BOOL, UINT, LPDWORD, DWORD, LPVOID};
-use winapi::shared::ntdef::{HANDLE, VOID};
-use winapi::um::wincon::{PCONSOLE_READCONSOLE_CONTROL, PHANDLER_ROUTINE};
-use winapi::um::wincontypes::{PINPUT_RECORD, COORD, HPCON};
+use winapi::{
+    shared::{
+        minwindef::{BOOL, DWORD, LPDWORD, LPVOID, UINT},
+        ntdef::{HANDLE, VOID},
+    },
+    um::{
+        wincon::{PCONSOLE_READCONSOLE_CONTROL, PHANDLER_ROUTINE},
+        wincontypes::{COORD, HPCON, PINPUT_RECORD},
+    },
+};
 
 make_func2! {winapi::um::consoleapi,
 pub fn AllocConsole() -> BOOL;0}

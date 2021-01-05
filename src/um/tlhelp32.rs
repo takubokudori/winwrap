@@ -1,15 +1,23 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
-use crate::*;
-use crate::handle::*;
-use crate::raw::um::tlhelp32::*;
-use crate::string::*;
-use std::mem::{MaybeUninit, size_of, ManuallyDrop};
-use std::ptr::null_mut;
-use winapi::shared::basetsd::{ULONG_PTR, SIZE_T};
-use winapi::shared::minwindef::{DWORD, BYTE, MAX_PATH};
-use winapi::um::tlhelp32::{MAX_MODULE_NAME32, MODULEENTRY32, THREADENTRY32, MODULEENTRY32W, HEAPENTRY32, HEAPLIST32, PROCESSENTRY32, PROCESSENTRY32W};
-use winapi::um::winnt::{CHAR, WCHAR, LONG, HANDLE};
+use crate::{handle::*, raw::um::tlhelp32::*, string::*, *};
+use std::{
+    mem::{size_of, ManuallyDrop, MaybeUninit},
+    ptr::null_mut,
+};
+use winapi::{
+    shared::{
+        basetsd::{SIZE_T, ULONG_PTR},
+        minwindef::{BYTE, DWORD, MAX_PATH},
+    },
+    um::{
+        tlhelp32::{
+            HEAPENTRY32, HEAPLIST32, MAX_MODULE_NAME32, MODULEENTRY32,
+            MODULEENTRY32W, PROCESSENTRY32, PROCESSENTRY32W, THREADENTRY32,
+        },
+        winnt::{CHAR, HANDLE, LONG, WCHAR},
+    },
+};
 
 bitflags::bitflags! {
     pub struct TH32CSFlags:u32 {
@@ -147,9 +155,7 @@ impl Default for ProcessEntry32W {
 
 impl ProcessEntry32W {
     pub fn get_exe_file(&mut self) -> ManuallyDrop<WString> {
-        unsafe {
-            WString::from_raw(self.exe_file.as_mut_ptr() as *mut _)
-        }
+        unsafe { WString::from_raw(self.exe_file.as_mut_ptr() as *mut _) }
     }
 }
 
@@ -200,9 +206,7 @@ impl Default for ProcessEntry32 {
 
 impl ProcessEntry32 {
     pub fn get_exe_file(&mut self) -> ManuallyDrop<AString> {
-        unsafe {
-            AString::from_raw(self.exe_file.as_mut_ptr() as *mut _)
-        }
+        unsafe { AString::from_raw(self.exe_file.as_mut_ptr() as *mut _) }
     }
 }
 
@@ -244,15 +248,11 @@ impl Default for ModuleEntry32 {
 
 impl ModuleEntry32 {
     pub fn get_module_name(&mut self) -> ManuallyDrop<AString> {
-        unsafe {
-            AString::from_raw(self.module_name.as_mut_ptr() as *mut _)
-        }
+        unsafe { AString::from_raw(self.module_name.as_mut_ptr() as *mut _) }
     }
 
     pub fn get_exe_path(&mut self) -> ManuallyDrop<AString> {
-        unsafe {
-            AString::from_raw(self.exe_path.as_mut_ptr() as *mut _)
-        }
+        unsafe { AString::from_raw(self.exe_path.as_mut_ptr() as *mut _) }
     }
 }
 
@@ -284,15 +284,11 @@ pub struct ModuleEntry32W{
 
 impl ModuleEntry32W {
     pub fn get_module_name(&mut self) -> ManuallyDrop<WString> {
-        unsafe {
-            WString::from_raw(self.module_name.as_mut_ptr() as *mut _)
-        }
+        unsafe { WString::from_raw(self.module_name.as_mut_ptr() as *mut _) }
     }
 
     pub fn get_exe_path(&mut self) -> ManuallyDrop<WString> {
-        unsafe {
-            WString::from_raw(self.exe_path.as_mut_ptr() as *mut _)
-        }
+        unsafe { WString::from_raw(self.exe_path.as_mut_ptr() as *mut _) }
     }
 }
 
@@ -330,8 +326,7 @@ pub fn create_tool_help32_snapshot(
     pid: DWORD,
 ) -> OsResult<SnapshotHandle> {
     unsafe {
-        CreateToolhelp32Snapshot(flags.bits(), pid)
-            .map(SnapshotHandle::new)
+        CreateToolhelp32Snapshot(flags.bits(), pid).map(SnapshotHandle::new)
     }
 }
 
@@ -341,10 +336,7 @@ pub fn heap32list_first(
 ) -> OsResult<()> {
     unsafe {
         entry.size = size_of::<HEAPLIST32>();
-        Heap32ListFirst(
-            handle.as_c_handle(),
-            entry.as_mut_c_ptr(),
-        )
+        Heap32ListFirst(handle.as_c_handle(), entry.as_mut_c_ptr())
     }
 }
 
@@ -354,10 +346,7 @@ pub fn heap32list_next(
 ) -> OsResult<()> {
     unsafe {
         entry.size = size_of::<HEAPLIST32>();
-        Heap32ListNext(
-            handle.as_c_handle(),
-            entry.as_mut_c_ptr(),
-        )
+        Heap32ListNext(handle.as_c_handle(), entry.as_mut_c_ptr())
     }
 }
 
@@ -366,23 +355,11 @@ pub fn heap32_first(
     pid: u32,
     heap_id: ULONG_PTR,
 ) -> OsResult<()> {
-    unsafe {
-        Heap32First(
-            entry.as_mut_c_ptr(),
-            pid,
-            heap_id,
-        )
-    }
+    unsafe { Heap32First(entry.as_mut_c_ptr(), pid, heap_id) }
 }
 
-pub fn heap32_next(
-    entry: &mut HeapEntry32,
-) -> OsResult<()> {
-    unsafe {
-        Heap32Next(
-            entry.as_mut_c_ptr(),
-        )
-    }
+pub fn heap32_next(entry: &mut HeapEntry32) -> OsResult<()> {
+    unsafe { Heap32Next(entry.as_mut_c_ptr()) }
 }
 
 pub fn process32_first_w(
@@ -390,9 +367,7 @@ pub fn process32_first_w(
     entry: &mut ProcessEntry32W,
 ) -> OsResult<()> {
     unsafe {
-        Process32FirstW(
-            handle.as_c_handle(),
-            entry.as_mut_c_ptr())?;
+        Process32FirstW(handle.as_c_handle(), entry.as_mut_c_ptr())?;
         Ok(())
     }
 }
@@ -402,9 +377,7 @@ pub fn process32_next_w(
     entry: &mut ProcessEntry32W,
 ) -> OsResult<()> {
     unsafe {
-        Process32NextW(
-            handle.as_c_handle(),
-            entry.as_mut_c_ptr())?;
+        Process32NextW(handle.as_c_handle(), entry.as_mut_c_ptr())?;
         Ok(())
     }
 }
@@ -414,9 +387,7 @@ pub fn process32_first(
     entry: &mut ProcessEntry32,
 ) -> OsResult<()> {
     unsafe {
-        Process32First(
-            handle.as_c_handle(),
-            entry.as_mut_c_ptr())?;
+        Process32First(handle.as_c_handle(), entry.as_mut_c_ptr())?;
         Ok(())
     }
 }
@@ -426,9 +397,7 @@ pub fn process32_next(
     entry: &mut ProcessEntry32,
 ) -> OsResult<()> {
     unsafe {
-        Process32Next(
-            handle.as_c_handle(),
-            entry.as_mut_c_ptr())?;
+        Process32Next(handle.as_c_handle(), entry.as_mut_c_ptr())?;
         Ok(())
     }
 }
@@ -437,24 +406,14 @@ pub fn thread32_first(
     handle: &SnapshotHandle,
     entry: &mut ThreadEntry32,
 ) -> OsResult<()> {
-    unsafe {
-        Thread32First(
-            handle.as_c_handle(),
-            entry.as_mut_c_ptr(),
-        )
-    }
+    unsafe { Thread32First(handle.as_c_handle(), entry.as_mut_c_ptr()) }
 }
 
 pub fn thread32_next(
     handle: &SnapshotHandle,
     entry: &mut ThreadEntry32,
 ) -> OsResult<()> {
-    unsafe {
-        Thread32Next(
-            handle.as_c_handle(),
-            entry.as_mut_c_ptr(),
-        )
-    }
+    unsafe { Thread32Next(handle.as_c_handle(), entry.as_mut_c_ptr()) }
 }
 
 pub fn module32_first_w(
@@ -463,10 +422,7 @@ pub fn module32_first_w(
 ) -> OsResult<()> {
     unsafe {
         entry.size = size_of::<MODULEENTRY32W>() as u32;
-        Module32FirstW(
-            handle.as_c_handle(),
-            entry.as_mut_c_ptr(),
-        )
+        Module32FirstW(handle.as_c_handle(), entry.as_mut_c_ptr())
     }
 }
 
@@ -476,10 +432,7 @@ pub fn module32_next_w(
 ) -> OsResult<()> {
     unsafe {
         entry.size = size_of::<MODULEENTRY32W>() as u32;
-        Module32NextW(
-            handle.as_c_handle(),
-            entry.as_mut_c_ptr(),
-        )
+        Module32NextW(handle.as_c_handle(), entry.as_mut_c_ptr())
     }
 }
 
@@ -499,9 +452,7 @@ pub fn module32_first(
 ) -> OsResult<()> {
     unsafe {
         entry.size = size_of::<MODULEENTRY32>() as u32;
-        Module32First(
-            handle.as_c_handle(),
-            entry.as_mut_c_ptr())?;
+        Module32First(handle.as_c_handle(), entry.as_mut_c_ptr())?;
         Ok(())
     }
 }
@@ -512,9 +463,6 @@ pub fn module32_next(
 ) -> OsResult<()> {
     unsafe {
         entry.size = size_of::<MODULEENTRY32>() as u32;
-        Module32Next(
-            handle.as_c_handle(),
-            entry.as_mut_c_ptr(),
-        )
+        Module32Next(handle.as_c_handle(), entry.as_mut_c_ptr())
     }
 }

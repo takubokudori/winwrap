@@ -1,12 +1,20 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
-use winapi::shared::minwindef::{DWORD, BOOL};
-use winapi::shared::ntdef::{NULL, LPCH, LPWCH, LPCSTR, LPSTR, HANDLE, PHANDLE, LPWSTR, LPCWSTR};
-use winapi::um::handleapi::INVALID_HANDLE_VALUE;
+use winapi::{
+    shared::{
+        minwindef::{BOOL, DWORD},
+        ntdef::{
+            HANDLE, LPCH, LPCSTR, LPCWSTR, LPSTR, LPWCH, LPWSTR, NULL, PHANDLE,
+        },
+    },
+    um::handleapi::INVALID_HANDLE_VALUE,
+};
 
-const LPCH_NULL: winapi::shared::ntdef::LPCH = NULL as winapi::shared::ntdef::LPCH;
-const LPWCH_NULL: winapi::shared::ntdef::LPWCH = NULL as winapi::shared::ntdef::LPWCH;
+const LPCH_NULL: winapi::shared::ntdef::LPCH =
+    NULL as winapi::shared::ntdef::LPCH;
+const LPWCH_NULL: winapi::shared::ntdef::LPWCH =
+    NULL as winapi::shared::ntdef::LPWCH;
 
 make_func! {winapi::um::processenv,
 pub fn GetEnvironmentStrings() -> LPCH;LPCH_NULL}

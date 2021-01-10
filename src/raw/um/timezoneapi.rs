@@ -69,14 +69,12 @@ pub fn GetTimeZoneInformationForYear(
     ptzi: LPTIME_ZONE_INFORMATION,
 ) -> BOOL;0}
 
-// TODO: reg系
 tp_func! {winapi::um::timezoneapi,
 pub fn EnumDynamicTimeZoneInformation(
     dwIndex: DWORD,
     lpTimeZoneInformation: PDYNAMIC_TIME_ZONE_INFORMATION,
 ) -> DWORD;}
 
-// TODO: reg系
 tp_func! {winapi::um::timezoneapi,
 pub fn GetDynamicTimeZoneInformationEffectiveYears(
     lpTimeZoneInformation: PDYNAMIC_TIME_ZONE_INFORMATION,

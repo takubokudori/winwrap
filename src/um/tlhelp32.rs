@@ -317,9 +317,15 @@ impl Default for ModuleEntry32W {
 /// # Example
 ///
 /// ```rust
-/// use winwrap::um::tlhelp32::{create_tool_help32_snapshot, TH32CSFlags};
-/// use winwrap::um::processthreadsapi::get_current_process_id;
-/// let handle = create_tool_help32_snapshot(TH32CSFlags::SNAPMODULE32, get_current_process_id()).unwrap();
+/// use winwrap::um::{
+///     processthreadsapi::get_current_process_id,
+///     tlhelp32::{create_tool_help32_snapshot, TH32CSFlags},
+/// };
+/// let handle = create_tool_help32_snapshot(
+///     TH32CSFlags::SNAPMODULE32,
+///     get_current_process_id(),
+/// )
+/// .unwrap();
 /// ```
 pub fn create_tool_help32_snapshot(
     flags: TH32CSFlags,
@@ -439,11 +445,17 @@ pub fn module32_next_w(
 /// # Example
 ///
 /// ```no_run
-/// use winwrap::um::tlhelp32::{create_tool_help32_snapshot, module32_first, TH32CSFlags};
-/// use winwrap::um::processthreadsapi::get_current_process_id;
-/// let handle = create_tool_help32_snapshot(TH32CSFlags::SNAPMODULE32, get_current_process_id()).unwrap();
-/// let mut entry=Default::default();
-/// module32_first(&handle,&mut entry).unwrap();
+/// use winwrap::um::{
+///     processthreadsapi::get_current_process_id,
+///     tlhelp32::{create_tool_help32_snapshot, module32_first, TH32CSFlags},
+/// };
+/// let handle = create_tool_help32_snapshot(
+///     TH32CSFlags::SNAPMODULE32,
+///     get_current_process_id(),
+/// )
+/// .unwrap();
+/// let mut entry = Default::default();
+/// module32_first(&handle, &mut entry).unwrap();
 /// println!("{}", entry.mod_base_addr as usize);
 /// ```
 pub fn module32_first(

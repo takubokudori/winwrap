@@ -20,18 +20,21 @@
 //! # Examples
 //!
 //! ```rust
-//! use winwrap::um::fileapi::*;
-//! use winwrap::winapi::shared::winerror::ERROR_NO_MORE_FILES;
+//! use winwrap::{
+//!     um::fileapi::*, winapi::shared::winerror::ERROR_NO_MORE_FILES,
+//! };
 //!
 //! fn enumerate_files_w() {
-//!     use winwrap::string::WString;
-//!     use winwrap::OsError::Win32;
+//!     use winwrap::{string::WString, OsError::Win32};
 //!     let path = WString::from_str_lossy(r".\*.*");
 //!     let (handle, mut data) = find_first_file_w(&path).unwrap();
 //!     loop {
 //!         println!("name: {:?}", data.get_file_name().to_string_lossy());
 //!         println!("\tflags: {:?}", data.file_attributes);
-//!         println!("\talternate file name: {}", data.get_alternate_file_name().to_string_lossy());
+//!         println!(
+//!             "\talternate file name: {}",
+//!             data.get_alternate_file_name().to_string_lossy()
+//!         );
 //!         println!("----------------------------");
 //!         data = match find_next_file_w(&handle) {
 //!             Ok(x) => x,
@@ -44,9 +47,7 @@
 //!     }
 //! }
 //!
-//! fn main(){
-//!     enumerate_files_w();
-//! }
+//! fn main() { enumerate_files_w(); }
 //! ```
 //!
 //! # License
@@ -56,6 +57,7 @@
 #![allow(clippy::too_many_arguments)]
 #![allow(clippy::result_unit_err)]
 #![allow(clippy::uninit_assumed_init)]
+#![allow(clippy::missing_safety_doc)]
 
 pub use winapi;
 pub use windy as string;

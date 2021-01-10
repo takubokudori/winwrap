@@ -614,6 +614,8 @@ pub fn SetFileIoOverlappedRange(
 ) -> BOOL;0}
 
 #[allow(non_snake_case)]
+#[allow(clippy::missing_safety_doc)]
+#[inline]
 pub unsafe fn GetCompressedFileSizeA(
     lpFileName: LPCSTR,
     lpFileSizeHigh: LPDWORD,
@@ -625,6 +627,8 @@ pub unsafe fn GetCompressedFileSizeA(
 }
 
 #[allow(non_snake_case)]
+#[allow(clippy::missing_safety_doc)]
+#[inline]
 pub unsafe fn GetCompressedFileSizeW(
     lpFileName: LPCWSTR,
     lpFileSizeHigh: LPDWORD,

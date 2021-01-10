@@ -11,11 +11,11 @@ use crate::{
     OsError::Win32,
     *,
 };
-use std::ptr::null_mut;
+use std::{marker::PhantomData, ops, ptr::null_mut};
 use winapi::{
     shared::{
-        basetsd::{DWORD_PTR, ULONG_PTR},
-        minwindef::{DWORD, LPVOID},
+        basetsd::{DWORD_PTR, SIZE_T, ULONG_PTR},
+        minwindef::{DWORD, HLOCAL, LPVOID},
         winerror::{ERROR_INSUFFICIENT_BUFFER, ERROR_MORE_DATA},
     },
     um::winnt::HANDLE,
@@ -323,9 +323,9 @@ where
 
 bitflags::bitflags! {
 pub struct SymlinkFlags: DWORD {
-    const NONE = 0;
+    const NONE                     = 0;
     /// SYMBOLIC_LINK_FLAG_DIRECTORY
-    const DIRECTORY = 1;
+    const DIRECTORY                = 1;
     /// SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE
     const ALLOW_UNPRIVILEGED_CREAT = 2;
 }}
@@ -358,4 +358,127 @@ pub fn create_symbolic_link_w(
             sym_flag.bits,
         )
     }
+}
+
+bitflags::bitflags! {
+    pub struct LocalMemFlags:DWORD{
+        const NONE          = 0;
+        const LHND          = winapi::um::minwinbase::LHND;
+        const LMEM_FIXED    = winapi::um::minwinbase::LMEM_FIXED;
+        const LMEM_MOVEABLE = winapi::um::minwinbase::LMEM_MOVEABLE;
+        const LMEM_ZEROINIT = winapi::um::minwinbase::LMEM_ZEROINIT;
+        const LPTR          = winapi::um::minwinbase::LPTR;
+        const NONZEROLHND   = winapi::um::minwinbase::NONZEROLHND;
+        const NONZEROLPTR   = winapi::um::minwinbase::NONZEROLPTR;
+    }
+}
+
+pub struct LocalMemory<T> {
+    inner: HLOCAL,
+    t: PhantomData<T>,
+    len: usize,
+}
+
+impl<T> LocalMemory<T> {
+    // TODO: init
+    pub unsafe fn new(flags: LocalMemFlags, len: SIZE_T) -> OsResult<Self> {
+        local_alloc(flags, len)
+    }
+
+    /// # Safety
+    /// `h_global` must be a valid HLOCAL value.
+    pub unsafe fn from_raw(handle: HLOCAL, len: usize) -> Self {
+        Self {
+            inner: handle,
+            t: Default::default(),
+            len,
+        }
+    }
+
+    pub fn capacity(&self) -> usize {
+        self.size().expect("Failed to LocalSize")
+    }
+
+    pub fn size(&self) -> OsResult<usize> { unsafe { LocalSize(self.inner) } }
+
+    pub fn realloc(&mut self, new_len: usize) -> OsResult<()> {
+        self.inner = unsafe { LocalReAlloc(self.inner, new_len, 0)? };
+        Ok(())
+    }
+
+    pub fn lock(&mut self) -> LocalMemLock<T> {
+        unsafe { LocalMemLock::from_raw(self.inner, self.len).unwrap() }
+    }
+}
+
+impl<T> Drop for LocalMemory<T> {
+    fn drop(&mut self) {
+        unsafe {
+            LocalFree(self.inner).unwrap_or_else(|x| {
+                panic!(
+                    "Failed to free LocalMemory 0x{:X}: {:?}",
+                    self.inner as usize, x
+                )
+            });
+        }
+    }
+}
+
+pub struct LocalMemLock<T> {
+    inner: *mut T,
+    len: usize,
+}
+
+impl<T> LocalMemLock<T> {
+    unsafe fn from_raw(handle: HLOCAL, len: usize) -> OsResult<Self> {
+        Ok(Self {
+            inner: LocalLock(handle)? as *mut _,
+            len,
+        })
+    }
+}
+impl<T> ops::Index<usize> for LocalMemLock<T> {
+    type Output = T;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        if !self.len <= index {
+            panic!("Index out of bounds");
+        }
+        unsafe { &*self.inner.add(index) }
+    }
+}
+
+impl<T> ops::IndexMut<usize> for LocalMemLock<T> {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        if !self.len <= index {
+            panic!("Index out of bounds");
+        }
+        unsafe { &mut *self.inner.add(index) }
+    }
+}
+
+impl<T> Drop for LocalMemLock<T> {
+    fn drop(&mut self) {
+        unsafe {
+            LocalUnlock(self.inner as *mut _).unwrap_or_else(|x| {
+                panic!(
+                    "Failed to unlock LocalMemLock 0x{:X}: {:?}",
+                    self.inner as usize, x
+                )
+            });
+        }
+    }
+}
+
+pub fn local_alloc<T>(
+    flags: LocalMemFlags,
+    len: SIZE_T,
+) -> OsResult<LocalMemory<T>> {
+    unsafe {
+        LocalAlloc(flags.bits, len).map(|x| LocalMemory::from_raw(x, len))
+    }
+}
+
+pub fn local_size<T>(mem: &LocalMemory<T>) -> OsResult<usize> {
+    unsafe { LocalSize(mem.inner) }
 }

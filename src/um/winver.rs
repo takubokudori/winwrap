@@ -174,8 +174,7 @@ impl<'a> VerQueryValueA<'a> {
     /// # Examples
     ///
     /// ```
-    /// use winwrap::um::winver::*;
-    /// use winwrap::string::*;
+    /// use winwrap::{string::*, um::winver::*};
     /// let file_name = AString::from_str_lossy("ntdll.dll");
     /// let len = get_file_version_info_size_a(&file_name).unwrap();
     /// let x = get_file_version_info_a(&file_name, len).unwrap();
@@ -193,8 +192,7 @@ impl<'a> VerQueryValueA<'a> {
     /// # examples
     ///
     /// ```
-    /// use winwrap::um::winver::*;
-    /// use winwrap::string::*;
+    /// use winwrap::{string::*, um::winver::*};
     /// let file_name = AString::from_str_lossy("ntdll.dll");
     /// let len = get_file_version_info_size_a(&file_name).unwrap();
     /// let x = get_file_version_info_a(&file_name, len).unwrap();
@@ -212,8 +210,7 @@ impl<'a> VerQueryValueA<'a> {
     /// # examples
     ///
     /// ```
-    /// use winwrap::um::winver::*;
-    /// use winwrap::string::*;
+    /// use winwrap::{string::*, um::winver::*};
     /// let file_name = AString::from_str_lossy("ntdll.dll");
     /// let len = get_file_version_info_size_a(&file_name).unwrap();
     /// let x = get_file_version_info_a(&file_name, len).unwrap();
@@ -221,9 +218,14 @@ impl<'a> VerQueryValueA<'a> {
     /// let vfi = vfi.as_var_file_info();
     /// let (language, code_page) = (vfi.language, vfi.code_page);
     /// let sfi = ver_query_value_a(
-    /// &x,
-    /// VerQuerySubBlock::StringFileInfo(language, code_page, "ProductVersion".to_string()),
-    /// ).unwrap();
+    ///     &x,
+    ///     VerQuerySubBlock::StringFileInfo(
+    ///         language,
+    ///         code_page,
+    ///         "ProductVersion".to_string(),
+    ///     ),
+    /// )
+    /// .unwrap();
     /// println!("{:?}", sfi.as_string_file_info().to_string_lossy());
     /// ```
     #[inline]
@@ -271,8 +273,7 @@ impl<'a> VerQueryValueW<'a> {
     /// # Examples
     ///
     /// ```
-    /// use winwrap::um::winver::*;
-    /// use winwrap::string::*;
+    /// use winwrap::{string::*, um::winver::*};
     /// let file_name = WString::from_str_lossy("ntdll.dll");
     /// let len = get_file_version_info_size_w(&file_name).unwrap();
     /// let x = get_file_version_info_w(&file_name, len).unwrap();
@@ -290,8 +291,7 @@ impl<'a> VerQueryValueW<'a> {
     /// # examples
     ///
     /// ```
-    /// use winwrap::um::winver::*;
-    /// use winwrap::string::*;
+    /// use winwrap::{string::*, um::winver::*};
     /// let file_name = WString::from_str_lossy("ntdll.dll");
     /// let len = get_file_version_info_size_w(&file_name).unwrap();
     /// let x = get_file_version_info_w(&file_name, len).unwrap();
@@ -309,8 +309,7 @@ impl<'a> VerQueryValueW<'a> {
     /// # examples
     ///
     /// ```
-    /// use winwrap::um::winver::*;
-    /// use winwrap::string::*;
+    /// use winwrap::{string::*, um::winver::*};
     /// let file_name = WString::from_str_lossy("ntdll.dll");
     /// let len = get_file_version_info_size_w(&file_name).unwrap();
     /// let x = get_file_version_info_w(&file_name, len).unwrap();
@@ -318,9 +317,14 @@ impl<'a> VerQueryValueW<'a> {
     /// let vfi = vfi.as_var_file_info();
     /// let (language, code_page) = (vfi.language, vfi.code_page);
     /// let sfi = ver_query_value_w(
-    /// &x,
-    /// VerQuerySubBlock::StringFileInfo(language, code_page, "ProductVersion".to_string()),
-    /// ).unwrap();
+    ///     &x,
+    ///     VerQuerySubBlock::StringFileInfo(
+    ///         language,
+    ///         code_page,
+    ///         "ProductVersion".to_string(),
+    ///     ),
+    /// )
+    /// .unwrap();
     /// println!("{:?}", sfi.as_string_file_info().to_string_lossy());
     /// ```
     #[inline]

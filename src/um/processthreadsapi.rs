@@ -170,12 +170,16 @@ pub fn get_current_process_id() -> DWORD { GetCurrentProcessId() }
 /// command_line must be null-terminated string.
 ///
 /// ```no_run
+/// use winwrap::{
+///     string::AString,
+///     um::processthreadsapi::{
+///         create_process_a, CreationFlags, StartupInfoA,
+///     },
+/// };
 ///
-/// use winwrap::um::processthreadsapi::{create_process_a, CreationFlags, StartupInfoA};
-/// use winwrap::string::AString;
-///
-/// let mut command_line = AString::from_str_lossy(r"C:\Windows\System32\calc.exe");
-/// let mut si=StartupInfoA::default();
+/// let mut command_line =
+///     AString::from_str_lossy(r"C:\Windows\System32\calc.exe");
+/// let mut si = StartupInfoA::default();
 /// let pi = create_process_a(
 ///     None,
 ///     unsafe { command_line.as_mut_c_str() },
@@ -186,7 +190,8 @@ pub fn get_current_process_id() -> DWORD { GetCurrentProcessId() }
 ///     None,
 ///     None,
 ///     &mut si,
-/// ).unwrap();
+/// )
+/// .unwrap();
 /// ```
 #[ansi_fn]
 #[inline]

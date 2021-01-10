@@ -6,8 +6,8 @@ use winapi::{
     shared::{
         basetsd::{DWORD64, DWORD_PTR, PDWORD_PTR, PSIZE_T, SIZE_T, UINT_PTR},
         minwindef::{
-            BOOL, DWORD, FARPROC, FILETIME, LPBOOL, LPCVOID, LPDWORD,
-            LPFILETIME, LPVOID, LPWORD, PDWORD, WORD,
+            BOOL, DWORD, FARPROC, FILETIME, HGLOBAL, HLOCAL, LPBOOL, LPCVOID,
+            LPDWORD, LPFILETIME, LPVOID, LPWORD, PDWORD, UINT, WORD,
         },
         ntdef::{
             HANDLE, LPCSTR, LPCWSTR, LPSTR, LPWSTR, NULL, PLUID, PULONG, PWSTR,
@@ -19,12 +19,13 @@ use winapi::{
         fileapi::STREAM_INFO_LEVELS,
         handleapi::INVALID_HANDLE_VALUE,
         minwinbase::{
-            LPOVERLAPPED, LPOVERLAPPED_COMPLETION_ROUTINE,
+            LMEM_INVALID_HANDLE, LPOVERLAPPED, LPOVERLAPPED_COMPLETION_ROUTINE,
             LPSECURITY_ATTRIBUTES,
         },
         winbase::{
-            DEP_SYSTEM_POLICY_TYPE, LPCOMMCONFIG, LPCOMMTIMEOUTS, LPDCB,
-            LPFIBER_START_ROUTINE, LPFILE_ID_DESCRIPTOR,
+            DEP_SYSTEM_POLICY_TYPE, GMEM_INVALID_HANDLE, LPCOMMCONFIG,
+            LPCOMMTIMEOUTS, LPDCB, LPFIBER_START_ROUTINE, LPFILE_ID_DESCRIPTOR,
+            LPMEMORYSTATUS,
         },
         winnt::{
             LPCH, PBOOLEAN, PCONTEXT, PCWSTR, PIO_COUNTERS, PPERFORMANCE_DATA,
@@ -760,3 +761,129 @@ pub fn ReadThreadProfilingData(
     Flags: DWORD,
     PerformanceData: PPERFORMANCE_DATA,
 ) -> DWORD;}
+
+make_func! {winapi::um::winbase,
+pub fn GlobalAlloc(
+    uFlags: UINT,
+    dwBytes: SIZE_T,
+) -> HGLOBAL;NULL}
+
+make_func! {winapi::um::winbase,
+pub fn GlobalReAlloc(
+    hMem: HGLOBAL,
+    dwBytes: SIZE_T,
+    uFlags: UINT,
+) -> HGLOBAL;NULL}
+
+make_func! {winapi::um::winbase,
+pub fn GlobalSize(
+    hMem: HGLOBAL,
+) -> SIZE_T;0}
+
+make_func! {winapi::um::winbase,
+pub fn GlobalFlags(
+    hMem: HGLOBAL,
+) -> UINT;GMEM_INVALID_HANDLE}
+
+make_func! {winapi::um::winbase,
+pub fn GlobalLock(
+    hMem: HGLOBAL,
+) -> LPVOID;NULL}
+
+make_func! {winapi::um::winbase,
+pub fn GlobalHandle(
+    pMem: LPCVOID,
+) -> HGLOBAL;NULL}
+
+make_func2! {winapi::um::winbase,
+pub fn GlobalUnlock(
+    hMem: HGLOBAL,
+) -> BOOL;0}
+
+#[allow(non_snake_case)]
+#[allow(clippy::missing_safety_doc)]
+#[inline]
+pub unsafe fn GlobalFree(hMem: HGLOBAL) -> OsResult<()> {
+    let ret = winapi::um::winbase::GlobalFree(hMem);
+    match ret {
+        NULL => Ok(()),
+        _ => Err(OsError::last_os_error()),
+    }
+}
+
+/*
+/// Undocumented
+pub fn GlobalCompact(
+    dwMinFree: DWORD,
+) -> SIZE_T;
+
+pub fn GlobalFix(
+    hMem: HGLOBAL,
+);
+pub fn GlobalUnfix(
+    hMem: HGLOBAL,
+);
+pub fn GlobalWire(
+    hMem: HGLOBAL,
+) -> LPVOID;
+pub fn GlobalUnWire(
+    hMem: HGLOBAL,
+) -> BOOL;
+ */
+tp_func! {winapi::um::winbase,
+pub fn GlobalMemoryStatus(
+    lpBuffer: LPMEMORYSTATUS,
+);}
+
+make_func! {winapi::um::winbase,
+pub fn LocalAlloc(
+    uFlags: UINT,
+    uBytes: SIZE_T,
+) -> HLOCAL;NULL}
+
+make_func! {winapi::um::winbase,
+pub fn LocalReAlloc(
+    hMem: HLOCAL,
+    uBytes: SIZE_T,
+    uFlags: UINT,
+) -> HLOCAL;NULL}
+
+make_func! {winapi::um::winbase,
+pub fn LocalLock(
+    hMem: HLOCAL,
+) -> LPVOID;NULL}
+
+make_func! {winapi::um::winbase,
+pub fn LocalHandle(
+    pMem: LPCVOID,
+) -> HLOCAL;NULL}
+
+make_func2! {winapi::um::winbase,
+pub fn LocalUnlock(
+    hMem: HLOCAL,
+) -> BOOL;0}
+
+make_func! {winapi::um::winbase,
+pub fn LocalSize(
+    hMem: HLOCAL,
+) -> SIZE_T;0}
+
+make_func! {winapi::um::winbase,
+pub fn LocalFlags(
+    hMem: HLOCAL,
+) -> UINT;LMEM_INVALID_HANDLE}
+
+make_func! {winapi::um::winbase,
+pub fn LocalFree(
+    hMem: HLOCAL,
+) -> HLOCAL;NULL}
+
+/*
+pub fn LocalShrink(
+    hMem: HLOCAL,
+    cbNewSize: UINT,
+) -> SIZE_T;
+pub fn LocalCompact(
+    uMinFree: UINT,
+) -> SIZE_T;
+ */

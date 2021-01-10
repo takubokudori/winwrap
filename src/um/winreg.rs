@@ -283,11 +283,14 @@ impl HKeyType for HKeyFlags {
 /// # Example
 ///
 /// ```rust
-/// use winwrap::um::winreg::{reg_create_key_a, HKeyFlags};
-/// use winwrap::string::AString;
+/// use winwrap::{
+///     string::AString,
+///     um::winreg::{reg_create_key_a, HKeyFlags},
+/// };
 ///
 /// let sub_key = AString::from_str_lossy("Environment");
-/// reg_create_key_a(&HKeyFlags::CURRENT_USER,sub_key.as_c_str()).expect("Failed to reg_create_key_a");
+/// reg_create_key_a(&HKeyFlags::CURRENT_USER, sub_key.as_c_str())
+///     .expect("Failed to reg_create_key_a");
 /// ```
 #[ansi_fn]
 pub fn reg_create_key_a(

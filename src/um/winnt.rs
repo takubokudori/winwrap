@@ -32,16 +32,18 @@ pub struct GroupAffinity {
 /// # Examples
 ///
 /// ```no_run
-/// use winwrap::handle::HModule;
-/// use winwrap::um::winnt::DllReason;
-/// use winwrap::winapi::shared::minwindef::{HINSTANCE, DWORD, LPVOID, BOOL};
+/// use winwrap::{
+///     handle::HModule,
+///     um::winnt::DllReason,
+///     winapi::shared::minwindef::{BOOL, DWORD, HINSTANCE, LPVOID},
+/// };
 ///
 /// #[no_mangle]
 /// #[allow(non_snake_case)]
 /// pub unsafe extern "system" fn DllMain(
 ///     hinstDLL: HINSTANCE,
 ///     fdwReason: DWORD,
-///     _lpReserved: LPVOID
+///     _lpReserved: LPVOID,
 /// ) -> BOOL {
 ///     dll_main(HModule::new(hinstDLL), DllReason::from(fdwReason)).into()
 /// }

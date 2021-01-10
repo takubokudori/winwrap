@@ -8,12 +8,13 @@ use winwrap_derive::*;
 /// # Example
 ///
 /// ```rust
-/// use winwrap::um::processenv::get_environment_variable_a;
-/// use winwrap::string::AString;
+/// use winwrap::{
+///     string::AString, um::processenv::get_environment_variable_a,
+/// };
 ///
 /// let name = AString::from_str_lossy("path");
 /// let s = get_environment_variable_a(name.as_c_str()).unwrap();
-/// println!("{:?}",s);
+/// println!("{:?}", s);
 /// ```
 #[ansi_fn]
 pub fn get_environment_variable_a(name: &AStr) -> OsResult<AString> {

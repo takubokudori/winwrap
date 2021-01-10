@@ -351,6 +351,8 @@ pub fn CreateWaitableTimerExW(
 ) -> HANDLE;NULL}
 
 #[allow(non_snake_case)]
+#[allow(clippy::missing_safety_doc)]
+#[inline]
 pub unsafe fn EnterSynchronizationBarrier(
     lpBarrier: LPSYNCHRONIZATION_BARRIER,
     dwFlags: DWORD,

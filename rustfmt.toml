@@ -5,4 +5,7 @@ fn_single_line = true
 merge_imports = true
 match_arm_blocks = true
 max_width = 80
-
+format_code_in_doc_comments = true
+format_macro_matchers = true
+format_macro_bodies = true
+format_strings = true

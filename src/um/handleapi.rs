@@ -44,8 +44,10 @@ pub fn compare_object_handles(
 /// # Example
 ///
 /// ```rust
-/// use winwrap::um::handleapi::get_handle_information;
-/// use winwrap::um::processthreadsapi::get_current_process;
+/// use winwrap::um::{
+///     handleapi::get_handle_information,
+///     processthreadsapi::get_current_process,
+/// };
 /// let proc = get_current_process();
 /// let info = get_handle_information(&proc);
 /// println!("{:?}", info);

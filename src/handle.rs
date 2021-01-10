@@ -61,7 +61,7 @@ macro_rules! make_handle {
 
 #[macro_export]
 macro_rules! bfi {
-    ($x:ident,$t:ty) => {
+    ($x:ident, $t:ty) => {
         impl Into<$t> for $x {
             fn into(self) -> $t { self.bits }
         }

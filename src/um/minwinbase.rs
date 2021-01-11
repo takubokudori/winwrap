@@ -1,13 +1,10 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::{
-    handle::*,
-    shared::minwindef::FileTime,
-    string::{AString, WString},
-    um::fileapi::FileAttributeConstants,
-    *,
+    handle::*, shared::minwindef::FileTime,
+    um::fileapi::FileAttributeConstants, *,
 };
-use std::mem::{ManuallyDrop, MaybeUninit};
+use std::mem::MaybeUninit;
 use winapi::{
     shared::{
         basetsd::ULONG_PTR,
@@ -23,6 +20,7 @@ use winapi::{
         },
     },
 };
+use windy::{AStr, WStr};
 
 make_struct! {SID_IDENTIFIER_AUTHORITY,
 #[derive(Debug, Default)]
@@ -121,13 +119,13 @@ pub struct Win32FindDataA {
 }}
 
 impl Win32FindDataA {
-    pub fn get_file_name(&mut self) -> ManuallyDrop<AString> {
-        unsafe { AString::from_raw(self.file_name.as_mut_ptr() as *mut _) }
+    pub fn get_file_name(&mut self) -> &AStr {
+        unsafe { AStr::from_raw(self.file_name.as_mut_ptr() as *mut _) }
     }
 
-    pub fn get_alternate_file_name(&mut self) -> ManuallyDrop<AString> {
+    pub fn get_alternate_file_name(&mut self) -> &AStr {
         unsafe {
-            AString::from_raw(self.alternate_file_name.as_mut_ptr() as *mut _)
+            AStr::from_raw(self.alternate_file_name.as_mut_ptr() as *mut _)
         }
     }
 
@@ -174,13 +172,13 @@ pub struct Win32FindDataW {
 }}
 
 impl Win32FindDataW {
-    pub fn get_file_name(&mut self) -> ManuallyDrop<WString> {
-        unsafe { WString::from_raw(self.file_name.as_mut_ptr() as *mut _) }
+    pub fn get_file_name(&mut self) -> &WStr {
+        unsafe { WStr::from_raw(self.file_name.as_mut_ptr() as *mut _) }
     }
 
-    pub fn get_alternate_file_name(&mut self) -> ManuallyDrop<WString> {
+    pub fn get_alternate_file_name(&mut self) -> &WStr {
         unsafe {
-            WString::from_raw(self.alternate_file_name.as_mut_ptr() as *mut _)
+            WStr::from_raw(self.alternate_file_name.as_mut_ptr() as *mut _)
         }
     }
 

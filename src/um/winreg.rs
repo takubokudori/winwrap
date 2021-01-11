@@ -342,7 +342,7 @@ pub fn reg_create_key_ex_w<'a, CL, SA>(
     class: CL,
     options: DWORD,
     sam: RegKeyRights,
-    secrity_attributes: SA,
+    security_attributes: SA,
 ) -> OsResult<(HKey, RegDisposition)>
 where
     CL: Into<Option<&'a mut WStr>>,
@@ -358,7 +358,7 @@ where
             class.into().map_or(null_mut(), |x| x.as_mut_ptr()),
             options,
             sam.bits,
-            secrity_attributes
+            security_attributes
                 .into()
                 .map_or(null_mut(), |x| x.as_mut_c_ptr()),
             &mut ret,

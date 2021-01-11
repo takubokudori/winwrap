@@ -5,10 +5,7 @@ use crate::{
     string::*,
     *,
 };
-use std::{
-    mem::{size_of, ManuallyDrop},
-    ptr::null_mut,
-};
+use std::{mem::size_of, ptr::null_mut};
 use winapi::shared::minwindef::{LPCVOID, LPVOID};
 use winwrap_derive::*;
 
@@ -143,7 +140,7 @@ impl VerQuerySubBlock {
 pub enum VerQueryValueA<'a> {
     Root(&'a VSFixedFileInfo),
     VarFileInfo(&'a LangAndCodePage),
-    StringFileInfo(ManuallyDrop<AString>),
+    StringFileInfo(&'a AStr),
 }
 
 impl<'a> VerQueryValueA<'a> {
@@ -163,7 +160,7 @@ impl<'a> VerQueryValueA<'a> {
             }
             VerQuerySubBlock::StringFileInfo(_, _, _) => {
                 let buf = buf as *mut u8;
-                Self::StringFileInfo(AString::from_raw_s(
+                Self::StringFileInfo(AStr::from_raw_s(
                     buf as *mut _,
                     len as usize,
                 ))
@@ -229,7 +226,7 @@ impl<'a> VerQueryValueA<'a> {
     /// println!("{:?}", sfi.as_string_file_info().to_string_lossy());
     /// ```
     #[inline]
-    pub fn as_string_file_info(&self) -> &ManuallyDrop<AString> {
+    pub fn as_string_file_info(&self) -> &AStr {
         match self {
             Self::StringFileInfo(x) => x,
             x => panic!("The item is not StringFileInfo: {:?}", x),
@@ -242,7 +239,7 @@ impl<'a> VerQueryValueA<'a> {
 pub enum VerQueryValueW<'a> {
     Root(&'a VSFixedFileInfo),
     VarFileInfo(&'a LangAndCodePage),
-    StringFileInfo(ManuallyDrop<WString>),
+    StringFileInfo(&'a WStr),
 }
 
 impl<'a> VerQueryValueW<'a> {
@@ -262,7 +259,7 @@ impl<'a> VerQueryValueW<'a> {
             }
             VerQuerySubBlock::StringFileInfo(_, _, _) => {
                 let buf = buf as *mut u8;
-                Self::StringFileInfo(WString::from_raw_s(
+                Self::StringFileInfo(WStr::from_raw_s(
                     buf as *mut _,
                     len as usize,
                 ))
@@ -328,7 +325,7 @@ impl<'a> VerQueryValueW<'a> {
     /// println!("{:?}", sfi.as_string_file_info().to_string_lossy());
     /// ```
     #[inline]
-    pub fn as_string_file_info(&self) -> &ManuallyDrop<WString> {
+    pub fn as_string_file_info(&self) -> &WStr {
         match self {
             VerQueryValueW::StringFileInfo(x) => x,
             x => panic!("The item is not StringFileInfo: {:?}", x),

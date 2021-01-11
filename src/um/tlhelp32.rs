@@ -2,7 +2,7 @@
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::{handle::*, raw::um::tlhelp32::*, string::*, *};
 use std::{
-    mem::{size_of, ManuallyDrop, MaybeUninit},
+    mem::{size_of, MaybeUninit},
     ptr::null_mut,
 };
 use winapi::{
@@ -154,8 +154,8 @@ impl Default for ProcessEntry32W {
 }
 
 impl ProcessEntry32W {
-    pub fn get_exe_file(&mut self) -> ManuallyDrop<WString> {
-        unsafe { WString::from_raw(self.exe_file.as_mut_ptr() as *mut _) }
+    pub fn get_exe_file(&mut self) -> &WStr {
+        unsafe { WStr::from_raw(self.exe_file.as_mut_ptr() as *mut _) }
     }
 }
 
@@ -205,8 +205,8 @@ impl Default for ProcessEntry32 {
 }
 
 impl ProcessEntry32 {
-    pub fn get_exe_file(&mut self) -> ManuallyDrop<AString> {
-        unsafe { AString::from_raw(self.exe_file.as_mut_ptr() as *mut _) }
+    pub fn get_exe_file(&mut self) -> &AStr {
+        unsafe { AStr::from_raw(self.exe_file.as_mut_ptr() as *mut _) }
     }
 }
 
@@ -247,12 +247,12 @@ impl Default for ModuleEntry32 {
 }
 
 impl ModuleEntry32 {
-    pub fn get_module_name(&mut self) -> ManuallyDrop<AString> {
-        unsafe { AString::from_raw(self.module_name.as_mut_ptr() as *mut _) }
+    pub fn get_module_name(&mut self) -> &AStr {
+        unsafe { AStr::from_raw(self.module_name.as_mut_ptr() as *mut _) }
     }
 
-    pub fn get_exe_path(&mut self) -> ManuallyDrop<AString> {
-        unsafe { AString::from_raw(self.exe_path.as_mut_ptr() as *mut _) }
+    pub fn get_exe_path(&mut self) -> &AStr {
+        unsafe { AStr::from_raw(self.exe_path.as_mut_ptr() as *mut _) }
     }
 }
 
@@ -283,12 +283,12 @@ pub struct ModuleEntry32W{
 }}
 
 impl ModuleEntry32W {
-    pub fn get_module_name(&mut self) -> ManuallyDrop<WString> {
-        unsafe { WString::from_raw(self.module_name.as_mut_ptr() as *mut _) }
+    pub fn get_module_name(&mut self) -> &WStr {
+        unsafe { WStr::from_raw(self.module_name.as_mut_ptr() as *mut _) }
     }
 
-    pub fn get_exe_path(&mut self) -> ManuallyDrop<WString> {
-        unsafe { WString::from_raw(self.exe_path.as_mut_ptr() as *mut _) }
+    pub fn get_exe_path(&mut self) -> &WStr {
+        unsafe { WStr::from_raw(self.exe_path.as_mut_ptr() as *mut _) }
     }
 }
 

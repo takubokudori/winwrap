@@ -93,7 +93,7 @@ where
 
 #[ansi_fn]
 pub fn post_message_a(
-    hwnd: HWnd,
+    hwnd: &HWnd,
     msg: UINT,
     wparam: WPARAM,
     lparam: LPARAM,
@@ -103,10 +103,71 @@ pub fn post_message_a(
 
 #[unicode_fn]
 pub fn post_message_w(
-    hwnd: HWnd,
+    hwnd: &HWnd,
     msg: UINT,
     wparam: WPARAM,
     lparam: LPARAM,
 ) -> OsResult<()> {
     unsafe { PostMessageW(hwnd.as_c_hwnd(), msg, wparam, lparam) }
+}
+
+bitflags::bitflags! {
+pub struct MBType: DWORD{
+    /// MB_ABORTRETRYIGNORE
+    const ABORTRETRYIGNORE=winapi::um::winuser::MB_ABORTRETRYIGNORE;
+    /// MB_CANCELTRYCONTINUE
+    const CANCELTRYCONTINUE=winapi::um::winuser::MB_CANCELTRYCONTINUE;
+    /// MB_HELP
+    const HELP=winapi::um::winuser::MB_HELP;
+    /// MB_OK
+    const OK=winapi::um::winuser::MB_OK;
+    /// MB_OKCANCEL
+    const OKCANCEL=winapi::um::winuser::MB_OKCANCEL;
+    /// MB_RETRYCANCEL
+    const RETRYCANCEL=winapi::um::winuser::MB_RETRYCANCEL;
+    /// MB_YESNO
+    const YESNO=winapi::um::winuser::MB_YESNO;
+    /// MB_YESNOCANCEL
+    const YESNOCANCEL=winapi::um::winuser::MB_YESNOCANCEL;
+    }
+}
+
+#[ansi_fn]
+pub fn message_box_a<'a, HP>(
+    hwnd: HP,
+    text: &AStr,
+    caption: &AStr,
+    ty: MBType,
+) -> OsResult<()>
+where
+    HP: Into<Option<&'a HWnd>>,
+{
+    unsafe {
+        MessageBoxA(
+            hwnd.into().map_or(null_mut(), |x| x.as_c_hwnd()),
+            text.as_ptr(),
+            caption.as_ptr(),
+            ty.bits(),
+        )
+    }
+}
+
+#[unicode_fn]
+pub fn message_box_w<'a, HP>(
+    hwnd: HP,
+    text: &WStr,
+    caption: &WStr,
+    ty: MBType,
+) -> OsResult<()>
+where
+    HP: Into<Option<&'a HWnd>>,
+{
+    unsafe {
+        MessageBoxW(
+            hwnd.into().map_or(null_mut(), |x| x.as_c_hwnd()),
+            text.as_ptr(),
+            caption.as_ptr(),
+            ty.bits(),
+        )
+    }
 }

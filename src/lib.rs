@@ -58,6 +58,7 @@
 #![allow(clippy::result_unit_err)]
 #![allow(clippy::uninit_assumed_init)]
 #![allow(clippy::missing_safety_doc)]
+#![allow(clippy::upper_case_acronyms)]
 
 pub use winapi;
 pub use windy as string;
@@ -228,9 +229,9 @@ impl OsError {
 /// Converts OsError to std::io::Error.
 ///
 /// Panics if there is no corresponding Win32Error code.
-impl Into<std::io::Error> for OsError {
-    fn into(self) -> std::io::Error {
-        std::io::Error::from_raw_os_error(self.to_win32_error().unwrap() as i32)
+impl From<OsError> for std::io::Error {
+    fn from(x: OsError) -> Self {
+        std::io::Error::from_raw_os_error(x.to_win32_error().unwrap() as i32)
     }
 }
 
@@ -244,6 +245,6 @@ impl From<windy::ConvertError> for OsError {
     fn from(x: ConvertError) -> Self { Self::Win32(x.to_error_code()) }
 }
 
-impl Into<u32> for OsError {
-    fn into(self) -> u32 { self.to_win32_error().unwrap() }
+impl From<OsError> for u32 {
+    fn from(x: OsError) -> Self { x.to_win32_error().unwrap() }
 }

@@ -62,8 +62,8 @@ macro_rules! make_handle {
 #[macro_export]
 macro_rules! bfi {
     ($x:ident, $t:ty) => {
-        impl Into<$t> for $x {
-            fn into(self) -> $t { self.bits }
+        impl From<$x> for $t {
+            fn from(x: $x) -> $t { x.bits }
         }
     };
 }
@@ -74,9 +74,7 @@ pub trait Handle {
 }
 
 /// Can `ReadFile()`.
-pub trait ReadableHandle: Handle {
-    fn hello() {}
-}
+pub trait ReadableHandle: Handle {}
 
 /// Can `WriteFile()`.
 pub trait WritableHandle: Handle {}
@@ -150,11 +148,11 @@ make_handle! { pub struct JobHandle; CloseHandle }
 
 make_handle! {
 /// Vectored Exception Handler handle
-pub struct VEHHandle; RemoveVectoredExceptionHandler }
+pub struct VehHandle; RemoveVectoredExceptionHandler }
 
 make_handle! {
 /// Vectored Continue Handler handle
-pub struct VCHHandle; RemoveVectoredContinueHandler }
+pub struct VchHandle; RemoveVectoredContinueHandler }
 
 pub struct HModule(pub(crate) HMODULE);
 

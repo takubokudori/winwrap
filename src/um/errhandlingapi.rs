@@ -70,10 +70,10 @@ pub type VectoredExceptionHandler =
 pub fn add_vectored_exception_handler(
     is_first: bool,
     func: VectoredExceptionHandler,
-) -> Result<VEHHandle, ()> {
+) -> Result<VehHandle, ()> {
     unsafe {
         let func = std::mem::transmute::<_, PVECTORED_EXCEPTION_HANDLER>(func);
-        Ok(VEHHandle::new(AddVectoredExceptionHandler(
+        Ok(VehHandle::new(AddVectoredExceptionHandler(
             is_first.into(),
             func,
         )?))
@@ -81,7 +81,7 @@ pub fn add_vectored_exception_handler(
 }
 
 pub unsafe fn remove_vectored_exception_handler(
-    handle: VEHHandle,
+    handle: VehHandle,
 ) -> Result<(), ()> {
     RemoveVectoredExceptionHandler(handle.as_c_handle())?;
     std::mem::forget(handle);
@@ -91,10 +91,10 @@ pub unsafe fn remove_vectored_exception_handler(
 pub fn add_vectored_continue_handler(
     is_first: bool,
     func: VectoredExceptionHandler,
-) -> Result<VCHHandle, ()> {
+) -> Result<VchHandle, ()> {
     unsafe {
         let func = std::mem::transmute::<_, PVECTORED_EXCEPTION_HANDLER>(func);
-        Ok(VCHHandle::new(AddVectoredContinueHandler(
+        Ok(VchHandle::new(AddVectoredContinueHandler(
             is_first.into(),
             func,
         )?))
@@ -102,7 +102,7 @@ pub fn add_vectored_continue_handler(
 }
 
 pub unsafe fn remove_vectored_continue_handler(
-    handle: VCHHandle,
+    handle: VchHandle,
 ) -> Result<(), ()> {
     RemoveVectoredContinueHandler(handle.as_c_handle())?;
     std::mem::forget(handle);

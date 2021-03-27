@@ -31,17 +31,17 @@ impl From<u32> for CodePage {
     }
 }
 
-impl Into<u32> for CodePage {
-    fn into(self) -> u32 {
-        match self {
-            Self::ACP => winapi::um::winnls::CP_ACP,
-            Self::MACCP => winapi::um::winnls::CP_MACCP,
-            Self::OEMCP => winapi::um::winnls::CP_OEMCP,
-            Self::SYMBOL => winapi::um::winnls::CP_SYMBOL,
-            Self::THREAD_ACP => winapi::um::winnls::CP_THREAD_ACP,
-            Self::UTF7 => winapi::um::winnls::CP_UTF7,
-            Self::UTF8 => winapi::um::winnls::CP_UTF8,
-            Self::CODEPAGE(x) => x,
+impl From<CodePage> for u32 {
+    fn from(x: CodePage) -> Self {
+        match x {
+            CodePage::ACP => winapi::um::winnls::CP_ACP,
+            CodePage::MACCP => winapi::um::winnls::CP_MACCP,
+            CodePage::OEMCP => winapi::um::winnls::CP_OEMCP,
+            CodePage::SYMBOL => winapi::um::winnls::CP_SYMBOL,
+            CodePage::THREAD_ACP => winapi::um::winnls::CP_THREAD_ACP,
+            CodePage::UTF7 => winapi::um::winnls::CP_UTF7,
+            CodePage::UTF8 => winapi::um::winnls::CP_UTF8,
+            CodePage::CODEPAGE(x) => x,
         }
     }
 }

@@ -59,8 +59,8 @@ impl From<u32> for FileMapProtectRight {
     }
 }
 
-impl Into<u32> for FileMapProtectRight {
-    fn into(self) -> u32 { self as u32 }
+impl From<FileMapProtectRight> for u32 {
+    fn from(x: FileMapProtectRight) -> Self { x as u32 }
 }
 
 bitflags::bitflags! {

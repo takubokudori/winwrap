@@ -64,7 +64,6 @@ pub use winapi;
 pub use windy as string;
 
 pub mod handle;
-pub mod prelude;
 pub mod raw;
 pub mod shared;
 pub mod um;
@@ -158,7 +157,7 @@ impl fmt::Display for OsError {
 
 impl PartialEq<std::io::Error> for OsError {
     fn eq(&self, other: &std::io::Error) -> bool {
-        let x = self.to_win32_error();
+        let x = self.as_win32_error();
         let y = other.raw_os_error();
         if let (Some(x), Some(y)) = (x, y) {
             x == y as u32
@@ -196,7 +195,7 @@ impl OsError {
     ///
     /// If NtStatus is contained, Converts Win32Error code.
     #[inline]
-    pub fn to_win32_error(&self) -> Option<ULONG> {
+    pub fn as_win32_error(&self) -> Option<ULONG> {
         match self {
             Self::Win32(x) => Some(*x),
             Self::NtStatus(x) => Self::nt_status_to_win32_error(*x),
@@ -231,7 +230,7 @@ impl OsError {
 /// Panics if there is no corresponding Win32Error code.
 impl From<OsError> for std::io::Error {
     fn from(x: OsError) -> Self {
-        std::io::Error::from_raw_os_error(x.to_win32_error().unwrap() as i32)
+        std::io::Error::from_raw_os_error(x.as_win32_error().unwrap() as i32)
     }
 }
 
@@ -246,5 +245,5 @@ impl From<windy::ConvertError> for OsError {
 }
 
 impl From<OsError> for u32 {
-    fn from(x: OsError) -> Self { x.to_win32_error().unwrap() }
+    fn from(x: OsError) -> Self { x.as_win32_error().unwrap() }
 }

@@ -1,7 +1,14 @@
 // Copyright takubokudori.
 // This source code is licensed under the MIT or Apache-2.0 license.
 use winwrap::{
-    prelude::*, winapi::shared::winerror::ERROR_NO_MORE_FILES, OsError::Win32,
+    string::*,
+    um::fileapi::{
+        find_first_file, find_first_file_a, find_first_file_w, find_next_file,
+        find_next_file_a, find_next_file_w,
+    },
+    winapi::shared::winerror::ERROR_NO_MORE_FILES,
+    OsError::Win32,
+    TString,
 };
 
 fn enumerate_files_a() {

@@ -333,9 +333,9 @@ pub struct MemProtectionFlags: u32{
 pub unsafe fn virtual_alloc<'a, AD, MO>(
     address: AD,
     size: SIZE_T,
-    allocate_type: MemAllocationFlags,
+    alloc_flags: MemAllocationFlags,
     option_type: MO,
-    protect: MemProtectionFlags,
+    protect_flags: MemProtectionFlags,
 ) -> OsResult<VirtualMemory<'a>>
 where
     AD: Into<Option<usize>>,
@@ -344,19 +344,30 @@ where
     let p = VirtualAlloc(
         address.into().map_or(null_mut(), |x| x as LPVOID),
         size,
-        allocate_type as u32 | option_type.into().map_or(0, |x| x.bits),
-        protect.bits,
+        alloc_flags as u32 | option_type.into().map_or(0, |x| x.bits),
+        protect_flags.bits,
     )?;
     Ok(VirtualMemory::from_raw(None, p, size))
+}
+
+/// Returns the old memory protection constants.
+pub unsafe fn virtual_protect(
+    address: usize,
+    size: SIZE_T,
+    new_protect_flags: MemProtectionFlags,
+) -> OsResult<MemProtectionFlags> {
+    let mut old = 0;
+    VirtualProtect(address as LPVOID, size, new_protect_flags.bits, &mut old)?;
+    Ok(MemProtectionFlags::from_bits_truncate(old))
 }
 
 pub unsafe fn virtual_alloc_ex<AD, MO>(
     proc_handle: &ProcessHandle,
     address: AD,
     size: SIZE_T,
-    allocate_type: MemAllocationFlags,
+    alloc_flags: MemAllocationFlags,
     option_type: MO,
-    protect: MemProtectionFlags,
+    protect_flags: MemProtectionFlags,
 ) -> OsResult<VirtualMemory>
 where
     AD: Into<Option<usize>>,
@@ -366,8 +377,8 @@ where
         proc_handle.as_c_handle(),
         address.into().map_or(null_mut(), |x| x as LPVOID),
         size,
-        allocate_type as u32 | option_type.into().map_or(0, |x| x.bits),
-        protect.bits,
+        alloc_flags as u32 | option_type.into().map_or(0, |x| x.bits),
+        protect_flags.bits,
     )?;
     Ok(VirtualMemory::from_raw(Some(proc_handle), p, size))
 }

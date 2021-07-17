@@ -12,19 +12,6 @@ pub fn is_wow64_process(proc_handle: &ProcessHandle) -> OsResult<bool> {
     }
 }
 
-pub fn is_wow64_process2(proc_handle: &ProcessHandle) -> OsResult<(u16, u16)> {
-    unsafe {
-        let mut process_machine = 0;
-        let mut native_machine = 0;
-        IsWow64Process2(
-            proc_handle.as_c_handle(),
-            &mut process_machine,
-            &mut native_machine,
-        )?;
-        Ok((process_machine, native_machine))
-    }
-}
-
 #[ansi_fn]
 pub fn get_system_wow64_directory_a() -> OsResult<AString> {
     unsafe {
@@ -58,5 +45,18 @@ pub fn get_system_wow64_directory_w() -> OsResult<WString> {
         };
         ret.set_len(nb as usize);
         Ok(WString::new_unchecked(ret))
+    }
+}
+
+pub fn is_wow64_process2(proc_handle: &ProcessHandle) -> OsResult<(u16, u16)> {
+    unsafe {
+        let mut process_machine = 0;
+        let mut native_machine = 0;
+        IsWow64Process2(
+            proc_handle.as_c_handle(),
+            &mut process_machine,
+            &mut native_machine,
+        )?;
+        Ok((process_machine, native_machine))
     }
 }

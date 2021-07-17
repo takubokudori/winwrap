@@ -9,6 +9,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
+      - name: Build examples
+        run: cargo build --release --examples --verbose
       - name: Run tests
         run: cargo test --release --verbose
       - name: Install i686 toolchain

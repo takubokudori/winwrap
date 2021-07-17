@@ -1,0 +1,8 @@
+[package]
+name = "dll_injector"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+winwrap = { path = "../../../" }
+windy-macros = "0.1.1"

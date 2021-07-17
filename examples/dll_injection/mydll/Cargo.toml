@@ -1,0 +1,13 @@
+[package]
+name = "mydll"
+version = "0.1.0"
+edition = "2018"
+
+[lib]
+name = "mydll"
+path = "src/lib.rs"
+crate-type = ["dylib"]
+
+[dependencies]
+winwrap = { path = "../../../" }
+windy-macros = "0.1.1"

@@ -381,3 +381,9 @@ make_func2! {winapi::um::winuser,
 pub fn SetForegroundWindow(
     hWnd: HWND,
 ) -> BOOL;0}
+
+make_func! {winapi::um::winuser,
+pub fn GetAncestor(
+    hwnd: HWND,
+    gaFlags: UINT,
+) -> HWND;HWND_NULL}

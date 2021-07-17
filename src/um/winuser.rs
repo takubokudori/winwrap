@@ -2,7 +2,7 @@
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::{handle::*, raw::um::winuser::*, string::*, *};
 use std::ptr::null_mut;
-use winapi::shared::minwindef::{LPARAM, UINT, WPARAM};
+use winapi::shared::minwindef::{BOOL, LPARAM, UINT, WPARAM};
 use winwrap_derive::*;
 
 #[ansi_fn]
@@ -170,4 +170,35 @@ where
             ty.bits(),
         )
     }
+}
+
+pub fn get_parent(hwnd: &HWnd) -> OsResult<HWnd> {
+    unsafe { GetParent(hwnd.as_c_hwnd()).map(HWnd::new) }
+}
+
+bitflags::bitflags! {
+pub struct GAFlags: DWORD{
+    /// GA_PARENT
+    const PARENT = winapi::um::winuser::GA_PARENT;
+    /// GA_ROOT
+    const ROOT = winapi::um::winuser::GA_ROOT;
+    /// GA_ROOTOWNER
+    const ROOTOWNER = winapi::um::winuser::GA_ROOTOWNER;
+}}
+
+pub fn get_ancestor(hwnd: &HWnd, flags: GAFlags) -> OsResult<HWnd> {
+    unsafe { GetAncestor(hwnd.as_c_hwnd(), flags.bits()).map(HWnd::new) }
+}
+
+pub type EnumWindowsProc =
+    extern "system" fn(hwnd: &mut HWnd, lparam: LPARAM) -> BOOL;
+use crate::winapi::shared::windef::HWND;
+pub type EnumWindowsProc2 =
+    unsafe extern "system" fn(hwnd: HWND, lparam: LPARAM) -> BOOL;
+
+pub fn enum_windows(
+    callback: EnumWindowsProc2,
+    lparam: LPARAM,
+) -> OsResult<()> {
+    unsafe { EnumWindows(Some(callback), lparam) }
 }

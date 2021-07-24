@@ -241,7 +241,7 @@ impl From<std::io::Error> for OsError {
 }
 
 impl From<windy::ConvertError> for OsError {
-    fn from(x: ConvertError) -> Self { Self::Win32(x.to_error_code()) }
+    fn from(x: ConvertError) -> Self { Self::Win32(x.as_error_code()) }
 }
 
 impl From<OsError> for u32 {

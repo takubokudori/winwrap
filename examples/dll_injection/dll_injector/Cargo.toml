@@ -5,4 +5,4 @@ edition = "2018"
 
 [dependencies]
 winwrap = { path = "../../../" }
-windy-macros = "0.1.1"
+windy-macros = { git = "https://github.com/takubokudori/windy-macros" }

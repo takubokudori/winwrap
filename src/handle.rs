@@ -5,7 +5,7 @@ use std::{fmt, ptr::null_mut};
 use winapi::{
     shared::{
         minwindef::{HKEY, HMODULE},
-        windef::HWND,
+        windef::{HHOOK, HWND},
     },
     um::{
         errhandlingapi::{
@@ -182,6 +182,19 @@ impl fmt::Debug for HWnd {
 impl HWnd {
     pub fn new(hwnd: HWND) -> Self { Self(hwnd) }
     pub fn as_c_hwnd(&self) -> HWND { self.0 }
+}
+
+pub struct HHook(pub(crate) HHOOK);
+
+impl fmt::Debug for HHook {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::fmt::Result {
+        (self.0 as usize).fmt(f)
+    }
+}
+
+impl HHook {
+    pub fn new(hhook: HHOOK) -> Self { Self(hhook) }
+    pub fn as_c_hhook(&self) -> HHOOK { self.0 }
 }
 
 make_handle! { pub struct SnapshotHandle; CloseHandle }

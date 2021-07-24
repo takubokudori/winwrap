@@ -130,8 +130,8 @@ pub fn main() {
     println!("\n******ModuleEntry32W******");
     for mut x in mi {
         println!("----------------");
-        println!("szExePath  : {}", x.get_exe_path().to_string().unwrap());
-        println!("szModule   : {}", x.get_module_name().to_string().unwrap());
+        println!("szExePath  : {}", x.get_exe_path().to_string());
+        println!("szModule   : {}", x.get_module_name().to_string());
         println!("modBaseAddr: {:X}", x.mod_base_addr as usize);
         println!("modBaseSize: {:X}", x.mod_base_size);
     }
@@ -139,7 +139,7 @@ pub fn main() {
     println!("\n******ProcessEntry32W******");
     for mut x in mi {
         println!("----------------");
-        println!("szExePath  : {}", x.get_exe_file().to_string().unwrap());
+        println!("szExePath  : {}", x.get_exe_file().to_string());
         println!("ProcessID: {}", x.process_id);
         println!("CountThreads: {}", x.cnt_threads);
         println!("ParentProcessID: {}", x.parent_process_id);

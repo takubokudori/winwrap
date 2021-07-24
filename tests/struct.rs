@@ -95,8 +95,8 @@ pub mod struct_size_tests {
         assert_eq!(&"", &data.get_file_name().to_string_lossy());
         assert_eq!(&"", &data.get_alternate_file_name().to_string_lossy());
         let mut data = Win32FindDataW::default();
-        assert_eq!(&"", &data.get_file_name().to_string().unwrap());
-        assert_eq!(&"", &data.get_alternate_file_name().to_string().unwrap());
+        assert_eq!(&"", &data.get_file_name().to_string());
+        assert_eq!(&"", &data.get_alternate_file_name().to_string());
         let mut data = ProcessEntry32::default();
         assert_eq!(&"", &data.get_exe_file().to_string_lossy());
         let mut data = ProcessEntry32W::default();

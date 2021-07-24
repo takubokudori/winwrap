@@ -2,23 +2,27 @@
 // This source code is licensed under the MIT or Apache-2.0 license.
 use crate::*;
 use winapi::{
+    ctypes::c_int,
     shared::{
         basetsd::{PDWORD_PTR, ULONG_PTR},
         guiddef::LPCGUID,
-        minwindef::{BOOL, LPARAM, LPVOID, LRESULT, UINT, WPARAM},
+        minwindef::{BOOL, HINSTANCE, LPARAM, LPVOID, LRESULT, UINT, WPARAM},
         ntdef::NULL,
-        windef::HWND,
+        windef::{HHOOK, HWND},
     },
     um::{
         winnt::{HANDLE, LONG, LPCSTR, LPCWSTR},
         winuser::{
-            HDEVNOTIFY, HPOWERNOTIFY, LPMSG, MSG, SENDASYNCPROC, WNDENUMPROC,
+            HDEVNOTIFY, HOOKPROC, HPOWERNOTIFY, LPMSG, MSG, SENDASYNCPROC,
+            WNDENUMPROC,
         },
     },
 };
 
 const HWND_NULL: winapi::shared::windef::HWND =
     NULL as winapi::shared::windef::HWND;
+const HHOOK_NULL: winapi::shared::windef::HHOOK =
+    NULL as winapi::shared::windef::HHOOK;
 
 make_func2! {winapi::um::winuser,
 pub fn GetMessageA(
@@ -376,6 +380,59 @@ pub fn EnumThreadWindows(
     lpfn: WNDENUMPROC,
     lParam: LPARAM,
 ) -> BOOL;0}
+
+make_func! {winapi::um::winuser,
+pub fn GetWindow(
+    hWnd: HWND,
+    uCmd: UINT,
+) -> HWND;HWND_NULL}
+
+make_func! {winapi::um::winuser,
+pub fn SetWindowsHookA(
+    nFilterType: c_int,
+    pfnFilterProc: HOOKPROC,
+) -> HHOOK;HHOOK_NULL}
+
+make_func! {winapi::um::winuser,
+pub fn SetWindowsHookW(
+    nFilterType: c_int,
+    pfnFilterProc: HOOKPROC,
+) -> HHOOK;HHOOK_NULL}
+
+make_func2! {winapi::um::winuser,
+pub fn UnhookWindowsHook(
+    nFilterType: c_int,
+    pfnFilterProc: HOOKPROC,
+) -> BOOL;0}
+
+make_func! {winapi::um::winuser,
+pub fn SetWindowsHookExA(
+    idHook: c_int,
+    lpfn: HOOKPROC,
+    hmod: HINSTANCE,
+    dwThreadId: DWORD,
+) -> HHOOK;HHOOK_NULL}
+
+make_func! {winapi::um::winuser,
+pub fn SetWindowsHookExW(
+    idHook: c_int,
+    lpfn: HOOKPROC,
+    hmod: HINSTANCE,
+    dwThreadId: DWORD,
+) -> HHOOK;HHOOK_NULL}
+
+make_func2! {winapi::um::winuser,
+pub fn UnhookWindowsHookEx(
+    hhk: HHOOK,
+) -> BOOL;0}
+
+tp_func! {winapi::um::winuser,
+pub fn CallNextHookEx(
+    hhk: HHOOK,
+    nCode: c_int,
+    wParam: WPARAM,
+    lParam: LPARAM,
+) -> LRESULT;}
 
 make_func2! {winapi::um::winuser,
 pub fn SetForegroundWindow(

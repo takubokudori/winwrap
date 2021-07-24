@@ -202,3 +202,46 @@ pub fn enum_windows(
 ) -> OsResult<()> {
     unsafe { EnumWindows(Some(callback), lparam) }
 }
+
+bitflags::bitflags! {
+    pub struct IdHook:i32 {
+        const CALLWNDPROC = winapi::um::winuser::WH_CALLWNDPROC;
+        const CALLWNDPROCRET = winapi::um::winuser::WH_CALLWNDPROCRET;
+        const CBT = winapi::um::winuser::WH_CBT;
+        const DEBUG = winapi::um::winuser::WH_DEBUG;
+        const FOREGROUNDIDLE = winapi::um::winuser::WH_FOREGROUNDIDLE;
+        const GETMESSAGE = winapi::um::winuser::WH_GETMESSAGE;
+        const JOURNALPLAYBACK = winapi::um::winuser::WH_JOURNALPLAYBACK;
+        const JOURNALRECORD = winapi::um::winuser::WH_JOURNALRECORD;
+        const KEYBOARD = winapi::um::winuser::WH_KEYBOARD;
+        const KEYBOARD_LL = winapi::um::winuser::WH_KEYBOARD_LL;
+        const MOUSE = winapi::um::winuser::WH_MOUSE;
+        const MOUSE_LL = winapi::um::winuser::WH_MOUSE_LL;
+        const MSGFILTER = winapi::um::winuser::WH_MSGFILTER;
+        const SHELL = winapi::um::winuser::WH_SHELL;
+        const SYSMSGFILTER = winapi::um::winuser::WH_SYSMSGFILTER;
+    }
+}
+
+pub type HookProc = unsafe extern "system" fn(
+    hwnd: HWND,
+    wparam: WPARAM,
+    lparam: LPARAM,
+) -> BOOL;
+
+pub fn set_windows_hook_ex_a(
+    id_hook: IdHook,
+    func: HookProc,
+    h_mod: HModule,
+    tid: DWORD,
+) -> OsResult<HHook> {
+    unsafe {
+        SetWindowsHookExA(
+            id_hook.bits,
+            std::mem::transmute(func),
+            h_mod.as_c_hmodule(),
+            tid,
+        )
+        .map(HHook::new)
+    }
+}
